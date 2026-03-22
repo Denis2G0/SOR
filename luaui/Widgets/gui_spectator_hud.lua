@@ -86,7 +86,7 @@ local titleDimensions = {}
 local knobDimensions = {}
 local barDimensions = {}
 
-local textColorWhite = { 1, 1, 1, 1 }
+local textColorWhite = { 0.85, 0.95, 1.0, 1 }
 
 local knobVAO = nil
 local metricDisplayLists = {}
