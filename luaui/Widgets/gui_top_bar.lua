@@ -371,7 +371,7 @@ local function updateButtons()
 	if dlist.buttons then glDeleteList(dlist.buttons) end
 	dlist.buttons = glCreateList(function()
 		font2:Begin(true)
-		font2:SetTextColor(0.92, 0.92, 0.92, 1)
+		font2:SetTextColor(0.85, 0.92, 0.97, 1)
 		font2:SetOutlineColor(0, 0, 0, 1)
 		for name, params in pairs(buttonsArea['buttons']) do
 			font2:Print(params[5], params[6], params[2] + ((params[4] - params[2]) * 0.5) - (fontsize / 5), fontsize, 'co')
@@ -524,7 +524,7 @@ local function drawResbarStorage(res)
 	font2:Begin(true)
 	font2:SetOutlineColor(0,0,0,1)
 	if res == 'metal' then
-		font2:SetTextColor(0.55, 0.55, 0.55, 1)
+		font2:SetTextColor(0.45, 0.55, 0.6, 1)
 	else
 		font2:SetTextColor(0.57, 0.57, 0.45, 1)
 	end
@@ -619,10 +619,10 @@ local function updateResbarText(res, force)
 								color3 = { 1, 0.3, 0.3, 0.25 }
 								color4 = { 1, 0.3, 0.3, 0.44 }
 							else
-								color1 = { 0.35, 0.35, 0.35, 1 }
-								color2 = { 0.25, 0.25, 0.25, 1 }
-								color3 = { 1, 1, 1, 0.25 }
-								color4 = { 1, 1, 1, 0.44 }
+								color1 = { 0.2, 0.3, 0.38, 1 }
+								color2 = { 0.12, 0.2, 0.28, 1 }
+								color3 = { 0.6, 0.85, 1.0, 0.25 }
+								color4 = { 0.6, 0.85, 1.0, 0.44 }
 							end
 						else
 							if allyteamOverflowingEnergy then
@@ -640,7 +640,7 @@ local function updateResbarText(res, force)
 
 						RectRound(resbarArea[res][3] - textWidth, resbarArea[res][4] - 15.5 * widgetScale, resbarArea[res][3], resbarArea[res][4], 3.7 * widgetScale, 0, 0, 1, 1, color1, color2)
 						RectRound(resbarArea[res][3] - textWidth + bgpadding2, resbarArea[res][4] - 15.5 * widgetScale + bgpadding2, resbarArea[res][3] - bgpadding2, resbarArea[res][4], 2.8 * widgetScale, 0, 0, 1, 1, color3, color4)
-						RectRoundOutline(resbarArea[res][3] - textWidth + bgpadding2, resbarArea[res][4] - 15.5 * widgetScale + bgpadding2, resbarArea[res][3] - bgpadding2, resbarArea[res][4]+10, 2.8 * widgetScale, bgpadding2*1.33, 0, 0, 1, 1, {1, 1, 1, 0.15}, {1, 1, 1, 0})
+						RectRoundOutline(resbarArea[res][3] - textWidth + bgpadding2, resbarArea[res][4] - 15.5 * widgetScale + bgpadding2, resbarArea[res][3] - bgpadding2, resbarArea[res][4]+10, 2.8 * widgetScale, bgpadding2*1.33, 0, 0, 1, 1, {0.3, 0.7, 0.9, 0.15}, {0.3, 0.7, 0.9, 0})
 
 						font2:Begin(true)
 						font2:SetTextColor(1, 0.88, 0.88, 1)
@@ -666,7 +666,7 @@ local function drawResbarValue(res)
 	cache.lastResbarValueWidth[res] = font2:GetTextWidth(value) * resbarDrawinfo[res].textCurrent[4]
 	font2:Begin(true)
 	if res == 'metal' then
-		font2:SetTextColor(0.95, 0.95, 0.95, 1)
+		font2:SetTextColor(0.88, 0.94, 0.97, 1)
 	else
 		font2:SetTextColor(1, 1, 0.74, 1)
 	end
@@ -715,7 +715,7 @@ local function updateResbar(res)
 	-- Ensure barColor is initialized
 	if not resbarDrawinfo[res].barColor then
 		if res == 'metal' then
-			resbarDrawinfo[res].barColor = { 1, 1, 1, 1 }
+			resbarDrawinfo[res].barColor = { 0.8, 0.93, 1.0, 1 }
 		else
 			resbarDrawinfo[res].barColor = { 1, 1, 0, 1 }
 		end
@@ -723,7 +723,7 @@ local function updateResbar(res)
 
 	if refreshUi then
 		if res == 'metal' then
-			resbarDrawinfo[res].barColor = { 1, 1, 1, 1 }
+			resbarDrawinfo[res].barColor = { 0.8, 0.93, 1.0, 1 }
 		else
 			resbarDrawinfo[res].barColor = { 1, 1, 0, 1 }
 		end
@@ -899,8 +899,8 @@ local function updateResbarValues(res, update)
 				local color1, color2, glowAlpha
 
 				if res == 'metal' then
-					color1 = { 0.51, 0.51, 0.5, 1 }
-					color2 = { 0.95, 0.95, 0.95, 1 }
+					color1 = { 0.4, 0.5, 0.55, 1 }
+					color2 = { 0.8, 0.92, 0.97, 1 }
 					glowAlpha = 0.025 + (0.05 * mathMin(1, cappedCurRes / r[res][2] * 40))
 				else
 					color1 = { 0.5, 0.45, 0, 1 }
