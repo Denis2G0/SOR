@@ -1,11 +1,11 @@
 return {
-  name = 'Beyond All Reason',
-  description = 'Beyond All Reason',
-  shortName = 'BYAR',   -- 'BAR' is used by original bar project still
+  name = 'SOR - State of Reckoning',
+  description = 'Singularity: Reign',
+  shortName = 'SOR',   -- 'BAR' is used by original bar project still
   version = '$VERSION',
   mutator = 'Official',
-  game = 'Beyond All Reason',
-  shortGame = 'BYAR',
+  game = 'SOR',
+  shortGame = 'SOR',
   modtype = 1,
-  url = "https://www.beyondallreason.info",
+  url = "https://www.sor-game.com",
 }
