@@ -134,12 +134,12 @@ function widget:DrawScreen()
 			RectRound(u1 + padding, y1 + padding, u2 - padding, y2 - padding, (u2 - u1) / 5.5, 1, 1, 1, 1, { 1, 1, 1, 0.035 * alpha }, { 1, 1, 1, 0.02 * alpha })
 		end
 		local vol2 = math.floor((volume / (100 / rectangles)) / 2)
-		gl.Color(0, 0.85, 0, alpha)                              -- draws filled rectangles
+		gl.Color(0.1, 0.75, 0.9, alpha)                              -- draws filled rectangles
 		local spacer2 = boxwidth / 10
 		for i = 1, vol2 do
 			local u1 = x1 + (i - 1) * boxwidth
 			local u2 = u1 + boxwidth - boxspacing
-			RectRound(u1 + spacer2, y1 + spacer2, u2 - spacer2, y2 - spacer2, ((u2 - spacer2) - (u1 + spacer2)) / 5.5, 1, 1, 1, 1, { 0, 0.5, 0, alpha * 0.8 }, { 0, 1, 0, alpha * 0.8 })
+			RectRound(u1 + spacer2, y1 + spacer2, u2 - spacer2, y2 - spacer2, ((u2 - spacer2) - (u1 + spacer2)) / 5.5, 1, 1, 1, 1, { 0.05, 0.4, 0.55, alpha * 0.8 }, { 0.1, 0.8, 0.95, alpha * 0.8 })
 			RectRound(u1 + spacer2 + padding, y1 + spacer2 + padding, u2 - spacer2 - padding, y2 - spacer2 - padding, ((u2 - spacer2) - (u1 + spacer2)) / 6.5, 1, 1, 1, 1, { 1, 1, 1, alpha * 0.25 }, { 1, 1, 1, alpha * 0.25 })
 			-- gloss
 			glBlending(GL_SRC_ALPHA, GL_ONE)
