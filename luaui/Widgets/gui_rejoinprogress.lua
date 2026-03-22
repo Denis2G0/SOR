@@ -85,7 +85,7 @@ local function updateRejoin()
 			local edgeWidth = math.max(1, mathFloor(vsy / 1100))
 			local addedSize = mathFloor(((barArea[4] - barArea[2]) * 0.15) + 0.5)
 			RectRound(barArea[1] - addedSize - edgeWidth, barArea[2] - addedSize - edgeWidth, barArea[3] + addedSize + edgeWidth, barArea[4] + addedSize + edgeWidth, barHeight * 0.33, 1, 1, 1, 1, { 0, 0, 0, 0.03 }, { 0, 0, 0, 0.03 })
-			RectRound(barArea[1] - addedSize, barArea[2] - addedSize, barArea[3] + addedSize, barArea[4] + addedSize, barHeight * 0.33, 1, 1, 1, 1, { 0.15, 0.15, 0.15, 0.2 }, { 0.8, 0.8, 0.8, 0.16 })
+			RectRound(barArea[1] - addedSize, barArea[2] - addedSize, barArea[3] + addedSize, barArea[4] + addedSize, barHeight * 0.33, 1, 1, 1, 1, { 0.05, 0.12, 0.18, 0.2 }, { 0.3, 0.6, 0.75, 0.16 })
 
 			gl.Texture(noiseBackgroundTexture)
 			gl.Color(1,1,1, 0.12)
@@ -100,8 +100,8 @@ local function updateRejoin()
 
 			-- Bar value
 			local valueWidth = catchup * barWidth
-			gl.Color(0, 1, 0, 1)
-			RectRound(barArea[1], barArea[2], barArea[1] + valueWidth, barArea[4], barHeight * 0.2, 1, 1, 1, 1, { 0, 0.55, 0, 1 }, { 0, 1, 0, 1 })
+			gl.Color(0.1, 0.8, 0.95, 1)
+			RectRound(barArea[1], barArea[2], barArea[1] + valueWidth, barArea[4], barHeight * 0.2, 1, 1, 1, 1, { 0.05, 0.4, 0.55, 1 }, { 0.1, 0.8, 0.95, 1 })
 
 			gl.Texture(stripesTexture)
 			gl.Color(1,1,1, 0.16)
@@ -119,7 +119,7 @@ local function updateRejoin()
 
 			-- Bar value glow
 			local glowSize = barHeight * 6
-			gl.Color(0, 1, 0, 0.08)
+			gl.Color(0.1, 0.8, 0.95, 0.08)
 			gl.Texture(barGlowCenterTexture)
 			DrawRect(barArea[1], barArea[2] - glowSize, barArea[1] + (catchup * barWidth), barArea[4] + glowSize, 0.008)
 			gl.Texture(barGlowEdgeTexture)
@@ -136,7 +136,7 @@ local function updateRejoin()
 			-- Text
 			local fontsize = mathFloor(height*0.34)
 			font2:Begin()
-			font2:SetTextColor(0.92, 0.92, 0.92, 1)
+			font2:SetTextColor(0.82, 0.92, 0.97, 1)
 			font2:SetOutlineColor(0, 0, 0, 1)
 			font2:Print('\255\225\255\225' .. Spring.I18N('ui.rejoin.catchingUp') .. ' \255\166\166\166'..gametime, area[1] + ((area[3] - area[1]) / 2), area[2] + barHeight * 2 + (fontsize*0.89), fontsize, 'cor')
 			font2:End()
