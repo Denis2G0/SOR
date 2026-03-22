@@ -2239,8 +2239,8 @@ function DrawLabel(text, vOffset, drawSeparator)
     end
 
     font:Begin(true)
-    font:SetTextColor(0.88, 0.88, 0.88, 1)
-	font:SetOutlineColor(0.18, 0.18, 0.18, 1)
+    font:SetTextColor(0.82, 0.90, 0.95, 1)
+	font:SetOutlineColor(0.08, 0.12, 0.16, 1)
     font:Print(text, widgetPosX, widgetPosY + widgetHeight - vOffset + 7.5, 12, "on")
     font:End()
 end
@@ -2251,8 +2251,8 @@ function DrawLabelTip(text, vOffset, xOffset)
     end
 
     font:Begin(true)
-    font:SetTextColor(0.8, 0.8, 0.8, 0.75)
-	font:SetOutlineColor(0.18, 0.18, 0.18, 1)
+    font:SetTextColor(0.75, 0.85, 0.90, 0.75)
+	font:SetOutlineColor(0.08, 0.12, 0.16, 1)
     font:Print(text, widgetPosX + xOffset, widgetPosY + widgetHeight - vOffset + 7.5, 10, "on")
     font:End()
 end
@@ -2974,8 +2974,8 @@ function DrawID(teamID, posY, dark, dead)
     end
     local fontsize = 9.5 * (playerScale + ((1-playerScale)*0.25)) * fontScaleHigh
     font:Begin(true)
-	font:SetTextColor(0.7, 0.7, 0.7, 1)
-	font:SetOutlineColor(0.18, 0.18, 0.18, 1)
+	font:SetTextColor(0.6, 0.72, 0.78, 1)
+	font:SetOutlineColor(0.08, 0.12, 0.16, 1)
     font:Print(spacer .. teamID, m_ID.posX + widgetPosX + (4.5*playerScale), posY + (5.3*playerScale), fontsize, "on")
     font:End()
 end
