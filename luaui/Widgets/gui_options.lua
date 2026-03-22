@@ -88,12 +88,12 @@ local pauseGameWhenSingleplayer = true
 local cameraTransitionTime = 0.18
 local cameraPanTransitionTime = 0.03
 
-local optionColor = '\255\255\255\255'
-local widgetOptionColor = '\255\160\160\160'
-local advOptionColor = '\255\180\160\140'
-local advMainOptionColor = '\255\255\235\200'
-local devOptionColor = '\255\200\110\100'
-local devMainOptionColor = '\255\245\166\140'
+local optionColor = '\255\220\235\245'
+local widgetOptionColor = '\255\140\170\185'
+local advOptionColor = '\255\100\180\200'
+local advMainOptionColor = '\255\160\220\240'
+local devOptionColor = '\255\200\130\100'
+local devMainOptionColor = '\255\240\170\140'
 
 local firstlaunchsetupDone = false
 
