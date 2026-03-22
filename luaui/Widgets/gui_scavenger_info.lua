@@ -99,8 +99,8 @@ function DrawTextarea(x,y,width,height,scrollbar)
 	local fontSizeLine				= 16 * widgetScale
 	local lineSeparator				= 2 * widgetScale
 
-	local fontColorTitle			= {1,1,1,1}
-	local fontColorLine				= {0.8,0.77,0.74,1}
+	local fontColorTitle			= {0.85,0.95,1.0,1}
+	local fontColorLine				= {0.75,0.82,0.88,1}
 
 	maxLines = mathFloor(height / (lineSeparator + fontSizeTitle))
 
@@ -174,8 +174,8 @@ function DrawWindow()
 
 	-- title
 	font2:Begin()
-	font2:SetTextColor(1, 1, 1, 1)
-	font2:SetOutlineColor(0, 0, 0, 0.4)
+	font2:SetTextColor(0.8, 0.95, 1.0, 1)
+	font2:SetOutlineColor(0, 0.05, 0.1, 0.4)
 	font2:Print(title, screenX + (titleFontSize * 0.75), screenY + (8*widgetScale), titleFontSize, "on")
 	font2:End()
 
