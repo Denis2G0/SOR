@@ -104,15 +104,15 @@ function DrawSidebar(x, y, width, height)
 	local fontOffsetX = versionOffsetX * widgetScale
 
 	-- background
-	gl.Color(0.7, 0.5, 0.15, 0.14)
-	RectRound(x, y - height, x + width, y, bgpadding, 0, 0, 0, 1, { 0.55, 0.4, 0.12, 0.14 }, { 0.8, 0.57, 0.18, 0.14 })
+	gl.Color(0.1, 0.35, 0.5, 0.14)
+	RectRound(x, y - height, x + width, y, bgpadding, 0, 0, 0, 1, { 0.08, 0.25, 0.4, 0.14 }, { 0.15, 0.45, 0.6, 0.14 })
 
 	-- version links
 	versionQuickLinks = {}
 	if changelogFile then
 		font:Begin()
-		font:SetOutlineColor(0.2, 0.17, 0, 0.33)
-		font:SetTextColor(0.8, 0.65, 0.15, 1)
+		font:SetOutlineColor(0, 0.1, 0.15, 0.33)
+		font:SetTextColor(0.4, 0.8, 0.95, 1)
 		local lineKey = 1
 		local yOffset = 24*widgetScale
 		local j = 0
@@ -153,17 +153,17 @@ function DrawTextarea(x, y, width, height, scrollbar)
 	local scrollbarPosWidth = 4 * widgetScale
 	local scrollbarPosMinHeight = 8 * widgetScale
 	local scrollbarBackgroundColor = { 0, 0, 0, 0.24 }
-	local scrollbarBarColor = { 1, 1, 1, 0.15 }
+	local scrollbarBarColor = { 0.3, 0.7, 0.9, 0.15 }
 
 	local fontSizeTitle = 17 * widgetScale
 	local fontSizeDate = 13 * widgetScale
 	local fontSizeLine = 15 * widgetScale
 	local lineSeparator = 2 * widgetScale
 
-	local fontColorTitle = { 1, 1, 1, 1 }
-	local fontColorDate = { 0.66, 0.88, 0.66, 1 }
-	local fontColorLine = { 0.8, 0.77, 0.74, 1 }
-	local fontColorLineBullet = { 0.9, 0.6, 0.2, 1 }
+	local fontColorTitle = { 0.85, 0.95, 1.0, 1 }
+	local fontColorDate = { 0.5, 0.85, 0.7, 1 }
+	local fontColorLine = { 0.75, 0.82, 0.88, 1 }
+	local fontColorLineBullet = { 0.3, 0.75, 0.9, 1 }
 
 	local textRightOffset = scrollbar and scrollbarMargin + scrollbarWidth + scrollbarWidth or 0
 	maxLines = mathFloor(height / (lineSeparator + fontSizeTitle))
@@ -262,8 +262,8 @@ function DrawWindow()
 
 	-- title
 	font2:Begin()
-	font2:SetTextColor(1, 1, 1, 1)
-	font2:SetOutlineColor(0, 0, 0, 0.4)
+	font2:SetTextColor(0.8, 0.95, 1.0, 1)
+	font2:SetOutlineColor(0, 0.05, 0.1, 0.4)
 	font2:Print(title, screenX + (titleFontSize * 0.75), screenY + (8*widgetScale), titleFontSize, "on")
 	font2:End()
 
@@ -321,9 +321,9 @@ function widget:DrawScreen()
 			for k,v in pairs(versionQuickLinks) do
 				if math_isInRect(x, y, v[1], v[2], v[3], v[4]) then
 					if pressed then
-						gl.Color(1, 0.93, 0.75, 0.23)
+						gl.Color(0.3, 0.8, 0.95, 0.23)
 					else
-						gl.Color(1, 0.93, 0.75, 0.15)
+						gl.Color(0.3, 0.8, 0.95, 0.15)
 					end
 					RectRound(v[1], v[2], v[3], v[4], bgpadding, 0,0,0,0)
 					break;
