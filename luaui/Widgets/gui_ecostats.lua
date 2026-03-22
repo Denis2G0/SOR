@@ -883,7 +883,7 @@ end
 local function DrawMText(numberM, vOffset)
 	local label = stringFormatSI(numberM)
 	font:Begin(true)
-	font:SetTextColor(1, 1, 1, 1)
+	font:SetTextColor(0.85, 0.94, 0.98, 1)
 	font:Print(label or "", widgetPosX + widgetWidth - (5 * sizeMultiplier), widgetPosY + widgetHeight - vOffset + (borderPadding * 0.5) + (tH * 0.58), tH / 2.3, 'rs')
 	font:End()
 end

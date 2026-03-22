@@ -85,8 +85,8 @@ local cachedPauseText = nil
 local spIsGUIHidden = Spring.IsGUIHidden
 
 -- Pre-allocated color tables
-local textColor = { 1.0, 1.0, 1.0, 0 }
-local outlineColor = { 0.0, 0.0, 0.0, 0 }
+local textColor = { 0.7, 0.95, 1.0, 0 }
+local outlineColor = { 0.0, 0.05, 0.1, 0 }
 
 
 
@@ -110,17 +110,17 @@ local fragmentShaderSource = [[
 	  if (intensity > 1) intensity = 1;
 	  if (intensity < 0.5) {
 			if (intensity < 0.2) {
-			  gl_FragColor = vec4(multi*0.22, multi*0.22, multi*0.22, alpha);
+			  gl_FragColor = vec4(multi*0.15, multi*0.20, multi*0.25, alpha);
 			} else if (intensity < 0.35) {
-			  gl_FragColor = vec4(multi*0.32, multi*0.32, multi*0.32, alpha);
+			  gl_FragColor = vec4(multi*0.22, multi*0.28, multi*0.35, alpha);
 			} else {
-			  gl_FragColor = vec4(multi*0.55, multi*0.55, multi*0.55, alpha);
+			  gl_FragColor = vec4(multi*0.40, multi*0.50, multi*0.58, alpha);
 			}
 	  } else {
 			if (intensity < 0.75) {
-				gl_FragColor = vec4(multi*0.7, multi*0.7, multi*0.7, alpha);
+				gl_FragColor = vec4(multi*0.52, multi*0.64, multi*0.72, alpha);
 			} else {
-			  gl_FragColor = vec4(multi*0.82, multi*0.82, multi*0.82, alpha);
+			  gl_FragColor = vec4(multi*0.62, multi*0.76, multi*0.85, alpha);
 			}
 	  }
 	}
