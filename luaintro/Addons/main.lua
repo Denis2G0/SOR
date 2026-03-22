@@ -620,11 +620,11 @@ function addon.DrawLoadScreen()
 	gl.Rect(1-posX,posY-(borderSize/vsy),(1-posX)+(borderSize/vsx),posY+((height+borderSize)/vsy))	-- right
 
 	-- background
-	gl.Color(0.15,0.15,0.15,(blurShader and 0.55 or 0.7))
+	gl.Color(0.04,0.06,0.10,(blurShader and 0.55 or 0.7))
 	gl.Rect(posX+loadvalue,posY,1-posX,posY+(height/vsy))
 
 	-- progress value
-	gl.Color((0.4-(loadProgress/7)), (loadProgress*0.35), 0, 0.85)
+	gl.Color(0.05 + loadProgress*0.15, 0.3 + loadProgress*0.45, 0.5 + loadProgress*0.4, 0.85)
 	gl.Rect(posX,posY,posX+loadvalue,posY+(height)/vsy)
 
 	gl.Blending(GL.SRC_ALPHA, GL.ONE)
@@ -634,11 +634,11 @@ function addon.DrawLoadScreen()
 	gl.Rect(posX,posY,1-posX,posY+(height/vsy))
 
 	-- progress value
-	gl.Color((0.45-(loadProgress/7)), (loadProgress*0.38), 0, 0.2)
+	gl.Color(0.05 + loadProgress*0.1, 0.25 + loadProgress*0.4, 0.45 + loadProgress*0.35, 0.2)
 	gl.BeginEnd(GL.QUADS, gradientv, posX, posY, posX+loadvalue, posY+((height)/vsy), {1,1,1,0.2}, {1,1,1,0})
 	gl.BeginEnd(GL.QUADS, gradientv, posX, posY, posX+loadvalue, posY+(((height)*0.3)/vsy), {1,1,1,0}, {1,1,1,0.04})
 	-- progress value texture
-	gl.Color((0.4-(loadProgress/7)), (loadProgress*0.3), 0, 0.19)
+	gl.Color(0.05 + loadProgress*0.1, 0.25 + loadProgress*0.35, 0.4 + loadProgress*0.35, 0.19)
 	gl.Texture(':ng:luaui/images/rgbnoise.png')
 	gl.BeginEnd(GL.QUADS, bartexture, posX,posY,1-posX,posY+((height)/vsy), (height*7)/vsy, (height*7)/vsy)
 	gl.Texture(false)
@@ -662,7 +662,7 @@ function addon.DrawLoadScreen()
 	gl.PushMatrix()
 	gl.Scale(1/vsx,1/vsy,1)
 	gl.Translate(vsx/2, (posY*vsy)+(height*0.68), 0)
-	font:SetTextColor(0.88,0.88,0.88,1)
+	font:SetTextColor(0.82,0.90,0.95,1)
 	font:SetOutlineColor(0,0,0,0.85)
 	font:Print(lastLoadMessage, 0, 0, barTextSize, "oac")
 	gl.PopMatrix()
