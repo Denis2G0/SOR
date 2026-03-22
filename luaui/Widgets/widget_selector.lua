@@ -823,8 +823,8 @@ function widget:DrawScreen()
 
 			-- title
 			font2:Begin()
-			font2:SetTextColor(1, 1, 1, 1)
-			font2:SetOutlineColor(0, 0, 0, 0.4)
+			font2:SetTextColor(0.8, 0.95, 1.0, 1)
+			font2:SetOutlineColor(0, 0.05, 0.1, 0.4)
 			font2:Print(title, backgroundRect[1] + (titleFontSize * 0.75), backgroundRect[4] + (8*widgetScale), titleFontSize, "on")
 			font2:End()
 		end)

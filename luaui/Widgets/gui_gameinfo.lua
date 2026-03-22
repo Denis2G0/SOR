@@ -225,8 +225,8 @@ function DrawTextarea(x, y, width, height, scrollbar)
 	local fontSizeLine = 15.5 * widgetScale
 	local lineSeparator = 2 * widgetScale
 
-	local fontColorLine = { 0.8, 0.77, 0.74, 1 }
-	local fontColorCommand = { 0.9, 0.6, 0.2, 1 }
+	local fontColorLine = { 0.75, 0.82, 0.88, 1 }
+	local fontColorCommand = { 0.3, 0.75, 0.9, 1 }
 
 	local textRightOffset = scrollbar and scrollbarMargin + scrollbarWidth + scrollbarWidth or 0
 	maxLines = mathFloor(height / (lineSeparator + fontSizeTitle))
@@ -308,8 +308,8 @@ function DrawWindow()
 	RectRound(titleRect[1], titleRect[2], titleRect[3], titleRect[4], elementCorner, 1, 1, 0, 0)
 
 	font2:Begin()
-	font2:SetTextColor(1, 1, 1, 1)
-	font2:SetOutlineColor(0, 0, 0, 0.4)
+	font2:SetTextColor(0.8, 0.95, 1.0, 1)
+	font2:SetOutlineColor(0, 0.05, 0.1, 0.4)
 	font2:Print(Spring.I18N('ui.gameInfo.title'), screenX + (titleFontSize * 0.75), screenY + (8*widgetScale), titleFontSize, "on")
 	font2:End()
 
