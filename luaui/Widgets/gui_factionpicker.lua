@@ -97,8 +97,8 @@ end
 local function drawFactionpicker()
 	local contentPadding = mathFloor((height * vsy * 0.09) * (1 - ((1 - ui_scale) * 0.5)))
 	font2:Begin()
-	font2:SetTextColor(1, 1, 1, 1)
-	font2:SetOutlineColor(0, 0, 0, 0.66)
+	font2:SetTextColor(0.8, 0.95, 1.0, 1)
+	font2:SetOutlineColor(0, 0.05, 0.1, 0.66)
 	font2:Print(Spring.I18N('ui.factionPicker.pick'), backgroundRect[1] + contentPadding, backgroundRect[4] - contentPadding - (fontSize * 0.7), fontSize, "o")
 
 	local contentWidth = mathFloor(backgroundRect[3] - backgroundRect[1] - contentPadding)
@@ -340,8 +340,8 @@ function widget:DrawScreen()
 
 	font2:Begin()
 	font2:SetOutlineColor(0, 0, 0, 0.66)
-	font2:SetTextColor(1, 1, 1, 1)
-	font2:SetOutlineColor(0, 0, 0, 0.66)
+	font2:SetTextColor(0.8, 0.95, 1.0, 1)
+	font2:SetOutlineColor(0, 0.05, 0.1, 0.66)
 	-- highlight
 	if math_isInRect(x, y, backgroundRect[1], backgroundRect[2], backgroundRect[3], backgroundRect[4]) then
 		for i, faction in pairs(factions) do
