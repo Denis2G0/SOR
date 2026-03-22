@@ -2239,7 +2239,7 @@ function DrawLabel(text, vOffset, drawSeparator)
     end
 
     font:Begin(true)
-    font:SetTextColor(0.82, 0.90, 0.95, 1)
+    font:SetTextColor(0.4, 0.85, 1.0, 1)
 	font:SetOutlineColor(0.08, 0.12, 0.16, 1)
     font:Print(text, widgetPosX, widgetPosY + widgetHeight - vOffset + 7.5, 12, "on")
     font:End()
@@ -2251,7 +2251,7 @@ function DrawLabelTip(text, vOffset, xOffset)
     end
 
     font:Begin(true)
-    font:SetTextColor(0.75, 0.85, 0.90, 0.75)
+    font:SetTextColor(0.35, 0.7, 0.85, 0.85)
 	font:SetOutlineColor(0.08, 0.12, 0.16, 1)
     font:Print(text, widgetPosX + xOffset, widgetPosY + widgetHeight - vOffset + 7.5, 10, "on")
     font:End()

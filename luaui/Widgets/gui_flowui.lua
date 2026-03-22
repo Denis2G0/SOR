@@ -553,10 +553,10 @@ end
 ]]
 WG.FlowUI.Draw.Element = function(px, py, sx, sy,  tl, tr, br, bl,  ptl, ptr, pbr, pbl,  opacity, color1, color2, bgpadding, opaque)
 	local opacity = mathMin(1, opacity or WG.FlowUI.opacity)
-	local color1 = color1 or { 0.02, 0.04, 0.06, opacity}
-	local color2 = color2 or { 0.25, 0.45, 0.55, opacity * 0.12 }
+	local color1 = color1 or { 0.04, 0.08, 0.16, opacity}
+	local color2 = color2 or { 0.12, 0.35, 0.55, opacity * 0.45 }
 	if opaque then
-		color2 = { 0.05, 0.09, 0.13, 1 }
+		color2 = { 0.06, 0.13, 0.24, 1 }
 	end
 	local ui_scale = WG.FlowUI.scale
 	local bgpadding = bgpadding or WG.FlowUI.elementPadding
@@ -616,8 +616,8 @@ WG.FlowUI.Draw.Element = function(px, py, sx, sy,  tl, tr, br, bl,  ptl, ptr, pb
 	local glossTopC = opaque and 0.12 * glossMult or 1
 	WG.FlowUI.Draw.RectRound(px + pxPad + 1, sy - syPad - 1 - glossHeight, sx - sxPad - 1, sy - syPad - 1,
 		cs*0.5, tl, tr, 0, 0,
-		{ 0.03, 0.06, 0.10, opaque and 1 or 0 },
-		{ glossTopC*0.4, glossTopC*0.75, glossTopC*0.9, glossTopAlpha })
+		{ 0.05, 0.12, 0.2, opaque and 1 or 0 },
+		{ glossTopC*0.4, glossTopC*0.75, glossTopC*0.95, glossTopAlpha * 1.8 })
 
 	-- Layer 6: Bottom gloss highlight (only if element is tall enough)
 	if doBottomFx then
@@ -625,8 +625,8 @@ WG.FlowUI.Draw.Element = function(px, py, sx, sy,  tl, tr, br, bl,  ptl, ptr, pb
 		local glossBotC = opaque and 0.05 * glossMult or 1
 		WG.FlowUI.Draw.RectRound(px + pxPad + 1, py + pyPad + 1, sx - sxPad - 1, py + pyPad + glossHeight,
 			cs, 0, 0, br, bl,
-			{ glossBotC*0.4, glossBotC*0.75, glossBotC*0.9, glossBotAlpha },
-			{ 0.02, 0.04, 0.06, opaque and 1 or 0 })
+			{ glossBotC*0.4, glossBotC*0.75, glossBotC*0.95, glossBotAlpha * 1.5 },
+			{ 0.04, 0.08, 0.14, opaque and 1 or 0 })
 	end
 
 	-- Layer 7: Top edge highlight (only if there's padding)
@@ -635,8 +635,8 @@ WG.FlowUI.Draw.Element = function(px, py, sx, sy,  tl, tr, br, bl,  ptl, ptr, pb
 		local edgeTopC = opaque and 0.33 or 1
 		WG.FlowUI.Draw.RectRound(px + pxPad + 1, sy - syPad - (cs*2.5), sx - sxPad - 1, sy - syPad - 1,
 			cs, tl, tr, 0, 0,
-			{ 0.05, 0.10, 0.14, opaque and 1 or 0 },
-			{ edgeTopC*0.15, edgeTopC*0.6, edgeTopC*0.8, edgeTopAlpha })
+			{ 0.06, 0.15, 0.25, opaque and 1 or 0 },
+			{ edgeTopC*0.15, edgeTopC*0.6, edgeTopC*0.85, edgeTopAlpha * 2.0 })
 	end
 
 	-- Layer 8: Bottom edge highlight (only if there's padding)
@@ -645,8 +645,8 @@ WG.FlowUI.Draw.Element = function(px, py, sx, sy,  tl, tr, br, bl,  ptl, ptr, pb
 		local edgeBotC = opaque and 0.15 or 1
 		WG.FlowUI.Draw.RectRound(px + pxPad + 1, py + pyPad + 1, sx - sxPad - 1, py + pyPad + (cs*2),
 			cs, 0, 0, br, bl,
-			{ edgeBotC*0.15, edgeBotC*0.6, edgeBotC*0.8, edgeBotAlpha },
-			{ 0.03, 0.07, 0.10, opaque and 1 or 0 })
+			{ edgeBotC*0.15, edgeBotC*0.6, edgeBotC*0.85, edgeBotAlpha * 2.0 },
+			{ 0.05, 0.1, 0.18, opaque and 1 or 0 })
 	end
 
 	-- Layer 9: Background tile texture
@@ -657,22 +657,22 @@ WG.FlowUI.Draw.Element = function(px, py, sx, sy,  tl, tr, br, bl,  ptl, ptr, pb
 
 	-- Layer 10: Cyan feathered inner outline
 	local outlineWidth = 2
-	local outlineAlpha = opaque and 0.2 or 0.11
+	local outlineAlpha = opaque and 0.35 or 0.22
 	WG.FlowUI.Draw.RectRoundOutline(
 		px + pxPad, py + pyPad, sx - sxPad, sy - syPad,
 		cs, outlineWidth,
 		tl, tr, br, bl,
-		{ 0.15, 0.65, 0.85, outlineAlpha }, { 0.15, 0.65, 0.85, 0 }
+		{ 0.1, 0.6, 0.9, outlineAlpha }, { 0.1, 0.6, 0.9, 0 }
 	)
 
 	-- Layer 11: Cyan feathered inner outline glow
 	local outlineWidth = 16
-	local outlineAlpha = opaque and 0.08 or 0.04
+	local outlineAlpha = opaque and 0.15 or 0.08
 	WG.FlowUI.Draw.RectRoundOutline(
 		px + pxPad, py + pyPad, sx - sxPad, sy - syPad,
 		cs, outlineWidth,
 		tl, tr, br, bl,
-		{ 0.1, 0.5, 0.7, outlineAlpha }, { 0.1, 0.5, 0.7, 0 }
+		{ 0.08, 0.45, 0.7, outlineAlpha }, { 0.08, 0.45, 0.7, 0 }
 	)
 
 end
@@ -691,8 +691,8 @@ end
 ]]
 WG.FlowUI.Draw.Button = function(px, py, sx, sy,  tl, tr, br, bl,  ptl, ptr, pbr, pbl,  opacity, color1, color2, bgpadding, glossMult)
 	local opacity = opacity or 1
-	local color1 = color1 or { 0.01, 0.03, 0.05, opacity}
-	local color2 = color2 or { 0.25, 0.5, 0.65, opacity * 0.12}
+	local color1 = color1 or { 0.03, 0.07, 0.14, opacity}
+	local color2 = color2 or { 0.1, 0.35, 0.55, opacity * 0.4}
 	local bgpadding = mathFloor(bgpadding or WG.FlowUI.buttonPadding*0.5)
 	glossMult = (1 + (2 - (opacity * 1.5))) * (glossMult and glossMult or 1)
 
@@ -716,8 +716,8 @@ WG.FlowUI.Draw.Button = function(px, py, sx, sy,  tl, tr, br, bl,  ptl, ptr, pbr
 	-- Alpha values tuned to match original brightness from overlapping layers
 	local topGlossAlpha = 0.18 * glossMult
 	WG.FlowUI.Draw.RectRound(px + pxPad, sy - syPad - glossHeight, sx - sxPad, sy - syPad, bgpadding, tl, tr, 0, 0,
-		{ 0.1, 0.4, 0.55, 0 },
-		{ 0.3, 0.7, 0.85, topGlossAlpha })
+		{ 0.08, 0.3, 0.5, 0 },
+		{ 0.25, 0.65, 0.9, topGlossAlpha * 1.5 })
 
 	-- -- Layer 3: Enhanced top edge highlight (thin bright edge at the very top)
 	-- WG.FlowUI.Draw.RectRound(px + pxPad, sy - syPad - (bgpadding*2.5), sx - sxPad, sy - syPad, bgpadding, tl, tr, 0, 0,
@@ -728,8 +728,8 @@ WG.FlowUI.Draw.Button = function(px, py, sx, sy,  tl, tr, br, bl,  ptl, ptr, pbr
 	-- Alpha values tuned to match original brightness from overlapping layers
 	local bottomGlossAlpha = 0.075 * glossMult
 	WG.FlowUI.Draw.RectRound(px + pxPad, py + pyPad, sx - sxPad, py + pyPad + glossHeight, bgpadding, 0, 0, br, bl,
-		{ 0.2, 0.55, 0.7, bottomGlossAlpha },
-		{ 0.1, 0.4, 0.55, 0 })
+		{ 0.2, 0.55, 0.75, bottomGlossAlpha * 1.5 },
+		{ 0.08, 0.3, 0.5, 0 })
 
 	-- -- Layer 5: Bottom edge highlight (thin edge at the very bottom)
 	-- WG.FlowUI.Draw.RectRound(px + pxPad, py + pyPad, sx - sxPad, py + pyPad + (bgpadding*2), bgpadding, 0, 0, br, bl,
@@ -738,12 +738,12 @@ WG.FlowUI.Draw.Button = function(px, py, sx, sy,  tl, tr, br, bl,  ptl, ptr, pbr
 
 	-- Layer 6: Cyan feathered inner outline glow
 	local outlineWidth = 7
-	local outlineAlpha = opaque and 0.12 or 0.06
+	local outlineAlpha = opaque and 0.25 or 0.15
 	WG.FlowUI.Draw.RectRoundOutline(
 		px + pxPad, py + pyPad, sx - sxPad, sy - syPad,
 		cs, outlineWidth,
 		tl, tr, br, bl,
-		{ 0.15, 0.6, 0.8, outlineAlpha }, { 0.15, 0.6, 0.8, 0 }
+		{ 0.1, 0.55, 0.85, outlineAlpha }, { 0.1, 0.55, 0.85, 0 }
 	)
 end
 

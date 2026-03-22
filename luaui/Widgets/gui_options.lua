@@ -522,13 +522,13 @@ function updateInputDlist()
 		-- button text
 		usedFont:Begin()
 		usedFont:SetOutlineColor(0,0,0,0.4)
-		usedFont:SetTextColor(0.62, 0.62, 0.62, 1)
+		usedFont:SetTextColor(0.4, 0.6, 0.7, 1)
 		usedFont:Print(modeText, modeTextPosX, activationArea[2]+chatlogHeightDiff-distance-(inputHeight*0.61), inputFontSize, "o")
 
 		-- text cursor
 		textCursorRect = { textPosX + textCursorPos, activationArea[2]+chatlogHeightDiff-distance-(inputHeight*0.5)-(inputFontSize*0.6), textPosX + textCursorPos + textCursorWidth, activationArea[2]+chatlogHeightDiff-distance-(inputHeight*0.5)+(inputFontSize*0.64) }
 
-		usedFont:SetTextColor(0.95, 0.95, 0.95, 1)
+		usedFont:SetTextColor(0.7, 0.92, 1.0, 1)
 		usedFont:Print(inputText, textPosX, activationArea[2]+chatlogHeightDiff-distance-(inputHeight*0.61), inputFontSize, "o")
 		usedFont:End()
 	end)
