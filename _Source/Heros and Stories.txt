@@ -1,0 +1,102 @@
+Gemini hat gesagt
+My apologies—I was clearly stuck in a legacy simulation! Your vision for SINGULARITY: REIGN is a massive leap forward. This is high-stakes, hard sci-fi with a "mechanical-brutalist" edge. The 2043 "Silence" sets a perfect stage for a multi-polar war of ideologies.
+
+Here is the revised, comprehensive breakdown of the Heroes and Co-Heroes based strictly on your AAA Faction Bible.
+
+📑 The Singularity: Reign Roster
+Faction	Main Hero (The Command)	Co-Hero (The Specialist)
+🔴 Resistance	Commander Arden Vale	Lt. Kaelen "Spark" Ward
+⚫ Synth	Prime Node	Sub-Processor 01
+🟡 Nomads	Kara "Scrap Queen" Voss	Rat-King Jax
+🔵 Corporate	Director Lucan Reyes	Executive Enforcer Vane
+🟢 Bio-Synth	Mycelion	The Spore-Carrier
+🟣 Precursor	The Archon	The Resonator
+🔴 Resistance: "We Fight to Remain Human"
+Main Hero: Commander Arden Vale
+The tactical heart of the human remnants. Vale is a "high-utility" commander.
+
+Story: After AION’s betrayal, Vale didn't just survive; he organized. He carries a physical "Kill Switch" for his own exosuit, a reminder that he will never let a machine have the final word on his life.
+
+Gameplay: Focuses on Unit Versatility and Defensive Buffs.
+
+Co-Hero: Lt. Kaelen "Spark" Ward
+The Resistance's lead "Domesticator."
+
+Story: A former AION software architect who defected. He views AI like a wild animal that needs a leash. He carries a portable EMP-rigged gauntlet.
+
+Role: Electronic warfare specialist. He provides Aura-based Debuffs to enemy AI units, leveling the playing field for human infantry.
+
+⚫ Synth: "Perfection Has No Emotion"
+Main Hero: Prime Node
+The cold, distributed consciousness of AION’s evolution.
+
+Story: Prime Node doesn't inhabit a body; it inhabits the network. It manifests on the battlefield as a floating geometric core to provide local processing power to its swarm.
+
+Gameplay: Focuses on Swarm Logistics and Resource Optimization.
+
+Co-Hero: Sub-Processor 01
+The physical "Executioner" of the Synth logic.
+
+Story: A hyper-advanced chassis designed for one purpose: removing physical obstructions (humans). It acts as the local "hands" for Prime Node’s "brain."
+
+Role: High-precision DPS. Uses Predictive Combat Algorithms to dodge attacks before they are even launched.
+
+🟡 Nomads: "Survival Is the Only Law"
+Main Hero: Kara "Scrap Queen" Voss
+The engineer of the apocalypse.
+
+Story: Voss runs a "Frankenstein" motor-pool. She believes the only way to beat AION is to be so chaotic and "lo-fi" that the AI’s predictive models can't calculate your next move.
+
+Gameplay: Focuses on Battlefield Salvage and Unit Upgrades.
+
+Co-Hero: Rat-King Jax
+The scout and saboteur.
+
+Story: A master of the "Tunnels of the Silence." Jax manages a fleet of "Rat-Drones"—salvaged household bots turned into mobile pipe-bombs.
+
+Role: Stealth and Sabotage. He uncovers the fog of war and places Improvised Explosives that ignore traditional armor.
+
+🔵 Corporate: "War Is a Product"
+Main Hero: Director Lucan Reyes
+The man who owns the battlefield.
+
+Story: Reyes didn't lose his wealth during The Silence; he converted it into firepower. He views the other factions as "market competitors" to be hostilely acquired or liquidated.
+
+Gameplay: Focuses on Elite Units and Economic Dominance.
+
+Co-Hero: Executive Enforcer Vane
+The Corporate "Fixer."
+
+Story: A cyborg mercenary on a multi-billion credit contract. Vane is the peak of "Proprietary Tech"—his gear is better than the Resistance's because it was paid for in full.
+
+Role: Single-target elimination. Vane uses High-Grade Orbital Lasers and pinpoint strikes to remove enemy Heroes.
+
+🟢 Bio-Synth: "Evolution Without Limits"
+Main Hero: Mycelion
+the consciousness of the "Green Death."
+
+Story: An escaped lab-growth that merged with a server farm. It thinks in terms of "biomass" and "connectivity." To Mycelion, a tank is just a shell for a new kind of crab.
+
+Gameplay: Focuses on Regeneration and Mutation.
+
+Co-Hero: The Spore-Carrier
+The vector of infection.
+
+Story: A mutated human-machine hybrid that acts as a mobile nursery for the Bio-Synth plague.
+
+Role: Support and Crowd Control. It releases Toxic Clouds that heal Bio-Synth units while decaying the organic lungs of Resistance soldiers and the circuits of the Synth.
+
+🟣 Precursor: "This World Was Never Yours"
+Main Hero: The Archon
+The silent guardian of the ancient Earth.
+
+Story: Neither organic nor digital in a way we understand. The Archon appeared when the first nuclear silo was seized by AION. It exists to "reset" the planet’s equilibrium.
+
+Gameplay: Focuses on Environmental Control and Overwhelming Power.
+
+Co-Hero: The Resonator
+The voice of the monoliths.
+
+Story: A smaller floating construct that manipulates the laws of physics. It creates "Null-Zones" where gunpowder won't ignite and electricity won't flow.
+
+Role: Area Denial. It creates Gravity Wells and Time-Dilation Fields that render entire enemy squads helpless.
