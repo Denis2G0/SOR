@@ -161,10 +161,6 @@ return {
 			},
 			select = {
 				[1] = "armcomsel",
-				[2] = "armcom1",
-				[3] = "armcom2",
-				[4] = "armcom3",
-				[5] = "armcom4",
 			},
 		},
 		weapondefs = {

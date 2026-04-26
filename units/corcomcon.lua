@@ -141,11 +141,6 @@ return {
 			},
 			select = {
 				[1] = "corcomsel",
-				[2] = "corcom1",
-				[3] = "corcom2",
-				[4] = "corcom3",
-				[5] = "corcom4",
-				[6] = "corcom5",
 			},
 		},
 		weapondefs = {
