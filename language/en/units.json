@@ -1,8 +1,8 @@
 {
 	"units": {
 		"factions": {
-			"arm": "Armada",
-			"cor": "Cortex",
+			"arm": "Resistance",
+			"cor": "Synth",
 			"leg": "Legion",
 			"random": "Random"
 		},
@@ -95,7 +95,7 @@
 			"armck": "Construction Bot",
 			"armckfus": "Cloakable Fusion Reactor",
 			"armclaw": "Dragon's Claw",
-			"armcom": "Armada Commander",
+			"armcom": "Field Commander Vale",
 			"armcomboss": "Epic Commander - Final Boss",
 			"armcomlvl10": "Armada Commander Level 10",
 			"armcomlvl2": "Armada Commander Level 2",
@@ -354,7 +354,7 @@
 			"corcat": "Catapult",
 			"corch": "Construction Hovercraft",
 			"corck": "Construction Bot",
-			"corcom": "Cortex Commander",
+			"corcom": "Prime Node",
 			"corcomboss": "Epic Commander - Final Boss",
 			"corcomlvl10": "Cortex Commander Level 10",
 			"corcomlvl2": "Cortex Commander Level 2",
