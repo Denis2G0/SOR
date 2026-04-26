@@ -3494,3 +3494,24 @@ for _, udef in pairs(UnitDefs) do
 		end
 	end
 end
+
+-- ============================================================
+-- SOR override: commander voices are owned by the SOR widget
+-- (luaui/Widgets/sor_commander_voice.lua). Remove BAR's
+-- commander entries so the gadget does NOT double-trigger and
+-- overlap with the SOR Vale/Prime voice on selection.
+-- This is an additive subtraction — when upstream changes
+-- commander defs, this block still wipes them cleanly.
+-- ============================================================
+for _, sorCommanderName in ipairs({
+	-- Synth (Arm-side after the 2026-04-26 faction swap)
+	"armcom", "armcomlvl2", "armcomlvl3", "armcomlvl4", "armcomlvl5",
+	"armcomlvl6", "armcomlvl7", "armcomlvl8", "armcomlvl9", "armcomlvl10",
+	"armdecom", "armcomnew",
+	-- Resistance (Cor-side after the swap)
+	"corcom", "corcomlvl2", "corcomlvl3", "corcomlvl4", "corcomlvl5",
+	"corcomlvl6", "corcomlvl7", "corcomlvl8", "corcomlvl9", "corcomlvl10",
+	"cordecom",
+}) do
+	GUIUnitSoundEffects[sorCommanderName] = nil
+end
