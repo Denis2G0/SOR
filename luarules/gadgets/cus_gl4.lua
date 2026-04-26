@@ -1135,13 +1135,28 @@ local function initBinsAndTextures()
 			-- Vale exo-frame, SOR Synth Prime Node frame) without modifying the .s3o mesh files.
 			-- Falls through cleanly: units without these customparams keep BAR-stock binding.
 			if unitDef.customParams then
-				if unitDef.customParams.colortex then textureTable[0] = unitDef.customParams.colortex end
-				if unitDef.customParams.othertex then textureTable[1] = unitDef.customParams.othertex end
+				if unitDef.customParams.colortex then
+					Spring.Echo(string.format("[SOR][cus_gl4] colortex override: %s defID=%d slot[0]: %s -> %s",
+						unitDef.name, unitDefID, tostring(textureTable[0]), unitDef.customParams.colortex))
+					textureTable[0] = unitDef.customParams.colortex
+				end
+				if unitDef.customParams.othertex then
+					Spring.Echo(string.format("[SOR][cus_gl4] othertex override: %s defID=%d slot[1]: %s -> %s",
+						unitDef.name, unitDefID, tostring(textureTable[1]), unitDef.customParams.othertex))
+					textureTable[1] = unitDef.customParams.othertex
+				end
 			end
 
 			local texKeyFast = GenFastTextureKey(unitDefID, unitDef, normalTex, textureTable)
 			if textureKeytoSet[texKeyFast] == nil then
 				textureKeytoSet[texKeyFast] = textureTable
+			end
+			-- SOR: diagnose final binding for overridden units
+			if unitDef.customParams and (unitDef.customParams.colortex or unitDef.customParams.othertex) then
+				Spring.Echo(string.format("[SOR][cus_gl4] FINAL %s defID=%d texKey=%d storedSlot0=%s storedSlot1=%s",
+					unitDef.name, unitDefID, texKeyFast,
+					tostring(textureKeytoSet[texKeyFast][0]),
+					tostring(textureKeytoSet[texKeyFast][1])))
 			end
 		end
 	end
