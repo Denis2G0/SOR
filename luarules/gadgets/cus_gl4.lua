@@ -1117,6 +1117,16 @@ local function initBinsAndTextures()
 				objectDefToUniformBin[unitDefID]  = 'otherunit' -- This will temporarily disable raptor shader
 			end
 
+			-- SOR: per-unit material atlas override. If a unit declares customparams.colortex
+			-- and/or customparams.othertex, use those literal paths instead of the s3o-embedded
+			-- texture references. This enables faction-identity skin swaps (e.g. SOR Resistance
+			-- Vale exo-frame, SOR Synth Prime Node frame) without modifying the .s3o mesh files.
+			-- Falls through cleanly: units without these customparams keep BAR-stock binding.
+			if unitDef.customParams then
+				if unitDef.customParams.colortex then textureTable[0] = unitDef.customParams.colortex end
+				if unitDef.customParams.othertex then textureTable[1] = unitDef.customParams.othertex end
+			end
+
 			local texKeyFast = GenFastTextureKey(unitDefID, unitDef, normalTex, textureTable)
 			if textureKeytoSet[texKeyFast] == nil then
 				textureKeytoSet[texKeyFast] = textureTable
