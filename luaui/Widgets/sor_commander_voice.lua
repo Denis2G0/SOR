@@ -22,8 +22,8 @@ local SOUND_CHANNEL      = 'ui'     -- non-positional, full volume, no rolloff
 
 local VALE_SELECT  = { "sounds/voice/en/sor/vale-sel.wav", "sounds/voice/en/sor/vale-sel-1.wav", "sounds/voice/en/sor/vale-sel-2.wav", "sounds/voice/en/sor/vale-sel-3.wav", "sounds/voice/en/sor/vale-sel-4.wav", "sounds/voice/en/sor/vale-sel-5.wav", }
 local VALE_ORDER   = { "sounds/voice/en/sor/vale-ok-1.wav", "sounds/voice/en/sor/vale-ok-2.wav", "sounds/voice/en/sor/vale-ok-3.wav", }
-local PRIME_SELECT = { "sounds/voice/en/sor/prime-sel.wav", "sounds/voice/en/sor/prime-sel-1.wav", "sounds/voice/en/sor/prime-sel-2.wav", }
-local PRIME_ORDER  = { "sounds/voice/en/sor/prime-ok-1.wav", "sounds/voice/en/sor/prime-ok-2.wav", }
+local PRIME_SELECT = { "sounds/voice/en/sor/prime-sel.wav", "sounds/voice/en/sor/prime-sel-1.wav", "sounds/voice/en/sor/prime-sel-2.wav", "sounds/voice/en/sor/prime-sel-3.wav", "sounds/voice/en/sor/prime-sel-4.wav", "sounds/voice/en/sor/prime-sel-5.wav", }
+local PRIME_ORDER  = { "sounds/voice/en/sor/prime-ok-1.wav", "sounds/voice/en/sor/prime-ok-2.wav", "sounds/voice/en/sor/prime-ok-3.wav", }
 
 -- Resistance commanders (Cor side after the 2026-04-26 faction swap).
 local RESISTANCE_COMMANDERS = { "corcom", "corcomlvl2", "corcomlvl3", "corcomlvl4", "corcomlvl5", "corcomlvl6", "corcomlvl7", "corcomlvl8", "corcomlvl9", "corcomlvl10", "cordecom", }

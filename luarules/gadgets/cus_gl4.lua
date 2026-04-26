@@ -1157,6 +1157,16 @@ local function initBinsAndTextures()
 					unitDef.name, unitDefID, texKeyFast,
 					tostring(textureKeytoSet[texKeyFast][0]),
 					tostring(textureKeytoSet[texKeyFast][1])))
+				-- VFS file existence + size
+				local ctex = unitDef.customParams.colortex
+				if ctex then
+					local data = VFS.LoadFile(ctex)
+					Spring.Echo(string.format("[SOR][cus_gl4] VFS.LoadFile(%s) -> %s",
+						ctex, data and ("OK "..#data.." bytes") or "MISSING"))
+					local ti = gl.TextureInfo(ctex)
+					Spring.Echo(string.format("[SOR][cus_gl4] gl.TextureInfo(%s) -> %s",
+						ctex, ti and (ti.xsize.."x"..ti.ysize) or "FAILED-TO-LOAD"))
+				end
 			end
 		end
 	end
