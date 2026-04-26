@@ -7,3 +7,6 @@
 .project
 *.code-workspace
 .lux/
+
+# SOR: original BAR file backups before overwrite (local only)
+*.barbak
