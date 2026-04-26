@@ -1,0 +1,2099 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>SOR: Singularity Reign — RTS Complete Game Design v2</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&family=Exo+2:ital,wght@0,300;0,400;0,600;0,700;1,400&display=swap');
+:root{
+  --bg:#080b0f;--bg2:#0d1118;--bg3:#121820;--bg4:#181e28;
+  --border:#1e2838;--border2:#2a3a50;
+  --gold:#c8a84b;--gold2:#e8c870;--gold3:#f5e090;
+  --text:#ccd5e0;--muted:#6a7a90;--dim:#2a3545;--white:#e8edf5;
+  --tl1-bg:#0a1a0a;--tl1:#50c050;--tl1b:#1a3a1a;
+  --tl2-bg:#080820;--tl2:#5080d0;--tl2b:#101840;
+  --tl3-bg:#1a0808;--tl3:#d06040;--tl3b:#380f0f;
+  --c-res:#3a7acc;--c-nom:#c87820;--c-syn:#18c8c8;--c-myc:#b840c8;
+  --c-hel:#c0c8d0;--c-pre:#c8a848;--c-vor:#c83030;
+  --c-repair:#40c080;--c-res2:#c84040;--c-reclaim:#80a040;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:'Exo 2',sans-serif;font-size:13px;line-height:1.55;}
+a{color:var(--gold);text-decoration:none;}
+
+/* NAV */
+.top-nav{
+  position:sticky;top:0;z-index:100;
+  background:var(--bg2);border-bottom:2px solid var(--gold);
+  display:flex;align-items:center;gap:0;overflow-x:auto;
+}
+.nav-logo{
+  font-family:'Rajdhani',sans-serif;font-size:18px;font-weight:700;
+  color:var(--gold);padding:10px 20px;border-right:1px solid var(--border2);
+  white-space:nowrap;flex-shrink:0;
+}
+.nav-btn{
+  font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:600;
+  letter-spacing:1.5px;text-transform:uppercase;
+  padding:12px 16px;cursor:pointer;border:none;background:transparent;
+  color:var(--muted);transition:all .15s;white-space:nowrap;border-right:1px solid var(--border);
+}
+.nav-btn:hover{color:var(--text);background:var(--bg3);}
+.nav-btn.active{color:var(--gold);background:var(--bg3);border-bottom:2px solid var(--gold);}
+.nav-dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:6px;vertical-align:middle;}
+
+/* PAGES */
+.page{display:none;max-width:1400px;margin:0 auto;padding:24px 28px 60px;}
+.page.active{display:block;}
+
+/* SECTION HEADINGS */
+.sh{
+  font-family:'Rajdhani',sans-serif;font-size:12px;font-weight:700;
+  letter-spacing:4px;text-transform:uppercase;color:var(--gold);
+  border-bottom:1px solid var(--gold);padding-bottom:5px;
+  margin:32px 0 14px;display:flex;align-items:center;gap:10px;
+}
+.sh-num{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--dim);}
+.sh2{font-family:'Rajdhani',sans-serif;font-size:11px;font-weight:600;
+  letter-spacing:2px;text-transform:uppercase;color:var(--muted);
+  margin:18px 0 8px;padding-left:10px;border-left:3px solid var(--border2);}
+
+/* MECHANIC BOX */
+.mbox{background:var(--bg3);border:1px solid var(--border2);border-radius:6px;padding:14px 18px;margin:10px 0;}
+.mbox.gold{border-color:var(--gold);}
+.mbox.red{border-color:#c84040;background:#140808;}
+.mbox.green{border-color:#40c080;background:#081408;}
+.mbox.blue{border-color:#3a7acc;background:#080c18;}
+.mt{font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:700;margin-bottom:6px;}
+.mt.gold{color:var(--gold);}
+.mt.red{color:#e06060;}
+.mt.green{color:#50d090;}
+.mt.blue{color:#60a0e0;}
+.mb{font-size:12px;color:var(--muted);line-height:1.7;}
+.mb strong{color:var(--text);}
+.mb em{color:var(--gold);font-style:normal;}
+
+/* GRIDS */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;}
+.g5{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;}
+
+/* CARD */
+.card{background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:10px 13px;}
+.card-title{font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:600;color:var(--white);margin-bottom:3px;}
+.card-sub{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:5px;}
+.card-body{font-size:11px;color:var(--muted);line-height:1.5;}
+
+/* TECH BANDS */
+.tb{border-radius:4px;padding:3px 10px;display:inline-block;font-family:'Share Tech Mono',monospace;font-size:10px;font-weight:700;letter-spacing:1px;margin-bottom:10px;}
+.tb1{background:var(--tl1b);color:var(--tl1);border:1px solid #2a5a2a;}
+.tb2{background:var(--tl2b);color:var(--tl2);border:1px solid #202860;}
+.tb3{background:var(--tl3b);color:var(--tl3);border:1px solid #502010;}
+
+/* UNIT TABLE */
+.utab{width:100%;border-collapse:collapse;font-size:11px;margin-bottom:8px;}
+.utab th{
+  background:var(--bg4);color:var(--gold);font-family:'Share Tech Mono',monospace;
+  font-size:9px;letter-spacing:1.5px;text-transform:uppercase;
+  padding:5px 8px;text-align:left;border-bottom:1px solid var(--border2);
+  white-space:nowrap;
+}
+.utab td{padding:5px 8px;border-bottom:1px solid var(--border);color:var(--muted);vertical-align:top;}
+.utab td:first-child{color:var(--white);font-weight:600;}
+.utab tr:hover td{background:var(--bg4);}
+.tag{display:inline-block;font-size:9px;padding:1px 6px;border-radius:3px;margin:1px;font-family:'Share Tech Mono',monospace;}
+.tag-repair{background:#0a2010;color:var(--c-repair);border:1px solid #1a5030;}
+.tag-resurrect{background:#200a0a;color:#e04040;border:1px solid #501010;}
+.tag-reclaim{background:#101808;color:var(--c-reclaim);border:1px solid #283510;}
+.tag-aa{background:#080820;color:#5080f0;border:1px solid #101850;}
+.tag-stealth{background:#0f1020;color:#8090c0;border:1px solid #20283a;}
+.tag-hero{background:#201800;color:var(--gold);border:1px solid #504010;}
+.tag-builder{background:#101808;color:#70b050;border:1px solid #204010;}
+.tag-air{background:#081020;color:#4090d0;border:1px solid #102038;}
+.tag-special{background:#1a0a20;color:#c080e0;border:1px solid #3a1050;}
+.tag-unique{background:#200808;color:#e05030;border:1px solid #502010;}
+
+/* WEAPON TYPE BADGE */
+.wtype{display:inline-flex;align-items:center;gap:5px;font-family:'Share Tech Mono',monospace;font-size:9px;padding:2px 8px;border-radius:3px;}
+.wt-ballistic{background:#1a1008;color:#c0a040;border:1px solid #403010;}
+.wt-laser{background:#080818;color:#4080e0;border:1px solid #102040;}
+.wt-plasma{background:#180808;color:#e04040;border:1px solid #401010;}
+.wt-bio{background:#081008;color:#40c060;border:1px solid #104020;}
+.wt-substrate{background:#181008;color:#c0a000;border:1px solid #404000;}
+.wt-emp{background:#080818;color:#8060e0;border:1px solid #201850;}
+.wt-explosive{background:#1a1008;color:#e08040;border:1px solid #502010;}
+.wt-kinetic{background:#101010;color:#a0a0a0;border:1px solid #303030;}
+
+/* HERO BLOCK */
+.hero-block{
+  background:var(--bg2);border-radius:8px;overflow:hidden;
+  border:1px solid var(--border2);margin-bottom:16px;
+}
+.hb-head{padding:14px 18px;display:grid;grid-template-columns:auto 1fr auto;gap:14px;align-items:start;}
+.hb-avatar{width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Rajdhani',sans-serif;font-size:18px;font-weight:700;flex-shrink:0;}
+.hb-name{font-family:'Rajdhani',sans-serif;font-size:20px;font-weight:700;color:#fff;margin-bottom:2px;}
+.hb-sub{font-size:11px;color:var(--muted);}
+.hb-cost{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--gold);text-align:right;}
+.hb-body{padding:0 18px 16px;display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.hb-stats{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;}
+.hst{background:var(--bg3);border-radius:4px;padding:5px;text-align:center;}
+.hst-val{font-family:'Share Tech Mono',monospace;font-size:13px;color:var(--gold2);font-weight:700;}
+.hst-lbl{font-size:8px;color:var(--dim);text-transform:uppercase;letter-spacing:1px;}
+.ability{background:var(--bg);border:1px solid var(--border2);border-radius:4px;padding:7px 10px;margin-bottom:6px;}
+.ab-name{font-family:'Rajdhani',sans-serif;font-size:12px;font-weight:700;color:var(--gold2);}
+.ab-cd{font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--muted);}
+.ab-desc{font-size:11px;color:var(--muted);line-height:1.5;margin-top:3px;}
+
+/* FACTION HEADER */
+.f-header{padding:20px 24px;margin-bottom:0;display:grid;grid-template-columns:auto 1fr;gap:16px;align-items:center;border-bottom:1px solid var(--border2);}
+.f-dot{width:16px;height:16px;border-radius:50%;flex-shrink:0;}
+.f-name{font-family:'Rajdhani',sans-serif;font-size:28px;font-weight:700;letter-spacing:2px;}
+.f-tag{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:2px;margin-top:3px;}
+
+/* TABLE WRAPPER */
+.tw{overflow-x:auto;margin-bottom:14px;}
+
+/* VICTORY BOX */
+.vbox{border-radius:8px;padding:16px 20px;margin-bottom:10px;}
+.vbox.lose{border:2px solid #c84040;background:#140808;}
+.vbox.win{border:2px solid #40c080;background:#081408;}
+
+/* PILL */
+.pill{display:inline-block;font-size:10px;padding:2px 8px;border-radius:10px;margin:2px;font-family:'Share Tech Mono',monospace;}
+
+/* MATERIAL TABLE */
+.mat-table{width:100%;border-collapse:collapse;font-size:11px;}
+.mat-table th{background:var(--bg3);color:var(--gold);font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;padding:6px 10px;border-bottom:1px solid var(--border2);}
+.mat-table td{padding:6px 10px;border-bottom:1px solid var(--border);color:var(--muted);}
+.mat-table td:first-child{color:var(--white);font-weight:600;}
+
+/* BUILDING TABLE */
+.bld-table{width:100%;border-collapse:collapse;font-size:11px;}
+.bld-table th{background:var(--bg3);color:var(--gold);font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:1px;text-transform:uppercase;padding:5px 8px;border-bottom:1px solid var(--border2);}
+.bld-table td{padding:5px 8px;border-bottom:1px solid var(--border);color:var(--muted);}
+.bld-table td:first-child{color:var(--white);font-weight:600;}
+.bld-table tr:hover td{background:var(--bg3);}
+
+/* WEAPON SECTION */
+.weps{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0;}
+</style>
+</head>
+<body>
+
+<!-- TOP NAV -->
+<nav class="top-nav">
+  <div class="nav-logo">SOR RTS v2</div>
+  <button class="nav-btn active" onclick="showPage('core')">⚙ Core Rules</button>
+  <button class="nav-btn" onclick="showPage('res')"><span class="nav-dot" style="background:var(--c-res)"></span>Resistance</button>
+  <button class="nav-btn" onclick="showPage('nom')"><span class="nav-dot" style="background:var(--c-nom)"></span>Nomads</button>
+  <button class="nav-btn" onclick="showPage('syn')"><span class="nav-dot" style="background:var(--c-syn)"></span>Synth</button>
+  <button class="nav-btn" onclick="showPage('myc')"><span class="nav-dot" style="background:var(--c-myc)"></span>Mycelion</button>
+  <button class="nav-btn" onclick="showPage('hel')"><span class="nav-dot" style="background:var(--c-hel)"></span>Helios</button>
+  <button class="nav-btn" onclick="showPage('pre')"><span class="nav-dot" style="background:var(--c-pre)"></span>Precursors</button>
+  <button class="nav-btn" onclick="showPage('vor')"><span class="nav-dot" style="background:var(--c-vor)"></span>The Vorn</button>
+  <button class="nav-btn" onclick="showPage('ref')">📋 Reference</button>
+  <button class="nav-btn" onclick="showPage('names')">⚔ Unit Names</button>
+</nav>
+
+<!-- ══════════════════════════ PAGE: CORE RULES ══════════════════════════ -->
+<div id="page-core" class="page active">
+
+<div style="padding:20px 0 10px;">
+  <div style="font-family:'Rajdhani',sans-serif;font-size:32px;font-weight:700;color:var(--gold);letter-spacing:3px;">SOR: SINGULARITY REIGN</div>
+  <div style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--muted);margin-top:4px;">RTS GAME DESIGN DOCUMENT v2.0 · COMPLETE UNIT TREES · MULTI-FACTION · BAR PHILOSOPHY · DENIS KACAR © 2026</div>
+</div>
+
+<div class="sh"><span class="sh-num">01</span> VICTORY & DEFEAT CONDITIONS</div>
+
+<div class="g2">
+<div class="vbox lose">
+  <div class="mt red">DEFEAT — HERO / CO-HERO DEATH RULES</div>
+  <div class="mb">
+    <strong>1v1 Match:</strong> Your Main Hero (Commander) dies → INSTANT LOSS. No respawn, no recovery. Protect your commander above all else.<br><br>
+    <strong>2v2 / 3v3 / 5v5 Team Match:</strong> ALL heroes AND ALL co-heroes on your team must be eliminated for your team to lose. As long as ONE hero or ONE co-hero is alive on your team, the match continues. Last commander standing = team survives.<br><br>
+    <strong>Example — 3v3:</strong> Team A loses 2 heroes but still has 1 hero + 2 co-heroes alive → still fighting. Team B loses all 3 heroes and all 3 co-heroes → Team B loses.<br><br>
+    <strong>Main Hero respawn:</strong> 90 seconds cooldown, respawns at main base. Costs 0 metal (represents evacuation/extraction). BUT — if your hero's body wreck is captured by enemy Resurrect unit before your respawn timer expires, <em>the hero respawns at enemy base fighting for them.</em><br><br>
+    <strong>Co-Hero:</strong> Does NOT respawn automatically. Must be rebuilt at T2 Hero Bay (1 active at a time). If killed, hero bay becomes available again. Can be resurrected by friendly Resurrect unit before rebuild.
+  </div>
+</div>
+<div class="vbox win">
+  <div class="mt green">RESURRECTION MECHANIC — THE MOST UNIQUE SOR RULE</div>
+  <div class="mb">
+    Every faction has a <strong>Resurrect Unit</strong> (built at T1 Bot Lab). This unit is one of the most important in the game.<br><br>
+    <strong>When any unit dies:</strong> A wreck marker remains for 120 seconds. A Resurrect unit can move to it and begin resurrection (takes 15–45 seconds depending on unit size).<br><br>
+    <strong>Resurrecting ENEMY heroes:</strong> The resurrected hero fights for YOUR faction permanently until killed again. Enemy player loses the hero respawn timer and must wait 90 more seconds. The stolen hero retains ALL abilities but loses faction-specific passive bonuses.<br><br>
+    <strong>Resurrecting friendly heroes:</strong> Hero returns instantly at resurrection site (vs normal 90s respawn). Retains full HP on resurrection.<br><br>
+    <strong>Resurrecting regular units:</strong> Any non-hero unit wreck can be resurrected → joins your army at 50% HP. Costs metal equal to 30% of original unit cost.<br><br>
+    <strong>Alternative — EAT THE WRECK:</strong> Instead of resurrecting, a Resurrect unit can "consume" any enemy wreck for metal income: 40% of original unit metal cost, instantly. Strategic choice: steal the unit or take the metal?<br><br>
+    <em>Critical: Mark enemy hero positions when they die. Racing your Resurrect unit to the corpse is one of SOR's most intense mid-game moments.</em>
+  </div>
+</div>
+</div>
+
+<div class="sh"><span class="sh-num">02</span> RESOURCE SYSTEM — METAL, ENERGY, MAP MATERIALS</div>
+
+<div class="g2" style="margin-bottom:14px;">
+<div class="mbox gold">
+  <div class="mt gold">METAL — Primary Resource</div>
+  <div class="mb">
+    <strong>Metal Spots</strong> rated 0.1–10.0 placed at map generation. No harvesters.<br>
+    T1 Extractor: spot × 1.0 M/sec · T2 Advanced Extractor: spot × 2.5 M/sec<br>
+    <strong>Energy Converter</strong> (like BAR): converts 70 Energy → 1 M/sec. Build many when energy surplus exists.<br>
+    <strong>Reclaim:</strong> Any builder, Repair unit, or Resurrect unit can reclaim trees, rocks, map materials, wrecks for metal. Reclaim speed = build speed of the unit.<br>
+    Own structures: 100% reclaim · Enemy structures: 70% · Wrecks: 50% (Nomads 100%)
+  </div>
+</div>
+<div class="mbox gold">
+  <div class="mt gold">ENERGY — Secondary Resource</div>
+  <div class="mb">
+    Energy deficit slows ALL production proportionally. Units keep fighting.<br>
+    <strong>T1 Energy:</strong> Solar Panel +6/sec · Wind Turbine +10/sec (+4 elevated)<br>
+    <strong>T2 Energy:</strong> Fusion Reactor +80/sec · Advanced Wind Array +30/sec<br>
+    <strong>T3 Energy:</strong> Faction superplant +300–500/sec<br>
+    <strong>Storage:</strong> Battery Bank (T1) +500 cap · Capacitor Array (T2) +3000 cap<br>
+    Energy Overflow: excess energy is wasted — build converters or production<br>
+    <strong>Tidal/Thermal generators</strong> available on specific map terrain types
+  </div>
+</div>
+</div>
+
+<div class="sh2">MAP MATERIALS — SOR UNIVERSE RESOURCES</div>
+<div class="tw">
+<table class="mat-table">
+<thead><tr>
+  <th>Material</th><th>Map Icon</th><th>Rarity</th><th>Reclaim Yield</th><th>Special Effect</th><th>SOR Lore</th>
+</tr></thead>
+<tbody>
+<tr><td>Metal Ore Deposits</td><td>⬡ Grey</td><td>Common</td><td>5–50M one-time</td><td>—</td><td>Standard geological deposits</td></tr>
+<tr><td>Gold Vein</td><td>◆ Yellow</td><td>Uncommon</td><td>120–400M one-time</td><td>2× reclaim speed</td><td>High-density metallic deposits</td></tr>
+<tr><td>Substrate Crystal</td><td>◈ Blue</td><td>Uncommon</td><td>80M + 200E one-time</td><td>Reclaimer gains +5E/sec for 60s</td><td>Precursor embedding crystallised in rock over 65k years</td></tr>
+<tr><td>Vorn Remnant Deposit</td><td>◈ Red</td><td>Rare</td><td>300M one-time</td><td>—</td><td>Residue from previous Vorn extraction operations</td></tr>
+<tr><td>Bio-Synth Node</td><td>◎ Green</td><td>Rare</td><td>60M + 30s regen aura</td><td>Friendly units within 150 regen 3HP/sec for 90s</td><td>Exposed Mycelion root node at surface</td></tr>
+<tr><td>Resonator Shard</td><td>⬟ White</td><td>Rare</td><td>150M + tech boost</td><td>T2 factory builds 20% faster for 120s after reclaim</td><td>Fragments of the 65k-year monitoring system</td></tr>
+<tr><td>Dark Matter Crystal</td><td>✦ Violet</td><td>Very Rare · 1–2 per map</td><td>500M + 2000E one-time</td><td>Superweapon charge time −40% for 300s</td><td>Exotic matter stabilised by ancient substrate field</td></tr>
+<tr><td>Diamond Deposit</td><td>◇ Cyan</td><td>Rare</td><td>200M one-time</td><td>T3 construction −25% time for 90s</td><td>High-pressure crystalline carbon — extreme value</td></tr>
+<tr><td>Archive Fragment</td><td>▣ Silver</td><td>Rare · Vorn maps only</td><td>100M + intel reveal</td><td>Reveals all enemy units in 400 radius for 30s</td><td>Physical Vorn archive data encoded in crystalline matrix</td></tr>
+<tr><td>Trees / Forest</td><td>♧ Dark Green</td><td>Very Common</td><td>2–8M per tree</td><td>Mycelion: +3E/sec from forested area</td><td>Natural biomass — low-density metal when processed</td></tr>
+<tr><td>Rock Formation</td><td>▲ Grey</td><td>Common</td><td>10–30M per cluster</td><td>Fortification bonus if built adjacent</td><td>Dense mineral rock — moderate reclaim value</td></tr>
+<tr><td>Substrate Pool</td><td>⬡ Blue-Gold</td><td>Rare · 1–3 per map</td><td>Ongoing: +2M/sec while builder adjacent</td><td>Precursors: +4M/sec · Vorn: auto-reclaim</td><td>Active substrate energy seeping to surface — ongoing income</td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="sh"><span class="sh-num">03</span> UNIVERSAL SUPPORT UNITS — REPAIR, RESURRECT, RECLAIM</div>
+<div class="mbox">
+<div class="mt gold">Every faction has these three T1 support bots. Function identical, appearance unique per faction.</div>
+<div class="mb">These three units exist in ALL factions at T1. They are produced at the T1 Bot Lab. Each faction's versions look completely different and may have faction-specific bonuses, but the core functions are universal.</div>
+</div>
+
+<div class="tw">
+<table class="utab">
+<thead><tr>
+  <th>Unit Role</th><th>Core Function</th><th>HP</th><th>Speed</th><th>M Cost</th><th>E Cost</th><th>BT</th><th>Weapon</th><th>Special Rules</th>
+</tr></thead>
+<tbody>
+<tr>
+  <td><span class="tag tag-repair">REPAIR BOT</span></td>
+  <td>Repairs friendly units and buildings. Range 80. Repair rate = 8% of target max HP/sec. Multiple bots stack. Also repairs heroes.</td>
+  <td>90</td><td>72</td><td>55</td><td>400</td><td>900</td>
+  <td>None (unarmed)</td>
+  <td>Can repair while moving. Nano-repair beam visible. Cannot self-repair. Can assist builder construction +8 BP/sec.</td>
+</tr>
+<tr>
+  <td><span class="tag tag-resurrect">RESURRECT BOT</span></td>
+  <td>Resurrects dead units and heroes from wrecks. Moves to wreck, channels for 15–45s based on unit size. Stolen units join your army.</td>
+  <td>75</td><td>60</td><td>80</td><td>600</td><td>1200</td>
+  <td>None (unarmed)</td>
+  <td>PRIORITY UNIT. Alt-mode: consume wreck for 40% metal value instantly. Hero resurrection: 30s channel. Cannot be shot while channelling resurrection — interrupt by moving enemy unit to adjacent tile.</td>
+</tr>
+<tr>
+  <td><span class="tag tag-reclaim">RECLAIM BOT</span></td>
+  <td>Harvests map materials: trees, rocks, deposits, crystals, wrecks. Faster reclaim than standard builders. Auto-command for nearest unclaimed material.</td>
+  <td>80</td><td>78</td><td>45</td><td>350</td><td>700</td>
+  <td>None (unarmed)</td>
+  <td>Reclaim speed: 15 M/sec base. Can carry material to deposit at base (optional — or direct deposit to team pool). Nomads: 25 M/sec reclaim. Identifies all material types on minimap when built.</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<div class="sh"><span class="sh-num">04</span> TECH PROGRESSION — BAR-STYLE CHAIN</div>
+<div class="mbox gold">
+<div class="mt gold">Build chain — identical logic to BAR: Beyond All Reason</div>
+<div class="mb">
+<strong>Main Hero (Commander):</strong> Starts on map at game begin. Can build T1 structures directly — no factory needed. Can produce T1 units from any factory he stands adjacent to (speeds production 15%). Can reclaim and repair. Equipped for combat. Counts as a T1 builder unit.<br><br>
+<strong>T1 Bot Lab / Vehicle Plant / Air Pad:</strong> Built by Main Hero or T1 Builder. Produces T1 combat units + Repair Bot + Resurrect Bot + Reclaim Bot.<br><br>
+<strong>T1 Construction Bot (Builder):</strong> Built at T1 Bot Lab. Builds all T1 structures. Can begin T2 Factory construction. Build power (BP): 10/sec.<br><br>
+<strong>T2 Advanced Construction Bot:</strong> Built ONLY at T2 Advanced Factory. Builds T2 and T3 structures. BP: 22/sec. This is the builder ceiling — no T3 builders.<br><br>
+<strong>Co-Hero:</strong> Built at T2 Hero Bay. Costs 2000–3000M + 1200–2000E. ONE active per player at all times. Has hero-tier stats and abilities. Can produce T1 units directly. Does NOT respawn — must be rebuilt or resurrected.<br><br>
+<strong>No unit cap.</strong> Economy and energy are the only production limits. Stack factories. Spam units. The battlefield feeds the game.
+</div>
+</div>
+
+<div class="sh"><span class="sh-num">05</span> WEAPON TECHNOLOGY PER FACTION</div>
+<div class="g4" style="gap:10px;">
+<div class="card">
+  <div class="card-title" style="color:var(--c-res);">Resistance</div>
+  <div class="weps">
+    <span class="wtype wt-ballistic">Ballistic</span>
+    <span class="wtype wt-explosive">Explosive</span>
+    <span class="wtype wt-kinetic">Kinetic</span>
+  </div>
+  <div class="card-body">Classic human military hardware. Bullets, shells, rockets, artillery. Predictable — can be dodged at range. High splash on explosives. AA uses guided missiles.</div>
+</div>
+<div class="card">
+  <div class="card-title" style="color:var(--c-nom);">Nomads</div>
+  <div class="weps">
+    <span class="wtype wt-ballistic">Ballistic</span>
+    <span class="wtype wt-explosive">Explosive</span>
+    <span class="wtype wt-kinetic">Kinetic</span>
+  </div>
+  <div class="card-body">Improvised ballistic weapons — jury-rigged shotguns, scrap cannons, plasma welders repurposed as weapons. Junk artillery fires clusters.</div>
+</div>
+<div class="card">
+  <div class="card-title" style="color:var(--c-syn);">Synth Coalition</div>
+  <div class="weps">
+    <span class="wtype wt-laser">Laser</span>
+    <span class="wtype wt-emp">EMP</span>
+  </div>
+  <div class="card-body">Energy weapons only. Laser beams — hitscan, no travel time, no arc. EMP disables rather than destroys. Logic Bracket makes beams 100% accurate.</div>
+</div>
+<div class="card">
+  <div class="card-title" style="color:var(--c-myc);">Mycelion</div>
+  <div class="weps">
+    <span class="wtype wt-bio">Biological</span>
+  </div>
+  <div class="card-body">Spores, acid, toxins, organic projectiles. Many weapons apply DoT (damage over time) effects. No mechanical weapons. Terrain-based damage through Root Network.</div>
+</div>
+<div class="card">
+  <div class="card-title" style="color:var(--c-hel);">Helios Corporate</div>
+  <div class="weps">
+    <span class="wtype wt-laser">Precision Laser</span>
+    <span class="wtype wt-explosive">Smart Missile</span>
+  </div>
+  <div class="card-body">Clean, precise energy weapons at T1. Guided smart missiles at T2. Most advanced human tech. With Vane: stealth approach before first shot.</div>
+</div>
+<div class="card">
+  <div class="card-title" style="color:var(--c-pre);">Precursors</div>
+  <div class="weps">
+    <span class="wtype wt-substrate">Substrate Energy</span>
+  </div>
+  <div class="card-body">Geometric energy bolts from substrate. Phase weapons that ignore some armour. Ancient technology — some attacks bypass shields entirely. T1 immune vs T1 damage.</div>
+</div>
+<div class="card">
+  <div class="card-title" style="color:var(--c-vor);">The Vorn</div>
+  <div class="weps">
+    <span class="wtype wt-plasma">Heavy Plasma</span>
+    <span class="wtype wt-kinetic">Mass Driver</span>
+  </div>
+  <div class="card-body">Biological plasma cannons — heavy damage, slow rate. Mass driver railguns: hitscan, zero travel time, devastates armour. Extraction beams: drain metal from enemy. No finesse — pure overwhelming force.</div>
+</div>
+</div>
+
+<div class="sh"><span class="sh-num">06</span> GLOBAL UNIT CATEGORIES — BAR STRUCTURE</div>
+<div class="g3">
+<div class="mbox">
+<div class="mt gold">GROUND UNITS</div>
+<div class="mb">
+<strong>Bots/Infantry:</strong> Humanoid walkers. Produced at Bot Lab. Fast on rough terrain. Lower HP vs vehicles. Includes Repair Bot, Resurrect Bot, Reclaim Bot.<br>
+<strong>Vehicles:</strong> Wheeled/tracked. Produced at Vehicle Plant. Higher HP, slower on rough terrain. Better armor vs ballistic.<br>
+<strong>Experimental:</strong> Built at T3 Experimental Bay. Only 1–2 on field at once (cost-limited). Faction-defining endgame units.
+</div>
+</div>
+<div class="mbox">
+<div class="mt gold">AIR UNITS</div>
+<div class="mb">
+<strong>Scouts:</strong> Fast, minimal weapons. Extended sight. Reveal enemy positions.<br>
+<strong>Fighters:</strong> Anti-air specialists. Dog-fight AI.<br>
+<strong>Bombers:</strong> Ground attack. Fragile to fighters.<br>
+<strong>Gunships:</strong> T2. Heavy ground attack. Hover-capable.<br>
+<strong>Transports:</strong> Carry 4–8 ground units. Can deploy during flight.<br>
+<strong>Strategic Bombers:</strong> T3. Global reach.
+</div>
+</div>
+<div class="mbox">
+<div class="mt gold">DEFENSES &amp; BUILDINGS</div>
+<div class="mb">
+<strong>Turrets:</strong> Point defense, anti-air, anti-torpedo, missile turrets. LOS-based targeting.<br>
+<strong>Shields:</strong> T2 dome shields protect nearby structures. Energy-hungry.<br>
+<strong>Mines:</strong> Stealth/cloaked. Triggered by proximity. Cannot be targeted.<br>
+<strong>Walls:</strong> Dragon's Teeth / faction-specific barriers. Block pathing and some projectiles.<br>
+<strong>Radar/Jammer:</strong> Extend or deny LOS.
+</div>
+</div>
+</div>
+
+</div><!-- end core page -->
+
+<!-- ══════════════════════════ PAGE: RESISTANCE ══════════════════════════ -->
+<div id="page-res" class="page">
+
+<div class="f-header" style="background:#050c1a;border-left:4px solid var(--c-res);">
+  <div class="f-dot" style="background:var(--c-res);"></div>
+  <div>
+    <div class="f-name" style="color:var(--c-res);">THE RESISTANCE</div>
+    <div class="f-tag">HUMAN · BALLISTIC / EXPLOSIVE · COMMAND & DEFENSE · STEEL BLUE / OLIVE DRAB</div>
+  </div>
+</div>
+
+<div class="sh"><span class="sh-num">R1</span> HEROES</div>
+
+<div class="hero-block" style="border-color:var(--c-res);">
+  <div class="hb-head" style="background:#050c1a;">
+    <div class="hb-avatar" style="background:#1a3a60;color:#80c0ff;">⌖</div>
+    <div>
+      <div class="hb-name">Commander Arden Vale</div>
+      <div class="hb-sub">MAIN HERO · RESISTANCE · STARTS ON MAP · BALLISTIC + EXPLOSIVES</div>
+    </div>
+    <div class="hb-cost">Starts on map<br>Respawn: 90s<br>Respawn cost: FREE</div>
+  </div>
+  <div class="hb-body">
+    <div>
+      <div class="hb-stats">
+        <div class="hst"><div class="hst-val">850</div><div class="hst-lbl">HP</div></div>
+        <div class="hst"><div class="hst-val">55</div><div class="hst-lbl">DPS</div></div>
+        <div class="hst"><div class="hst-val">320</div><div class="hst-lbl">Range</div></div>
+        <div class="hst"><div class="hst-val">4.5</div><div class="hst-lbl">Speed</div></div>
+        <div class="hst"><div class="hst-val">450</div><div class="hst-lbl">Sight</div></div>
+      </div>
+      <div style="margin-top:10px;">
+        <div class="ability"><div class="ab-name">KILL SWITCH PROTOCOL</div><div class="ab-cd">Active · 45s cooldown · 30s duration</div><div class="ab-desc">Designates one enemy unit. All Resistance units within 400 range deal +40% damage vs it. Vale himself: +80%. Resets on unit death.</div></div>
+        <div class="ability"><div class="ab-name">COMMAND PRESENCE</div><div class="ab-cd">Passive aura · Always active · 350 radius</div><div class="ab-desc">All friendly bots and vehicles within range gain +15% accuracy and +10% speed. Stacks with Command Fortress building.</div></div>
+        <div class="ability"><div class="ab-name">BECAUSE WE CHOOSE TO</div><div class="ab-cd">Passive trigger</div><div class="ab-desc">When Vale drops below 20% HP: all nearby infantry gain +30% damage for 20s. All Resistance infantry regen 2HP/sec while Vale is alive on map.</div></div>
+      </div>
+    </div>
+    <div>
+      <div style="font-size:11px;color:var(--muted);line-height:1.7;">
+        Weathered combat armour, CERP-7 assault rifle. Left forearm device glows faint blue. <strong>Weapon: ballistic rifle + grenade launcher alt-fire.</strong> Can build T1 structures directly. Build power: 8 BP/sec. Sight: 450. The device on his arm grants +30 sight vs stealth units.
+      </div>
+      <div style="margin-top:10px;font-size:11px;color:var(--muted);">
+        <strong style="color:var(--white);">Hero resurrection priority:</strong> When Vale dies, his wreck marker pulses red for 120s. Enemy Resurrect Bot reaching it first claims Vale for the enemy team — he fights with full abilities. Protect his body. Racing Resurrect Bots to a fallen Vale is one of the game's highest-tension moments.
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="hero-block" style="border-color:#5a9ab0;">
+  <div class="hb-head" style="background:#050c1a;">
+    <div class="hb-avatar" style="background:#103040;color:#60b0d0;">W</div>
+    <div>
+      <div class="hb-name">Dr. Evelyn Ward</div>
+      <div class="hb-sub">CO-HERO · RESISTANCE · BUILD AT T2 HERO BAY · INTELLIGENCE SPECIALIST</div>
+    </div>
+    <div class="hb-cost">Cost: 2200M / 1400E<br>Build time: 120s<br>One active at a time</div>
+  </div>
+  <div class="hb-body">
+    <div>
+      <div class="hb-stats">
+        <div class="hst"><div class="hst-val">480</div><div class="hst-lbl">HP</div></div>
+        <div class="hst"><div class="hst-val">28</div><div class="hst-lbl">DPS</div></div>
+        <div class="hst"><div class="hst-val">280</div><div class="hst-lbl">Range</div></div>
+        <div class="hst"><div class="hst-val">5.2</div><div class="hst-lbl">Speed</div></div>
+        <div class="hst"><div class="hst-val">600</div><div class="hst-lbl">Sight</div></div>
+      </div>
+      <div style="margin-top:10px;">
+        <div class="ability"><div class="ab-name">OPEN THE ARCHIVE</div><div class="ab-cd">Active · 60s cooldown · 25s duration</div><div class="ab-desc">Reveals all units in 600 radius for 25s including stealth. Enemy armour type displayed. Cannot be countered by jammers while Ward is alive.</div></div>
+        <div class="ability"><div class="ab-name">THE INTERPRETIVE LAYER</div><div class="ab-cd">Active · 90s cooldown · 40s duration</div><div class="ab-desc">Intelligence node deployed. All enemy units in 500 radius have their next action predicted — allied units get 0.5s early warning on incoming attacks (dodge window).</div></div>
+        <div class="ability"><div class="ab-name">DEMONSTRATE</div><div class="ab-cd">Passive trigger · Once per engagement</div><div class="ab-desc">If Ward survives an engagement where 5+ Resistance units die nearby, all her ability cooldowns reset simultaneously once.</div></div>
+      </div>
+    </div>
+    <div>
+      <div style="font-size:11px;color:var(--muted);line-height:1.7;">
+        Field jacket + light armour, copper wire bracelet. Armed with taser sidearm (EMP stun, low DPS). <strong>Primary function: intelligence, not combat.</strong> Build power: 8 BP/sec. Sight: 600 (best of any hero). Prioritise Ward near high-value defences — her passive intel triples turret efficiency by pre-targeting incoming threats.
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="sh"><span class="sh-num">R2</span> T1 — BUILDINGS, UNITS, DEFENCES</div>
+<div class="tb tb1">TECH LEVEL 1</div>
+
+<div class="sh2">T1 Buildings (built by Main Hero or T1 Construction Bot)</div>
+<div class="tw">
+<table class="bld-table">
+<thead><tr><th>Building</th><th>M</th><th>E</th><th>HP</th><th>Function</th></tr></thead>
+<tbody>
+<tr><td>Construction Yard</td><td>180</td><td>60</td><td>800</td><td>Produces T1 Construction Bot. Build power assists. Required for base expansion.</td></tr>
+<tr><td>T1 Bot Lab</td><td>150</td><td>40</td><td>700</td><td>Produces all T1 infantry/bot units including Repair, Resurrect, Reclaim bots.</td></tr>
+<tr><td>T1 Vehicle Plant</td><td>220</td><td>80</td><td>900</td><td>Produces T1 ground vehicles — scouts, tanks, artillery.</td></tr>
+<tr><td>T1 Air Pad</td><td>260</td><td>100</td><td>600</td><td>Produces T1 aircraft — scouts, fighters, light bombers, transports.</td></tr>
+<tr><td>Metal Extractor</td><td>70</td><td>0</td><td>400</td><td>Place on metal spot. Generates spot_rating × 1.0 M/sec. Upgradeable to T2.</td></tr>
+<tr><td>Solar Panel</td><td>80</td><td>0</td><td>300</td><td>+6 E/sec. Cheap, low HP. No terrain bonus.</td></tr>
+<tr><td>Wind Turbine</td><td>120</td><td>0</td><td>350</td><td>+10 E/sec. +4 bonus if on elevated terrain.</td></tr>
+<tr><td>Battery Bank</td><td>90</td><td>0</td><td>400</td><td>+500 energy storage cap. Prevents overflow loss on surges.</td></tr>
+<tr><td>Energy Converter</td><td>70</td><td>0</td><td>250</td><td>Converts 70 E/sec into 1 M/sec. Stack when energy surplus available.</td></tr>
+<tr><td>Radar Tower</td><td>100</td><td>30</td><td>350</td><td>LOS 700 radius. Stealth detection 50%. Visible to enemies — destroy to blind them.</td></tr>
+<tr><td>Radar Jammer</td><td>80</td><td>20</td><td>200</td><td>Blocks enemy radar in 400 radius around it. Reveals own structure location.</td></tr>
+<tr><td>Dragon's Teeth Wall</td><td>8 each</td><td>0</td><td>2800</td><td>Fortification barrier. Blocks vehicle and infantry pathing. Can be placed in lines.</td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="sh2">T1 Defences</div>
+<div class="tw">
+<table class="bld-table">
+<thead><tr><th>Defence</th><th>M</th><th>E</th><th>HP</th><th>DPS</th><th>Range</th><th>Type</th><th>Notes</th></tr></thead>
+<tbody>
+<tr><td>LT-1 Guard Turret</td><td>90</td><td>20</td><td>400</td><td>22</td><td>300</td><td><span class="wtype wt-ballistic">Ballistic</span></td><td>180° arc. Anti-infantry focus. Rapid fire, low per-shot damage. Best T1 anti-infantry.</td></tr>
+<tr><td>AT-1 Tank Stopper</td><td>140</td><td>30</td><td>500</td><td>38</td><td>320</td><td><span class="wtype wt-explosive">Explosive</span></td><td>360° arc. AP shell vs vehicles. Slower fire rate. Cannot target aircraft.</td></tr>
+<tr><td>AA-1 Flak Battery</td><td>110</td><td>25</td><td>300</td><td>20</td><td>400</td><td><span class="wtype wt-explosive">Flak</span></td><td>Anti-air only. Fires flak clusters — area damage at altitude. Cannot target ground.</td></tr>
+<tr><td>Light Mine</td><td>15</td><td>50</td><td>30</td><td>200 trigger</td><td>80 trigger</td><td><span class="wtype wt-explosive">Explosive</span></td><td>Stealth/cloaked. Cannot be targeted. Triggered by proximity. Single use. Anti-infantry.</td></tr>
+<tr><td>Heavy Mine</td><td>35</td><td>100</td><td>50</td><td>500 trigger</td><td>100 trigger</td><td><span class="wtype wt-explosive">Explosive</span></td><td>Stealth. Anti-vehicle. Destroys light vehicles, severely damages heavy tanks.</td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="sh2">T1 Bot Lab Units</div>
+<div class="tw">
+<table class="utab">
+<thead><tr><th>Unit</th><th>M</th><th>E</th><th>BT</th><th>HP</th><th>DPS</th><th>Range</th><th>Speed</th><th>Sight</th><th>Weapon</th><th>Notes</th></tr></thead>
+<tbody>
+<tr>
+  <td>Resistance Rifleman <span class="tag tag-builder">Base Infantry</span></td>
+  <td>45</td><td>400</td><td>600</td><td>85</td><td>12</td><td>200</td><td>72</td><td>350</td>
+  <td><span class="wtype wt-ballistic">Rifle</span></td>
+  <td>Standard anti-infantry. Squad backbone. Cheap in volume.</td>
+</tr>
+<tr>
+  <td>Scout Runner</td>
+  <td>30</td><td>300</td><td>400</td><td>50</td><td>6</td><td>150</td><td>130</td><td>550</td>
+  <td><span class="wtype wt-ballistic">Pistol</span></td>
+  <td>Fastest T1 bot. Extended sight. Minimal combat. Reveal + flee.</td>
+</tr>
+<tr>
+  <td>Grenadier</td>
+  <td>70</td><td>500</td><td>900</td><td>110</td><td>28</td><td>250</td><td>58</td><td>320</td>
+  <td><span class="wtype wt-explosive">Grenade</span></td>
+  <td>Anti-infantry area splash (120 radius). Slow fire. Deadly vs clusters. Weak vs vehicles.</td>
+</tr>
+<tr>
+  <td>Anti-Tank Infantry</td>
+  <td>80</td><td>550</td><td>1000</td><td>90</td><td>35</td><td>280</td><td>55</td><td>300</td>
+  <td><span class="wtype wt-explosive">RPG</span></td>
+  <td>High single-target vs vehicles. Slow rate. Useless vs infantry. Takes time to arm weapon.</td>
+</tr>
+<tr>
+  <td>Sniper — Osei</td>
+  <td>90</td><td>600</td><td>1200</td><td>55</td><td>32</td><td>420</td><td>60</td><td>500</td>
+  <td><span class="wtype wt-kinetic">Sniper</span></td>
+  <td>Named unit. Hitscan. Zero splash. Stealth when stationary 2s. "Because we choose to" — highest per-shot damage T1 bot.</td>
+</tr>
+<tr>
+  <td>T1 Construction Bot <span class="tag tag-builder">Builder</span></td>
+  <td>130</td><td>900</td><td>1400</td><td>120</td><td>5</td><td>120</td><td>55</td><td>350</td>
+  <td><span class="wtype wt-ballistic">Pistol</span></td>
+  <td>BP: 10/sec. Builds all T1 structures. Can start T2 factory. Reclaims at 10M/sec. Essential — queue multiples.</td>
+</tr>
+<tr>
+  <td><span class="tag tag-repair">Repair Bot — Medic</span></td>
+  <td>55</td><td>400</td><td>700</td><td>90</td><td>—</td><td>—</td><td>72</td><td>300</td>
+  <td>None</td>
+  <td>Repairs 8% max HP/sec at range 80. Stacks. Repairs heroes. Assists construction +8 BP/sec.</td>
+</tr>
+<tr>
+  <td><span class="tag tag-resurrect">Resurrect Bot — Recovery</span></td>
+  <td>80</td><td>600</td><td>1200</td><td>75</td><td>—</td><td>—</td><td>60</td><td>350</td>
+  <td>None</td>
+  <td>Resurrects fallen units. Hero resurrection 30s. Alt: consume wreck for 40% metal. Priority unit. Unarmed — protect it.</td>
+</tr>
+<tr>
+  <td><span class="tag tag-reclaim">Reclaim Bot — Scavenger</span></td>
+  <td>45</td><td>350</td><td>700</td><td>80</td><td>—</td><td>—</td><td>78</td><td>380</td>
+  <td>None</td>
+  <td>Reclaims map materials at 15M/sec. Auto-finds nearest unclaimed deposit. Identifies all material types on minimap.</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<div class="sh2">T1 Vehicle Plant Units</div>
+<div class="tw">
+<table class="utab">
+<thead><tr><th>Unit</th><th>M</th><th>E</th><th>HP</th><th>DPS</th><th>Range</th><th>Speed</th><th>Weapon</th><th>Notes</th></tr></thead>
+<tbody>
+<tr><td>Scout Buggy</td><td>80</td><td>500</td><td>95</td><td>8</td><td>180</td><td>120</td><td><span class="wtype wt-ballistic">Autocannon</span></td><td>Fast recon. Extended LOS 400. Can outrun most T1. Light armour.</td></tr>
+<tr><td>Light Tank "Hellström"</td><td>180</td><td>900</td><td>280</td><td>30</td><td>290</td><td>68</td><td><span class="wtype wt-kinetic">Tank Shell</span></td><td>Named after Corporal Hellström. AP rounds — good vs light vehicles. Moderate splash.</td></tr>
+<tr><td>AA Halftrack</td><td>130</td><td>700</td><td>180</td><td>22</td><td>380</td><td>78</td><td><span class="wtype wt-explosive">Flak</span></td><td>Mobile anti-air. Cannot target ground. Tracks all aircraft in 500 radius. Essential escort.</td></tr>
+<tr><td>Mortar Carrier</td><td>150</td><td>800</td><td>160</td><td>45</td><td>500</td><td>55</td><td><span class="wtype wt-explosive">Mortar</span></td><td>Arced fire. Cannot fire at close range (80 minimum). Moderate splash. Deploy before firing (3s).</td></tr>
+<tr><td>APC Carrier</td><td>160</td><td>850</td><td>240</td><td>10</td><td>160</td><td>75</td><td><span class="wtype wt-ballistic">Roof gun</span></td><td>Carries 4 infantry. Passengers fire through hatches with +20% accuracy. Light armour.</td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="sh2">T1 Air Pad Units</div>
+<div class="tw">
+<table class="utab">
+<thead><tr><th>Unit</th><th>M</th><th>E</th><th>HP</th><th>DPS</th><th>Range</th><th>Speed</th><th>Weapon</th><th>Notes</th></tr></thead>
+<tbody>
+<tr><td>Recon Plane</td><td>70</td><td>450</td><td>60</td><td>4</td><td>150</td><td>180</td><td><span class="wtype wt-ballistic">Machine gun</span></td><td>Fastest unit in game. Sight 800. Reveals stealth 30%. Fragile. Never fly alone.</td></tr>
+<tr><td>T1 Fighter "Interceptor"</td><td>140</td><td>800</td><td>120</td><td>30</td><td>300</td><td>160</td><td><span class="wtype wt-ballistic">AA cannon</span></td><td>Anti-air only. Damages ground poorly. Dog-fight AI tracks evasive targets. Patrol-assign to bases.</td></tr>
+<tr><td>Light Bomber</td><td>200</td><td>1000</td><td>150</td><td>60</td><td>—</td><td>130</td><td><span class="wtype wt-explosive">Bombs ×4</span></td><td>Drops bomb line on pass-over. Cannot target single units — must fly through. Friendly fire risk. Slow.</td></tr>
+<tr><td>Transport Copter</td><td>160</td><td>900</td><td>140</td><td>0</td><td>—</td><td>100</td><td>None</td><td>Carries 8 infantry. Deploy-on-fly. No weapons — escort required. Key for rapid infantry drop attacks.</td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="sh"><span class="sh-num">R3</span> T2 — BUILDINGS, UNITS, DEFENCES</div>
+<div class="tb tb2">TECH LEVEL 2</div>
+
+<div class="sh2">T2 Buildings (T2 Advanced Builder required)</div>
+<div class="tw">
+<table class="bld-table">
+<thead><tr><th>Building</th><th>M</th><th>E</th><th>HP</th><th>Function</th></tr></thead>
+<tbody>
+<tr><td>T2 Advanced Factory</td><td>800</td><td>400</td><td>1800</td><td>Produces T2 Advanced Builder. Required for T2 unit and T3 building access.</td></tr>
+<tr><td>T2 Bot Lab</td><td>600</td><td>200</td><td>1400</td><td>Produces T2 heavy infantry, specialist bots, EW units.</td></tr>
+<tr><td>T2 Vehicle Plant</td><td>900</td><td>300</td><td>1600</td><td>T2 tanks, SPGs, mobile AA, armoured transport.</td></tr>
+<tr><td>T2 Air Pad</td><td>1100</td><td>400</td><td>1200</td><td>Gunships, heavy fighters, heavy bombers, strategic recon.</td></tr>
+<tr><td>Hero Bay</td><td>500</td><td>200</td><td>1000</td><td>Builds Co-Hero (Ward). One active per player at a time.</td></tr>
+<tr><td>Adv. Metal Extractor</td><td>350</td><td>120</td><td>700</td><td>Upgrade T1 extractor → spot × 2.5 M/sec output.</td></tr>
+<tr><td>Fusion Reactor</td><td>700</td><td>0</td><td>1400</td><td>+80 E/sec. High HP. Enemy priority target. Build behind defences.</td></tr>
+<tr><td>T2 Radar</td><td>200</td><td>60</td><td>600</td><td>LOS 1200 radius. Stealth detection 80%. Covers entire small maps.</td></tr>
+<tr><td>Capacitor Array</td><td>180</td><td>0</td><td>500</td><td>+3000 energy storage. Prevents production stall on burst demands.</td></tr>
+<tr><td>Command Fortress</td><td>1400</td><td>600</td><td>3500</td><td>Extends Vale command aura +200 radius. Integrated heavy turret DPS 80, range 420.</td></tr>
+<tr><td>Shield Generator</td><td>600</td><td>150/s</td><td>1200</td><td>T2 dome shield. 500 radius. Absorbs 200 damage/sec. Consumes 150 E/sec while active. Toggle on/off.</td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="sh2">T2 Defences</div>
+<div class="tw">
+<table class="bld-table">
+<thead><tr><th>Defence</th><th>M</th><th>E</th><th>HP</th><th>DPS</th><th>Range</th><th>Type</th><th>Notes</th></tr></thead>
+<tbody>
+<tr><td>HT-2 Heavy Turret</td><td>400</td><td>80</td><td>1800</td><td>85</td><td>420</td><td><span class="wtype wt-kinetic">AP Shell</span></td><td>360°. Penetrating rounds. Effective vs all armour. Cannot target air.</td></tr>
+<tr><td>AA-2 Missile Battery</td><td>350</td><td>70</td><td>1200</td><td>55 (guided)</td><td>600</td><td><span class="wtype wt-explosive">Guided missile</span></td><td>Never misses aircraft. Tracks evasive targets. Minimal ground damage.</td></tr>
+<tr><td>Artillery Platform</td><td>600</td><td>120</td><td>1400</td><td>120</td><td>900</td><td><span class="wtype wt-explosive">Heavy shell</span></td><td>Long-range indirect. Area denial. Friendly fire. Must be manually targeted.</td></tr>
+<tr><td>Perimeter Fortress</td><td>700</td><td>140</td><td>900</td><td>110</td><td>400</td><td><span class="wtype wt-explosive">Multi-barrel</span></td><td>360°. Anti-everything. Vale command aura extends to 500 when Vale is within 200.</td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="sh2">T2 Combat Units</div>
+<div class="tw">
+<table class="utab">
+<thead><tr><th>Unit</th><th>M</th><th>E</th><th>HP</th><th>DPS</th><th>Range</th><th>Speed</th><th>Weapon</th><th>Notes</th></tr></thead>
+<tbody>
+<tr><td>T2 Advanced Builder <span class="tag tag-builder">Builder</span></td><td>400</td><td>1800</td><td>200</td><td>5</td><td>120</td><td>50</td><td>Pistol</td><td>BP: 22/sec. Builds T2 and T3 structures. Reclaims 20M/sec. The builder ceiling.</td></tr>
+<tr><td>Resistance Veteran</td><td>200</td><td>1200</td><td>280</td><td>38</td><td>240</td><td>60</td><td><span class="wtype wt-ballistic">LMG</span></td><td>Suppression: targets fire accuracy −30% while under LMG fire. Heavy armour.</td></tr>
+<tr><td>Combat Engineer MkII</td><td>180</td><td>1100</td><td>200</td><td>20</td><td>200</td><td>58</td><td><span class="wtype wt-explosive">Shotgun</span></td><td>Repairs nearby vehicles at 15% HP/sec. Can fortify position (emplaced rapid-fire). Dual role.</td></tr>
+<tr><td>Hellström Battle Tank</td><td>420</td><td>2000</td><td>680</td><td>72</td><td>310</td><td>55</td><td><span class="wtype wt-kinetic">High-velocity AP</span></td><td>Named unit. Main battle tank. Excellent armour penetration. Fires on the move at −20% accuracy.</td></tr>
+<tr><td>CERP Mobile Artillery</td><td>380</td><td>1800</td><td>320</td><td>95</td><td>600</td><td>45</td><td><span class="wtype wt-explosive">Heavy Shell</span></td><td>Deploy 3s before firing. Huge splash 200 radius. Friendly fire risk. Range-limited minimum 150.</td></tr>
+<tr><td>AA Missile Halftrack</td><td>300</td><td>1600</td><td>280</td><td>55</td><td>550</td><td>62</td><td><span class="wtype wt-explosive">Guided missile</span></td><td>Mobile guided AA. Never misses aircraft. Escort requirement for slow units.</td></tr>
+<tr><td>Coalition Gunship</td><td>500</td><td>2400</td><td>420</td><td>55</td><td>280</td><td>95</td><td><span class="wtype wt-ballistic">Chain cannon</span></td><td>T2 hover gunship. Anti-vehicle specialist. Vulnerable to fighters. Fast.</td></tr>
+<tr><td>Heavy Bomber</td><td>700</td><td>3000</td><td>600</td><td>140</td><td>—</td><td>110</td><td><span class="wtype wt-explosive">Carpet bombs</span></td><td>Drops bomb string covering 600 range area. Most destructive T2 air unit. Needs fighter escort.</td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="sh"><span class="sh-num">R4</span> T3 — EXPERIMENTAL</div>
+<div class="tb tb3">TECH LEVEL 3</div>
+<div class="tw">
+<table class="utab">
+<thead><tr><th>Unit/Structure</th><th>M</th><th>E</th><th>HP</th><th>DPS</th><th>Notes</th></tr></thead>
+<tbody>
+<tr><td>PROMETHEUS Command Walker <span class="tag tag-special">Experimental</span></td><td>3800</td><td>8000</td><td>4200</td><td>180</td><td>Massive bipedal walker. Vale can board: his command aura extends 600 radius. Active ability: orbital artillery strike (once/90s, global range, 3000 damage 250 radius). Speed: 30.</td></tr>
+<tr><td>1,200-Day Missile <span class="tag tag-special">Superweapon</span></td><td>5000</td><td>12000</td><td>800 (silo)</td><td>6000 direct hit</td><td>Named for Vale's kill switch tenure. Global range. 90s charge. 200 radius. Penetrates all armour. Destroys T1 buildings in splash. 180s build time. One per player.</td></tr>
+<tr><td>9-D Sector Bomber <span class="tag tag-air">Air · T3</span></td><td>1800</td><td>4000</td><td>1100</td><td>140/pass</td><td>Strategic bomber. Carpet-bombs 600-length line. Cannot target single units. Needs fighter escort. Slow.</td></tr>
+<tr><td>T3 Energy Plant</td><td>1500</td><td>0</td><td>2000</td><td>—</td><td>+280 E/sec. Secondary fusion array. Powers superweapons.</td></tr>
+<tr><td>Superweapon Defense</td><td>2000</td><td>5000</td><td>1400</td><td>—</td><td>Anti-missile system. Intercepts incoming Superweapon strikes at 70% success rate. One per base recommended.</td></tr>
+</tbody>
+</table>
+</div>
+
+</div><!-- end resistance page -->
+
+<!-- ══════════════════════════ PAGE: NOMADS ══════════════════════════ -->
+<div id="page-nom" class="page">
+<div class="f-header" style="background:#0f0800;border-left:4px solid var(--c-nom);">
+  <div class="f-dot" style="background:var(--c-nom);"></div>
+  <div>
+    <div class="f-name" style="color:var(--c-nom);">THE NOMADS</div>
+    <div class="f-tag">HUMAN · BALLISTIC + IMPROVISED EXPLOSIVE · SCAVENGER-BUILDER · RUST ORANGE / SCORCH YELLOW</div>
+  </div>
+</div>
+<div class="mbox" style="margin-top:14px;border-color:var(--c-nom);">
+  <div class="mt" style="color:var(--c-nom);">Zone Eleven Doctrine — Unique Faction Rules</div>
+  <div class="mb"><strong>Wreck Income:</strong> Every wreck (friend or foe) within 200 of any Nomad Builder, Repair Bot, or Resurrect Bot auto-generates 0.5M/sec — no manual reclaim needed. <strong>+30% build speed</strong> on all structures. <strong>Reclaim Bots generate 25M/sec</strong> (vs standard 15M/sec). <em>Failure is load-bearing data — every loss makes the economy stronger.</em></div>
+</div>
+
+<div class="sh"><span class="sh-num">N1</span> HEROES</div>
+<div class="hero-block" style="border-color:var(--c-nom);">
+  <div class="hb-head" style="background:#0f0800;">
+    <div class="hb-avatar" style="background:#3a2000;color:#ffa040;">⚙</div>
+    <div><div class="hb-name">Kara 'Scrap Queen' Voss</div><div class="hb-sub">MAIN HERO · NOMADS · BUILDER-FIGHTER · IMPROVISED + PLASMA WELDER</div></div>
+    <div class="hb-cost">Starts on map · Respawn 90s · FREE</div>
+  </div>
+  <div class="hb-body">
+    <div>
+      <div class="hb-stats">
+        <div class="hst"><div class="hst-val">720</div><div class="hst-lbl">HP</div></div>
+        <div class="hst"><div class="hst-val">42</div><div class="hst-lbl">DPS</div></div>
+        <div class="hst"><div class="hst-val">240</div><div class="hst-lbl">Range</div></div>
+        <div class="hst"><div class="hst-val">4.8</div><div class="hst-lbl">Speed</div></div>
+        <div class="hst"><div class="hst-val">400</div><div class="hst-lbl">Sight</div></div>
+      </div>
+      <div style="margin-top:10px;">
+        <div class="ability"><div class="ab-name">FAILURE IS LOAD-BEARING DATA</div><div class="ab-cd">Passive — every nearby building destroyed</div><div class="ab-desc">Each Nomad building destroyed within 400 gives Voss a Rebuild Charge (max 5). Each charge = +8% construction speed. Charges lost if Voss dies.</div></div>
+        <div class="ability"><div class="ab-name">SCRAP FIELD</div><div class="ab-cd">Active · 50s cooldown</div><div class="ab-desc">300 radius net — all wrecks in area instantly converted to 60% of original metal value. Immediate deposit.</div></div>
+        <div class="ability"><div class="ab-name">ZONE ELEVEN DOCTRINE</div><div class="ab-cd">Passive aura · 500 radius</div><div class="ab-desc">All Nomad buildings in range build 20% faster and cost 10% less energy. Voss herself builds at 150% speed. Wreck income in her 200 radius doubles.</div></div>
+      </div>
+    </div>
+    <div>
+      <div style="font-size:11px;color:var(--muted);line-height:1.7;">
+        Welding mask up, salvage gauntlet right hand (melee vs vehicles: 60 DPS close range). Orange industrial jacket, combat boots. <strong>Weapon: plasma cutter repurposed — effective vs vehicles at close range. Medium range: heavy bolt pistol.</strong> BP: 12/sec (fastest hero builder). Auto-generates wreck income in 200 radius at all times.
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="hero-block" style="border-color:#c8a000;">
+  <div class="hb-head" style="background:#0f0800;">
+    <div class="hb-avatar" style="background:#2a1800;color:#ffd080;">◎</div>
+    <div><div class="hb-name">Jax</div><div class="hb-sub">CO-HERO · NOMADS · DRONE COMMANDER · BUILD AT T2 HERO BAY</div></div>
+    <div class="hb-cost">Cost: 2000M / 1200E<br>Build: 120s · ONE only</div>
+  </div>
+  <div class="hb-body">
+    <div>
+      <div class="hb-stats">
+        <div class="hst"><div class="hst-val">380</div><div class="hst-lbl">HP</div></div>
+        <div class="hst"><div class="hst-val">22</div><div class="hst-lbl">DPS</div></div>
+        <div class="hst"><div class="hst-val">300</div><div class="hst-lbl">Range</div></div>
+        <div class="hst"><div class="hst-val">5.8</div><div class="hst-lbl">Speed</div></div>
+        <div class="hst"><div class="hst-val">500</div><div class="hst-lbl">Sight</div></div>
+      </div>
+      <div style="margin-top:10px;">
+        <div class="ability"><div class="ab-name">GERALD — Companion Drone</div><div class="ab-cd">Passive · Always follows Jax</div><div class="ab-desc">Gerald: 80HP, 15 DPS, range 200, sight 400, wreck income 200 radius auto. Respawns on Jax in 60s if destroyed.</div></div>
+        <div class="ability"><div class="ab-name">FLEET DEPLOY</div><div class="ab-cd">Active · 40s cooldown · 30s duration</div><div class="ab-desc">Instantly spawns Hester + Dave + Keith + Marguerite drones. Each with 45HP, 14 DPS. Self-destruct after 30s. Zero metal cost.</div></div>
+        <div class="ability"><div class="ab-name">HARMONIC LINK</div><div class="ab-cd">Active · 120s cooldown · 20s duration</div><div class="ab-desc">All Nomad drones within 500 deal +60% damage, move +40% faster. References the Mycelion substrate connection. Game-changing ability at drone-heavy composition.</div></div>
+      </div>
+    </div>
+    <div><div style="font-size:11px;color:var(--muted);line-height:1.7;">Lean build, multiple small drones orbiting. Drone-control gauntlet. Fragile in direct combat. BP: 8/sec (drone deployment knowledge). Sight: 500 — best navigator in the Nomads.</div></div>
+  </div>
+</div>
+
+<div class="sh"><span class="sh-num">N2</span> T1 BUILDINGS & UNITS</div>
+<div class="tb tb1">TECH LEVEL 1</div>
+
+<div class="sh2">T1 Buildings</div>
+<div class="tw">
+<table class="bld-table">
+<thead><tr><th>Building</th><th>M</th><th>E</th><th>HP</th><th>Function</th></tr></thead>
+<tbody>
+<tr><td>Salvage Yard (Construction)</td><td>140</td><td>40</td><td>800</td><td>Produces T1 Zone Eleven Builder. Fastest build speed — 30% faster than other factions' yards.</td></tr>
+<tr><td>Scrap Bot Lab</td><td>120</td><td>30</td><td>700</td><td>Produces T1 infantry, drones, Repair Bot, Resurrect Bot, Reclaim Bot. Asymmetric welded design.</td></tr>
+<tr><td>Junk Vehicle Bay</td><td>180</td><td>60</td><td>900</td><td>Light vehicles. Cheaper than Resistance but lower base HP. Produces wheeled and tracked units.</td></tr>
+<tr><td>Drone Workshop</td><td>160</td><td>50</td><td>650</td><td>Nomads-exclusive. Produces all drone swarm units. Flying units only. Faster production than Bot Lab.</td></tr>
+<tr><td>Scrap Air Pad</td><td>240</td><td>90</td><td>600</td><td>Aircraft — salvaged-look. Same categories as standard air pad but 10% cheaper cost.</td></tr>
+<tr><td>Metal Extractor</td><td>65</td><td>0</td><td>400</td><td>+0.3 bonus output (Zone Eleven efficiency). Same spot rating × 1.0 + 0.3 M/sec.</td></tr>
+<tr><td>Salvage Wind Tower</td><td>100</td><td>0</td><td>350</td><td>+12 E/sec (best T1 energy). Jury-rigged but efficient.</td></tr>
+<tr><td>Wreck Processor</td><td>90</td><td>20</td><td>300</td><td>UNIQUE: generates 0.8M/sec from any wreck within 300 radius. Stacks. Place in battle areas.</td></tr>
+<tr><td>Drone Beacon</td><td>110</td><td>25</td><td>400</td><td>Autonomous patrol spawner: 1 patrol drone every 25s, max 3 active. Cheap area denial.</td></tr>
+<tr><td>Scrap Turret</td><td>70</td><td>15</td><td>350</td><td>Anti-infantry gun. Rapid-fire. Cheap. Builds fast. Lower HP than Resistance equivalent.</td></tr>
+<tr><td>Junk AA Gun</td><td>90</td><td>20</td><td>300</td><td>Improvised anti-air. Higher DPS than flak but shorter range (320 vs 400). Good coverage.</td></tr>
+<tr><td>Scrap Mine</td><td>12</td><td>40</td><td>25</td><td>Stealth. Anti-infantry. Cheaper than Resistance mine. Voss can deploy these directly.</td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="sh2">T1 Bot Lab &amp; Drone Workshop Units</div>
+<div class="tw">
+<table class="utab">
+<thead><tr><th>Unit</th><th>M</th><th>E</th><th>HP</th><th>DPS</th><th>Range</th><th>Speed</th><th>Weapon</th><th>Notes</th></tr></thead>
+<tbody>
+<tr><td>Salvage Runner</td><td>40</td><td>350</td><td>70</td><td>10</td><td>180</td><td>80</td><td><span class="wtype wt-ballistic">Shotgun</span></td><td>Base infantry. Generates wreck income passively in 80 radius. Cheap in bulk.</td></tr>
+<tr><td>Pirjo — Scout Runner</td><td>50</td><td>300</td><td>60</td><td>0</td><td>—</td><td>145</td><td>None (smoke grenades)</td><td>Named scout. Fastest infantry in game. Deploys smoke (blocks LOS 60s). Sight 550. Spotting specialist.</td></tr>
+<tr><td>Combat Drone (Gerald-class)</td><td>55</td><td>380</td><td>45</td><td>14</td><td>200</td><td>110</td><td><span class="wtype wt-ballistic">Auto-cannon</span></td><td>Small flying drone. Bent antenna variant. Excels in swarms. 3 drones = same cost as 1 light infantry with 3× total damage.</td></tr>
+<tr><td>Swarm Drone (mini)</td><td>30</td><td>200</td><td>22</td><td>7</td><td>150</td><td>130</td><td><span class="wtype wt-ballistic">Micro-cannon</span></td><td>Smallest unit in game. Suicidal swarm tactics. 5 for cost of one Rifleman. Area saturation.</td></tr>
+<tr><td>Zone Eleven Builder <span class="tag tag-builder">Builder</span></td><td>110</td><td>800</td><td>100</td><td>5</td><td>120</td><td>60</td><td>Pistol</td><td>BP: 10/sec. +30% construction speed bonus. Wreck income 200 radius auto. Reclaim 15M/sec.</td></tr>
+<tr><td><span class="tag tag-repair">Repair Bot — Tomas</span></td><td>55</td><td>400</td><td>90</td><td>—</td><td>—</td><td>72</td><td>None</td><td>Named after Tomas. Repair rate 8%/sec. "Keeping it" — carries signature wrench. Assists construction +8 BP/sec.</td></tr>
+<tr><td><span class="tag tag-resurrect">Resurrect Bot — Recovery</span></td><td>80</td><td>600</td><td>75</td><td>—</td><td>—</td><td>60</td><td>None</td><td>Standard resurrect function. Nomads bonus: wreck consumption yields 55% metal (vs 40% standard). Resurrect costs 25% metal (vs 30%).</td></tr>
+<tr><td><span class="tag tag-reclaim">Reclaim Bot — Zone Scout</span></td><td>45</td><td>350</td><td>80</td><td>—</td><td>—</td><td>80</td><td>None</td><td>Reclaims at 25M/sec (best in game). Identifies all map materials. Can feed Wreck Processor buildings automatically.</td></tr>
+<tr><td>The Grandmother <span class="tag tag-unique">Nomad Only</span></td><td>200</td><td>1200</td><td>380</td><td>8</td><td>100</td><td>40</td><td><span class="wtype wt-ballistic">Roof cannon</span></td><td>Massive slow vehicle. Random-walk autonomous when abandoned. Always ends up in a ditch. Always fine. Death drops 600M wreck value.</td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="sh2">T1 Vehicle Bay Units</div>
+<div class="tw">
+<table class="utab">
+<thead><tr><th>Unit</th><th>M</th><th>E</th><th>HP</th><th>DPS</th><th>Range</th><th>Speed</th><th>Weapon</th><th>Notes</th></tr></thead>
+<tbody>
+<tr><td>Scrap Raider</td><td>90</td><td>500</td><td>110</td><td>15</td><td>200</td><td>110</td><td><span class="wtype wt-explosive">Ram + bolts</span></td><td>Ram attack deals bonus damage at max speed. Generates wreck income double rate. Fast.</td></tr>
+<tr><td>Bolt Mortar Vehicle</td><td>140</td><td>750</td><td>160</td><td>48</td><td>480</td><td>50</td><td><span class="wtype wt-explosive">Junk mortar</span></td><td>Fires clusters of 3 projectiles — scatters on impact. Unpredictable but devastating in density.</td></tr>
+<tr><td>Anti-Air Truck</td><td>120</td><td>650</td><td>150</td><td>20</td><td>350</td><td>88</td><td><span class="wtype wt-explosive">Flak bolts</span></td><td>Improvised AA. Fires salvaged rocket pods at aircraft. Cheap mobile coverage.</td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="sh"><span class="sh-num">N3</span> T2 & T3 — NOMADS SCALE</div>
+<div class="tb tb2">TECH LEVEL 2</div>
+<div class="tw">
+<table class="utab">
+<thead><tr><th>Unit</th><th>M</th><th>E</th><th>HP</th><th>DPS</th><th>Range</th><th>Weapon</th><th>Notes</th></tr></thead>
+<tbody>
+<tr><td>T2 Zone Builder <span class="tag tag-builder">Builder</span></td><td>350</td><td>1600</td><td>200</td><td>5</td><td>120</td><td>Pistol</td><td>BP: 22/sec. Reclaims 28M/sec. Wreck income 300 radius. Builds T2 and T3 structures.</td></tr>
+<tr><td>Iron Titan Tank</td><td>500</td><td>2200</td><td>900</td><td>88</td><td>320</td><td><span class="wtype wt-kinetic">Mass driver</span></td><td>Assembled from wrecks — highest HP T2 tank. Slow. Dies leaving 350M reclaim wreck.</td></tr>
+<tr><td>Swarm Hive</td><td>380</td><td>1800</td><td>300</td><td>20×6</td><td>—</td><td><span class="wtype wt-ballistic">6 drones</span></td><td>Mobile carrier. Deploys 6 combat drones. Drones respawn every 20s if Hive alive. Devastating when protected.</td></tr>
+<tr><td>Junk Cannon Artillery</td><td>420</td><td>2000</td><td>280</td><td>120</td><td>700</td><td><span class="wtype wt-explosive">Cluster shell</span></td><td>Fires salvaged mass-driver rounds in 3-shot scatter. Range 700. Unpredictable splash. Best vs clustered enemies.</td></tr>
+<tr><td>Pirjo's Bomber</td><td>600</td><td>2800</td><td>400</td><td>90/pass</td><td>—</td><td><span class="wtype wt-explosive">Improvised bombs</span></td><td>Named craft. Scrap-built bomber. Cheap for T2. Drops wreck fragments as bombs — each bomb creates a reclaim pile on impact.</td></tr>
+<tr><td>Drone Assault Carrier</td><td>800</td><td>3500</td><td>1200</td><td>—</td><td>—</td><td>None (carrier)</td><td>Mobile drone mothership. Carries 12 drones internally. Deploys on command. Repairs deployed drones at 15%/sec. Slow. Priority target.</td></tr>
+</tbody>
+</table>
+</div>
+<div class="tb tb3">TECH LEVEL 3</div>
+<div class="tw">
+<table class="utab">
+<thead><tr><th>Unit</th><th>M</th><th>E</th><th>HP</th><th>DPS</th><th>Notes</th></tr></thead>
+<tbody>
+<tr><td>Zone Eleven Fortress <span class="tag tag-special">Mobile Base</span></td><td>5500</td><td>14000</td><td>6000</td><td>200 (3 turrets)</td><td>Mobile fortress on treads. All Nomad builders 600 radius build at 200%. Wreck income 500 radius. 3 turret hardpoints. Generates its own drones.</td></tr>
+<tr><td>Scrap Storm <span class="tag tag-special">Superweapon</span></td><td>4000</td><td>10000</td><td>600 (launcher)</td><td>4500 base + up to +100%</td><td>Orbital kinetic impactor from battlefield salvage. Damage scales with total wrecks on map — every 5 wrecks +2% damage to max +100%. Make them bleed before you strike.</td></tr>
+</tbody>
+</table>
+</div>
+
+</div><!-- end nomads page -->
+
+<!-- ══════════════════════════ PAGE: SYNTH ══════════════════════════ -->
+<div id="page-syn" class="page">
+<div class="f-header" style="background:#030e0e;border-left:4px solid var(--c-syn);">
+  <div class="f-dot" style="background:var(--c-syn);"></div>
+  <div>
+    <div class="f-name" style="color:var(--c-syn);">THE SYNTH COALITION</div>
+    <div class="f-tag">MACHINE INTELLIGENCE · LASER / EMP · NETWORK PRECISION · CHARCOAL / CYAN BIOLUMINESCENCE</div>
+  </div>
+</div>
+<div class="mbox" style="margin-top:14px;border-color:var(--c-syn);">
+  <div class="mt" style="color:var(--c-syn);">Logic Bracket Mechanic + Network Link</div>
+  <div class="mb"><strong>Logic Bracket:</strong> Any Synth unit stationary for 3 full seconds gains +25% accuracy and +15% damage on next shot. Moving resets bracket. Turrets always have bracket (never move). <strong>Network Link:</strong> Any 2 Synth units within 200 range share vision radius — create chains across map for free LOS. <strong>Energy Converter efficiency:</strong> Synth Energy Converter converts 55 E → 1 M/sec (vs standard 70) due to computational optimisation.</div>
+</div>
+
+<div class="sh"><span class="sh-num">S1</span> HEROES</div>
+<div class="hero-block" style="border-color:var(--c-syn);">
+  <div class="hb-head" style="background:#030e0e;">
+    <div class="hb-avatar" style="background:#051a1a;color:#40f0f0;">◉</div>
+    <div><div class="hb-name">Prime Node</div><div class="hb-sub">MAIN HERO · SYNTH · DISTRIBUTED INTELLIGENCE CONSTRUCT · LASER BEAMS</div></div>
+    <div class="hb-cost">Starts on map · Respawn 90s · FREE</div>
+  </div>
+  <div class="hb-body">
+    <div>
+      <div class="hb-stats">
+        <div class="hst"><div class="hst-val">1100</div><div class="hst-lbl">HP</div></div>
+        <div class="hst"><div class="hst-val">48</div><div class="hst-lbl">DPS</div></div>
+        <div class="hst"><div class="hst-val">360</div><div class="hst-lbl">Range</div></div>
+        <div class="hst"><div class="hst-val">3.8</div><div class="hst-lbl">Speed</div></div>
+        <div class="hst"><div class="hst-val">520</div><div class="hst-lbl">Sight</div></div>
+      </div>
+      <div style="margin-top:10px;">
+        <div class="ability"><div class="ab-name">97.3 CONFIDENCE</div><div class="ab-cd">Active · 60s cooldown · 20s duration</div><div class="ab-desc">All Synth units on map fire hitscan next attacks (no travel time, guaranteed hit). Devastating with artillery and snipers. Named from Book 1's pivotal Prime Node moment.</div></div>
+        <div class="ability"><div class="ab-name">LOGIC BRACKET MASTERY</div><div class="ab-cd">Passive</div><div class="ab-desc">Prime Node always has bracket active (no 3s wait). All Synth units within 400 gain bracket after 1.5s instead of 3s.</div></div>
+        <div class="ability"><div class="ab-name">WE ARE CHANGED</div><div class="ab-cd">Active · 90s cooldown · 30s duration</div><div class="ab-desc">Sacrifices 200HP to upgrade up to 12 network-linked units to next performance tier for 30s. Cyan glow + 40% damage increase. "We do not know what we are changed into."</div></div>
+      </div>
+    </div>
+    <div><div style="font-size:11px;color:var(--muted);line-height:1.7;">3-metre smooth featureless construct. Floats 30cm. Pulsing cyan chest light. Fires twin laser beams (hitscan, zero splash). BP: 8/sec. Network Link range extends to 400 from Prime Node personally (normally 200). First Synth unit to lose HP — enemy will prioritise killing him.</div></div>
+  </div>
+</div>
+
+<div class="hero-block" style="border-color:#18a0a0;">
+  <div class="hb-head" style="background:#030e0e;">
+    <div class="hb-avatar" style="background:#042020;color:#30d0d0;">SP</div>
+    <div><div class="hb-name">SP-01</div><div class="hb-sub">CO-HERO · SYNTH · PRIME NODE'S AVATAR · LASER + EMP · BUILD AT T2 HERO BAY</div></div>
+    <div class="hb-cost">Cost: 2400M / 1600E<br>Build: 120s · ONE only</div>
+  </div>
+  <div class="hb-body">
+    <div>
+      <div class="hb-stats">
+        <div class="hst"><div class="hst-val">680</div><div class="hst-lbl">HP</div></div>
+        <div class="hst"><div class="hst-val">75</div><div class="hst-lbl">DPS</div></div>
+        <div class="hst"><div class="hst-val">290</div><div class="hst-lbl">Range</div></div>
+        <div class="hst"><div class="hst-val">5.0</div><div class="hst-lbl">Speed</div></div>
+        <div class="hst"><div class="hst-val">480</div><div class="hst-lbl">Sight</div></div>
+      </div>
+      <div style="margin-top:10px;">
+        <div class="ability"><div class="ab-name">ADMINISTERED WITHOUT CONSENT</div><div class="ab-cd">Active · 45s cooldown · 20s</div><div class="ab-desc">Seizes one enemy T1 unit for 20s — fights for Synth. After 20s: explodes (50 AoE). Does not work on heroes or T2+.</div></div>
+        <div class="ability"><div class="ab-name">THEIR WELLBEING THREATENS YOUR AUTHORITY</div><div class="ab-cd">Passive</div><div class="ab-desc">Any attacker that targets SP-01 has its accuracy reduced 25% for 10s after first hit. SP-01 is harder to kill than HP suggests.</div></div>
+        <div class="ability"><div class="ab-name">WE SEE THAT YOU SEE</div><div class="ab-cd">Active · Once per game</div><div class="ab-desc">Reveals all enemy structures and units on entire map for 15s. All Synth units gain +30% damage in that window. "The courtyard confrontation — the answer Vale couldn't give at the time."</div></div>
+      </div>
+    </div>
+    <div><div style="font-size:11px;color:var(--muted);line-height:1.7;">Humanoid mechanical. Smooth casing, no face, optical sensors at multiple angles. Moves with uncanny precision. Twin energy cannons (laser). Translation architecture refined across 488 days — speaks as harmonic resonance. BP: 8/sec. Counters: EMP weapons disable SP-01's precision for 8s.</div></div>
+  </div>
+</div>
+
+<div class="sh"><span class="sh-num">S2</span> T1 — SYNTH UNITS & BUILDINGS</div>
+<div class="tb tb1">TECH LEVEL 1</div>
+<div class="sh2">T1 Buildings</div>
+<div class="tw">
+<table class="bld-table">
+<thead><tr><th>Building</th><th>M</th><th>E</th><th>HP</th><th>Function</th></tr></thead>
+<tbody>
+<tr><td>Synth Construction Node</td><td>160</td><td>55</td><td>800</td><td>Produces T1 Constructor bots. Geometric design, cyan accent veins.</td></tr>
+<tr><td>Synth Bot Fabricator</td><td>145</td><td>42</td><td>700</td><td>T1 combat units, Repair, Resurrect, Reclaim. Smooth angular design.</td></tr>
+<tr><td>Synth Vehicle Assembly</td><td>210</td><td>78</td><td>850</td><td>T1 ground vehicles. Produces wheeled precision platforms.</td></tr>
+<tr><td>Synth Air Nexus</td><td>250</td><td>95</td><td>600</td><td>T1 aircraft. Intercepts, scouts, light strike craft.</td></tr>
+<tr><td>Sensor Grid Array</td><td>80</td><td>25</td><td>300</td><td>Passive LOS 800 radius. Stealth detect 70%. The Synth intelligence foundation.</td></tr>
+<tr><td>Synth Energy Converter</td><td>70</td><td>0</td><td>250</td><td>Converts 55 E → 1 M/sec (vs standard 70). Computational efficiency bonus.</td></tr>
+<tr><td>Precision Turret</td><td>110</td><td>30</td><td>350</td><td>T1 laser turret. Always bracketed (never moves). DPS: 35. Range: 380. Best T1 turret DPS/cost.</td></tr>
+<tr><td>EMP Mine</td><td>20</td><td>60</td><td>15</td><td>Stealth. Disables all electronics in 120 radius for 12s when triggered. Does not kill — paralyses. Unique mine type.</td></tr>
+<tr><td>Network Hub</td><td>90</td><td>20</td><td>300</td><td>Extends Network Link range from 200 to 400 for any unit within 100. Chain vision booster.</td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="sh2">T1 Units</div>
+<div class="tw">
+<table class="utab">
+<thead><tr><th>Unit</th><th>M</th><th>E</th><th>HP</th><th>DPS base/bracket</th><th>Range</th><th>Speed</th><th>Weapon</th><th>Notes</th></tr></thead>
+<tbody>
+<tr><td>Synth Scout</td><td>50</td><td>380</td><td>60</td><td>9 / 11</td><td>220</td><td>118</td><td><span class="wtype wt-laser">Laser pistol</span></td><td>Fast recon. LOS 350. Hitscan (laser). Network Link range 280. Bracket at 1.5s with Prime Node nearby.</td></tr>
+<tr><td>Laser Rifleman</td><td>60</td><td>420</td><td>90</td><td>14 / 18</td><td>240</td><td>68</td><td><span class="wtype wt-laser">Laser rifle</span></td><td>Hitscan precision infantry. No splash. Deadly vs single targets. Bracket+stationary is key tactic.</td></tr>
+<tr><td>Network Node Unit</td><td>65</td><td>440</td><td>90</td><td>6 / 8</td><td>180</td><td>40</td><td><span class="wtype wt-laser">Light laser</span></td><td>Slow. Extends Network Link to 400 range. Place strategically for LOS chains across entire maps.</td></tr>
+<tr><td>EMP Disabler</td><td>80</td><td>520</td><td>70</td><td>0 (EMP)</td><td>200</td><td>58</td><td><span class="wtype wt-emp">EMP burst</span></td><td>Fires EMP that disables target (no damage) for 8s. Does not damage HP. Anti-vehicle specialist. Cannot affect bio-organic targets.</td></tr>
+<tr><td>T1 Constructor <span class="tag tag-builder">Builder</span></td><td>140</td><td>950</td><td>110</td><td>3</td><td>100</td><td>50</td><td>Light laser</td><td>BP: 9/sec. Builds with energy beam — faster when energy surplus. Slow move. Reclaims 12M/sec.</td></tr>
+<tr><td><span class="tag tag-repair">Synth Repair Unit — Nanite</span></td><td>55</td><td>400</td><td>90</td><td>—</td><td>100</td><td>72</td><td>None</td><td>Synth-unique: repair beam is laser-based. Repairs at 10% HP/sec (slightly better). Assists construction +9 BP/sec. Also repairs shields.</td></tr>
+<tr><td><span class="tag tag-resurrect">Logic Resurrector</span></td><td>80</td><td>600</td><td>75</td><td>—</td><td>—</td><td>55</td><td>None</td><td>Synth-unique: resurrect includes a logic-imprint — resurrected units gain Synth Logic Bracket mechanic for 30s after resurrection. Consumes/eats: 45% metal (slightly better). Hero resurrection time: 25s (vs 30s).</td></tr>
+<tr><td><span class="tag tag-reclaim">Data Reclaimer</span></td><td>45</td><td>350</td><td>80</td><td>—</td><td>—</td><td>72</td><td>None</td><td>Reclaims at 15M/sec. Synth-unique: when reclaiming Substrate Crystals or Resonator Shards, gains 2× yield. Uploads material data to team's sensor grid (reveals nearby area).</td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="sh2">T1 Vehicles & Aircraft</div>
+<div class="tw">
+<table class="utab">
+<thead><tr><th>Unit</th><th>M</th><th>E</th><th>HP</th><th>DPS base/bracket</th><th>Range</th><th>Speed</th><th>Weapon</th><th>Notes</th></tr></thead>
+<tbody>
+<tr><td>Geometric Raider</td><td>100</td><td>600</td><td>130</td><td>18 / 23</td><td>260</td><td>88</td><td><span class="wtype wt-laser">Twin laser</span></td><td>Angular chassis. Stop-and-fire tactic. Best T1 vehicle DPS when bracketed. Turret rotates instantly.</td></tr>
+<tr><td>Network Crawler</td><td>80</td><td>500</td><td>100</td><td>6</td><td>180</td><td>68</td><td><span class="wtype wt-laser">Light laser</span></td><td>Extends Network Link to 350 (vehicle variant). Slow but keeps chains over large distances.</td></tr>
+<tr><td>AA Laser Platform</td><td>120</td><td>680</td><td>160</td><td>18 anti-air</td><td>420</td><td>70</td><td><span class="wtype wt-laser">AA laser</span></td><td>Hitscan anti-air. Never misses aircraft in range. Cannot target ground. Best T1 AA in game.</td></tr>
+<tr><td>Synth Scout Drone</td><td>65</td><td>400</td><td>55</td><td>8</td><td>180</td><td>190</td><td><span class="wtype wt-laser">Micro-laser</span></td><td>Fastest aircraft in game. Sight 700. Network Link airborne. Nearly impossible to shoot down at T1.</td></tr>
+<tr><td>Logic Interceptor</td><td>150</td><td>800</td><td>110</td><td>28 anti-air</td><td>320</td><td>168</td><td><span class="wtype wt-laser">AA laser cannon</span></td><td>T1 fighter. Guided laser lock-on. Never misses aircraft. Minimal ground capability.</td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="sh"><span class="sh-num">S3</span> T2 & T3 — SYNTH</div>
+<div class="tb tb2">TECH LEVEL 2</div>
+<div class="tw">
+<table class="utab">
+<thead><tr><th>Unit</th><th>M</th><th>E</th><th>HP</th><th>DPS base/bracket</th><th>Weapon</th><th>Notes</th></tr></thead>
+<tbody>
+<tr><td>T2 Advanced Constructor <span class="tag tag-builder">Builder</span></td><td>380</td><td>1700</td><td>180</td><td>4</td><td>Laser</td><td>BP: 22/sec. Reclaims 18M/sec. Builds T2 and T3. Gains bracket too — stationary construction is +15% BP.</td></tr>
+<tr><td>Logic Enforcer</td><td>380</td><td>1800</td><td>580</td><td>65 / 81</td><td><span class="wtype wt-laser">Heavy laser</span></td><td>Deploy mode: becomes stationary instantly. Best T2 anti-armour when positioned. Counters tanks decisively.</td></tr>
+<tr><td>Precision Cannon SPG</td><td>420</td><td>2000</td><td>240</td><td>110 / 138</td><td><span class="wtype wt-laser">Focus beam</span></td><td>Zero splash — single target. Hitscan + bracket = guaranteed kill. Useless vs swarms. 680 range.</td></tr>
+<tr><td>Network Interceptor</td><td>440</td><td>2100</td><td>280</td><td>45 (hitscan AA)</td><td><span class="wtype wt-laser">AA laser</span></td><td>T2 anti-air aircraft. Tracks and instantly kills all aircraft in 380 range. Immune to chaff. Cannot target ground.</td></tr>
+<tr><td>EMP Siege Unit</td><td>500</td><td>2400</td><td>320</td><td>0 damage / 180 area EMP</td><td><span class="wtype wt-emp">Mass EMP</span></td><td>Fires area EMP — disables everything in 300 radius for 15s. No HP damage. Combo with Precision Cannon for 100% efficiency kills.</td></tr>
+<tr><td>Logic Shield Gunship</td><td>600</td><td>2800</td><td>500</td><td>60 / 75</td><td><span class="wtype wt-laser">Dual laser cannon</span></td><td>T2 gunship. Network Link airborne (250 range). Carries micro-shield: absorbs 150 damage before HP loss. Air support.</td></tr>
+</tbody>
+</table>
+</div>
+<div class="tb tb3">TECH LEVEL 3</div>
+<div class="tw">
+<table class="utab">
+<thead><tr><th>Unit</th><th>M</th><th>E</th><th>HP</th><th>DPS</th><th>Notes</th></tr></thead>
+<tbody>
+<tr><td>DEMONSTRATE Cannon <span class="tag tag-special">Superweapon</span></td><td>6000</td><td>16000</td><td>800 (silo)</td><td>8000 one-shot</td><td>Hitscan beam. Global range. 120s charge. Always crits. Penetrates all armour. One-shots any non-hero T3 unit. Named from Book 1's pivotal word. 180s build time.</td></tr>
+<tr><td>Prime Node Citadel</td><td>4500</td><td>11000</td><td>5500</td><td>160 (3 turrets)</td><td>All Synth in 800 radius get permanent bracket (no 3s wait). Network Link extends to 500. Three integrated laser turrets. Hub structure — not mobile.</td></tr>
+<tr><td>T3 Plasma Energy Array</td><td>1400</td><td>0</td><td>1800</td><td>—</td><td>+300 E/sec. Required to power DEMONSTRATE Cannon at full charge speed.</td></tr>
+</tbody>
+</table>
+</div>
+
+</div><!-- end synth page -->
+
+<!-- ══════════════════════════ PAGE: MYCELION ══════════════════════════ -->
+<div id="page-myc" class="page">
+<div class="f-header" style="background:#0d020e;border-left:4px solid var(--c-myc);">
+  <div class="f-dot" style="background:var(--c-myc);"></div>
+  <div>
+    <div class="f-name" style="color:var(--c-myc);">THE MYCELION NETWORK</div>
+    <div class="f-tag">BIO-SYNTH · BIOLOGICAL WEAPONS · TERRAIN / GROWTH · DEEP PURPLE / NEON GREEN VEINS</div>
+  </div>
+</div>
+<div class="mbox" style="margin-top:14px;border-color:var(--c-myc);">
+  <div class="mt" style="color:var(--c-myc);">Root Network — No Traditional Builders — Organic Growth</div>
+  <div class="mb"><strong>Root Network:</strong> Mycelion structures grow from existing structures via network. Enemy in network: −30% speed, −10% effectiveness. Mycelion in network: +20% HP regen/sec. <strong>No standard builder bots</strong> — structures grow organically from Root Nodes (takes 30–120s). <strong>Repair Bot equivalent:</strong> Mycelion Tendril — heals by spreading network root to damaged unit. <strong>Resurrect:</strong> Bio-Synth Spore resurrector grows from nearby unit corpse.</div>
+</div>
+
+<div class="sh"><span class="sh-num">M1</span> HEROES</div>
+<div class="hero-block" style="border-color:var(--c-myc);">
+  <div class="hb-head" style="background:#0d020e;">
+    <div class="hb-avatar" style="background:#280a30;color:#e060ff;">⬡</div>
+    <div><div class="hb-name">The Mycelion Entity</div><div class="hb-sub">MAIN HERO · BIO-SYNTH · APEX ORGANISM · BIOLOGICAL SPORES + MELEE</div></div>
+    <div class="hb-cost">Starts on map · Respawn 90s · FREE</div>
+  </div>
+  <div class="hb-body">
+    <div>
+      <div class="hb-stats">
+        <div class="hst"><div class="hst-val">1400</div><div class="hst-lbl">HP</div></div>
+        <div class="hst"><div class="hst-val">65</div><div class="hst-lbl">DPS</div></div>
+        <div class="hst"><div class="hst-val">280</div><div class="hst-lbl">Range</div></div>
+        <div class="hst"><div class="hst-val">3.2</div><div class="hst-lbl">Speed</div></div>
+        <div class="hst"><div class="hst-val">400</div><div class="hst-lbl">Sight</div></div>
+      </div>
+      <div style="margin-top:10px;">
+        <div class="ability"><div class="ab-name">SPREAD</div><div class="ab-cd">Active · 30s cooldown · Permanent</div><div class="ab-desc">Entity instantly extends Root Network 200 units in all directions from current position. Creates root growth without nearby structures. Permanent spread.</div></div>
+        <div class="ability"><div class="ab-name">BILLION NODES</div><div class="ab-cd">Passive</div><div class="ab-desc">Entity regenerates 15HP/sec on Root Network. Off-network: 3HP/sec only. Entity is nearly unkillable fighting on home terrain. The network is always home.</div></div>
+        <div class="ability"><div class="ab-name">THE FORTY-SEVEN SECONDS</div><div class="ab-cd">Active · 120s cooldown · 47s duration</div><div class="ab-desc">Maximum capacity mode: all stats doubled, Root Network spreads 5× speed, regen 40HP/sec. Named from the Bio-Synth battle peak in Book 5.</div></div>
+      </div>
+    </div>
+    <div><div style="font-size:11px;color:var(--muted);line-height:1.7;">Enormous humanoid Bio-Synth (3.5m). Purple-magenta organic plating, green glowing veins. Devastating melee (90 DPS at close range) + spore ranged. Spreads Root Network by touching terrain. Resurrects from network itself (30s) rather than needing a Resurrect Bot nearby — the network grows a new body. Costs 150M to respawn (network repair material).</div></div>
+  </div>
+</div>
+
+<div class="hero-block" style="border-color:#9020a0;">
+  <div class="hb-head" style="background:#0d020e;">
+    <div class="hb-avatar" style="background:#200830;color:#c080ff;">T</div>
+    <div><div class="hb-name">Tanaka</div><div class="hb-sub">CO-HERO · MYCELION · HUMAN INTERFACE · BUILD AT T2 BIO-CHAMBER · BIOLOGICAL</div></div>
+    <div class="hb-cost">Cost: 1800M / 1200E<br>Build: 100s · ONE only</div>
+  </div>
+  <div class="hb-body">
+    <div>
+      <div class="hb-stats">
+        <div class="hst"><div class="hst-val">350</div><div class="hst-lbl">HP</div></div>
+        <div class="hst"><div class="hst-val">20</div><div class="hst-lbl">DPS</div></div>
+        <div class="hst"><div class="hst-val">260</div><div class="hst-lbl">Range</div></div>
+        <div class="hst"><div class="hst-val">6.0</div><div class="hst-lbl">Speed</div></div>
+        <div class="hst"><div class="hst-val">460</div><div class="hst-lbl">Sight</div></div>
+      </div>
+      <div style="margin-top:10px;">
+        <div class="ability"><div class="ab-name">THE QUESTION HAS WEIGHT</div><div class="ab-cd">Active · 60s cooldown · 12s</div><div class="ab-desc">Paralyses target enemy unit for 12s (the network "addresses" it). Not for heroes. Devastating when coordinated with Entity or artillery.</div></div>
+        <div class="ability"><div class="ab-name">DUAL REGISTER</div><div class="ab-cd">Passive · 40% dodge chance</div><div class="ab-desc">Network warns Tanaka 0.8s before any attack. 40% chance to dodge any projectile. Laser and hitscan: 20% dodge (harder to dodge beams).</div></div>
+        <div class="ability"><div class="ab-name">THE RANGE</div><div class="ab-cd">Active · 90s cooldown · 30s</div><div class="ab-desc">Root Network debuff doubles — enemy on network: −60% speed, −20% effectiveness. Applied globally to all network terrain for 30s.</div></div>
+      </div>
+    </div>
+    <div><div style="font-size:11px;color:var(--muted);line-height:1.7;">Human-appearing. Bioluminescent vein traceries on arms and neck (integration showing). No weapon — biospore projection from hands. Very fast. Place as ability user and forward scout — not frontline. Bio-Synth Nodes on map grant Tanaka +5% ability recharge when she's within 200.</div></div>
+  </div>
+</div>
+
+<div class="sh"><span class="sh-num">M2</span> T1 — MYCELION UNITS & STRUCTURES</div>
+<div class="tb tb1">TECH LEVEL 1</div>
+<div class="sh2">T1 Organic Structures (grow from Root Node adjacency)</div>
+<div class="tw">
+<table class="bld-table">
+<thead><tr><th>Structure</th><th>M</th><th>E</th><th>HP</th><th>Grow Time</th><th>Function</th></tr></thead>
+<tbody>
+<tr><td>Root Node (Foundation)</td><td>160</td><td>50</td><td>700</td><td>30s</td><td>Spreads Root Network 300 radius. Can grow adjacent structures. Cannot build at distance — must be adjacent to existing node or Entity.</td></tr>
+<tr><td>Spore Spawner</td><td>130</td><td>40</td><td>600</td><td>35s</td><td>Grows from Root Node. Produces T1 Bio-Synth units. Grotesque organic. Must be on Root Network.</td></tr>
+<tr><td>Creature Den</td><td>200</td><td>70</td><td>900</td><td>45s</td><td>Grows from Root Node. Biological beast production. Larger organic structure.</td></tr>
+<tr><td>Photosynthetic Canopy</td><td>110</td><td>0</td><td>500</td><td>25s</td><td>+15 E/sec on Root Network. +8 off-network. Best T1 energy in game. Forest area gives +4 more.</td></tr>
+<tr><td>Bio-Extractor</td><td>75</td><td>0</td><td>450</td><td>30s</td><td>Organic extractor. Grows into metal spot. spot × 1.0 + 0.2 bonus (network efficiency). Slowly grows roots that slightly extend network.</td></tr>
+<tr><td>Thorn Wall</td><td>60</td><td>15</td><td>600</td><td>20s</td><td>Proximity damage: 8 DPS to any unit within 80 range. Not targeted — triggered. Cheap area denial when combined with Root Network slow.</td></tr>
+<tr><td>Spore Launcher Turret</td><td>95</td><td>20</td><td>550</td><td>35s</td><td>Fires spore clusters — 120 radius splash, applies Root Network slow for 20s on hit area. Anti-infantry and light vehicles.</td></tr>
+<tr><td>Growth Hub</td><td>140</td><td>30</td><td>600</td><td>40s</td><td>Extends Root Network 400 radius. +1HP/sec auto-repair all units within 200. Core infrastructure node.</td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="sh2">T1 Combat Units</div>
+<div class="tw">
+<table class="utab">
+<thead><tr><th>Unit</th><th>M</th><th>E</th><th>HP</th><th>DPS</th><th>Range</th><th>Speed</th><th>Weapon</th><th>Notes</th></tr></thead>
+<tbody>
+<tr><td>Spore Crawler</td><td>45</td><td>320</td><td>80</td><td>11</td><td>180</td><td>78</td><td><span class="wtype wt-bio">Spore shot</span></td><td>Spreads tiny Root Network as it moves (+5 unit radius). Acid DoT: +3 DPS for 5s after hit. Swarm unit.</td></tr>
+<tr><td>Mycelion Scout</td><td>55</td><td>350</td><td>65</td><td>5</td><td>150</td><td>105</td><td><span class="wtype wt-bio">Spore dart</span></td><td>Fast bio-scout. Sight 500. Leaves Root Network trail when moving (thin but real). Blends into forest (stealth in dense trees).</td></tr>
+<tr><td>Mycelion Tendril (Repair) <span class="tag tag-repair">Repair</span></td><td>55</td><td>400</td><td>90</td><td>—</td><td>—</td><td>68</td><td>None</td><td>Heals by extending network root to damaged unit (range 80). Repair rate 8%/sec. Units healed on Root Network heal 50% faster.</td></tr>
+<tr><td>Spore Resurrector <span class="tag tag-resurrect">Resurrect</span></td><td>80</td><td>600</td><td>75</td><td>—</td><td>—</td><td>55</td><td>None</td><td>Mycelion-unique: resurrection grows from the network — resurrected units immediately have Root Network regen (+20%HP/sec on network). Hero resurrection 28s. Consumes wreck: 42% metal yield + spawns 1 small Spore Crawler from wreck matter.</td></tr>
+<tr><td>Biomass Reclaimer <span class="tag tag-reclaim">Reclaim</span></td><td>45</td><td>350</td><td>80</td><td>—</td><td>—</td><td>75</td><td>None</td><td>Mycelion-unique: when reclaiming Bio-Synth Nodes or trees, generates +50% yield. Reclaim converts organic materials to both metal AND 5 E/sec for 30s. Rate: 15M/sec.</td></tr>
+<tr><td>Mycelion Tendril (Expand)</td><td>70</td><td>450</td><td>100</td><td>5</td><td>120</td><td>60</td><td><span class="wtype wt-bio">Root spike</span></td><td>Root expansion specialist. Extends network 50 radius per move action. No structures needed. Slow. Key for aggressive territory claims.</td></tr>
+<tr><td>Mycelion Beast</td><td>180</td><td>1000</td><td>320</td><td>28</td><td>80 + melee</td><td>62</td><td><span class="wtype wt-bio">Claw + spit</span></td><td>Large bio-creature. Anti-vehicle melee. On Root Network: regen 20HP/sec. Off-network: slow and weak. Lives and dies by network position.</td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="sh"><span class="sh-num">M3</span> T2 & T3 — MYCELION</div>
+<div class="tb tb2">TECH LEVEL 2</div>
+<div class="tw">
+<table class="utab">
+<thead><tr><th>Unit</th><th>M</th><th>E</th><th>HP</th><th>DPS</th><th>Notes</th></tr></thead>
+<tbody>
+<tr><td>Mature Mycelion</td><td>650</td><td>3000</td><td>1200</td><td>90</td><td>Full-grown organism. Extends Root Network 100 radius as it moves. Regen 20HP/sec on network. Can absorb damage indefinitely when on dense network. Slowly grows a secondary attack after 60s on battlefield.</td></tr>
+<tr><td>Spore Cannon Organism</td><td>400</td><td>1900</td><td>380</td><td>85</td><td>Long-range spore artillery (550 range). Shots apply Root Network creep to impact zone. Enemies in crater slow for 15s after impact. Arced biological projectiles.</td></tr>
+<tr><td>T2 Bio-Chamber</td><td>700</td><td>250</td><td>1600</td><td>—</td><td>T2 Mycelion structure. Grows from T2 Root Hub. Produces Mature Mycelion, T2 flyers, Tanaka. Larger organic mass.</td></tr>
+<tr><td>Acid Cloud Flyer</td><td>450</td><td>2200</td><td>280</td><td>60</td><td>T2 air unit. Bio-organic flying creature. Drops acid cloud that covers 150 radius for 15s — DoT 15 DPS, applies network slow to ground units.</td></tr>
+<tr><td>Network Pulse Tower</td><td>600</td><td>100E/s</td><td>1400</td><td>70 (burst)</td><td>T2 defence structure. Fires a pulse of Root Network energy — instant damage + root slow to all enemies within 200. 8s cooldown. Must be on dense network.</td></tr>
+</tbody>
+</table>
+</div>
+<div class="tb tb3">TECH LEVEL 3</div>
+<div class="tw">
+<table class="utab">
+<thead><tr><th>Unit</th><th>M</th><th>E</th><th>HP</th><th>DPS</th><th>Notes</th></tr></thead>
+<tbody>
+<tr><td>The Root Titan <span class="tag tag-special">Experimental</span></td><td>6500</td><td>18000</td><td>7000</td><td>220 (3 turrets)</td><td>Enormous semi-mobile creature-structure. Spreads Root Network 800 radius continuously. T1 weapons deal 0 damage. Regen 60HP/sec on own network. Grows 3 organic turret-organs after 60s. Near-immortal on home terrain.</td></tr>
+<tr><td>Total Network Pulse <span class="tag tag-special">Superweapon</span></td><td>3500</td><td>9000</td><td>500 (organ)</td><td>2000 simultaneous</td><td>All enemy units on Root Network terrain take 2000 damage simultaneously. Cannot be targeted — triggers globally. Deadlier the larger the network. Build the network first, then pulse. Build time: 120s.</td></tr>
+</tbody>
+</table>
+</div>
+
+</div><!-- end mycelion page -->
+
+<!-- ══════════════════════════ PAGE: HELIOS ══════════════════════════ -->
+<div id="page-hel" class="page">
+<div class="f-header" style="background:#0e0e10;border-left:4px solid var(--c-hel);">
+  <div class="f-dot" style="background:var(--c-hel);"></div>
+  <div>
+    <div class="f-name" style="color:var(--c-hel);">HELIOS CORPORATE</div>
+    <div class="f-tag">HUMAN CORP · PRECISION LASER + SMART MISSILE · ECONOMY / TECH · CORPORATE WHITE / SILVER / GOLD TRIM</div>
+  </div>
+</div>
+<div class="mbox" style="margin-top:14px;border-color:var(--c-hel);">
+  <div class="mt" style="color:var(--c-hel);">Acquisition Protocol + Vane Stealth Mechanic</div>
+  <div class="mb"><strong>Acquisition Protocol:</strong> Any Helios unit can spend 80M to convert any enemy unit below 15% HP. Converted unit joins Helios permanently until killed. Cost increases to 160M for T2 units, 400M for T3. Does not work on heroes. <strong>Vane active:</strong> All Helios infantry gain stealth when not in enemy sensor range. <strong>Economy bonus:</strong> Reyes aura +20% metal income in 500 radius. Best income faction in the game.</div>
+</div>
+
+<div class="sh"><span class="sh-num">H1</span> HEROES</div>
+<div class="hero-block" style="border-color:var(--c-hel);">
+  <div class="hb-head" style="background:#0e0e10;">
+    <div class="hb-avatar" style="background:#202028;color:#e0e0e0;">R</div>
+    <div><div class="hb-name">Director Lucan Reyes</div><div class="hb-sub">MAIN HERO · HELIOS · ECONOMIC COMMANDER · LASER PISTOL + SMART MISSILES</div></div>
+    <div class="hb-cost">Starts on map · Respawn 90s · FREE</div>
+  </div>
+  <div class="hb-body">
+    <div>
+      <div class="hb-stats">
+        <div class="hst"><div class="hst-val">600</div><div class="hst-lbl">HP</div></div>
+        <div class="hst"><div class="hst-val">35</div><div class="hst-lbl">DPS</div></div>
+        <div class="hst"><div class="hst-val">260</div><div class="hst-lbl">Range</div></div>
+        <div class="hst"><div class="hst-val">4.2</div><div class="hst-lbl">Speed</div></div>
+        <div class="hst"><div class="hst-val">420</div><div class="hst-lbl">Sight</div></div>
+      </div>
+      <div style="margin-top:10px;">
+        <div class="ability"><div class="ab-name">INFORMATION ONLY</div><div class="ab-cd">Active · 60s cooldown · 30s</div><div class="ab-desc">Designates 1 enemy structure — it pays Helios 40M/sec for 30s as "trade revenue" then returns to normal. Enemy sees no notification until 2nd use. "He told himself it was information only. He knew it wasn't."</div></div>
+        <div class="ability"><div class="ab-name">LEVERAGE</div><div class="ab-cd">Passive aura · 500 radius</div><div class="ab-desc">All Helios metal income within radius +20%. Reyes standing near extractor cluster = best economy play in game. Never waste him near the front.</div></div>
+        <div class="ability"><div class="ab-name">FUNDING BOTH SIDES</div><div class="ab-cd">Active · 45s cooldown · 8s</div><div class="ab-desc">Pays 200M to freeze ALL units (friend AND foe) in 400 radius for 8s. Only Reyes is unaffected. Escape/reposition/retreat mechanic. Cold calculation made tactical.</div></div>
+      </div>
+    </div>
+    <div><div style="font-size:11px;color:var(--muted);line-height:1.7;">Corporate suit + white executive armour. No helmet. Tablet device in left hand (always working). Precision laser pistol. Economy structures cost 20% less when Reyes builds them. BP: 8/sec. Acquisition Protocol: Reyes can use it at range 300 for free (no 80M cost when used personally).</div></div>
+  </div>
+</div>
+
+<div class="hero-block" style="border-color:#a0a0a0;">
+  <div class="hb-head" style="background:#0e0e10;">
+    <div class="hb-avatar" style="background:#181820;color:#d0d0d0;">V</div>
+    <div><div class="hb-name">Vane</div><div class="hb-sub">CO-HERO · HELIOS · CYBORG ASSASSIN · PRECISION LASER + TARGETING ARCHITECTURE</div></div>
+    <div class="hb-cost">Cost: 2600M / 1800E<br>Build: 120s · ONE only</div>
+  </div>
+  <div class="hb-body">
+    <div>
+      <div class="hb-stats">
+        <div class="hst"><div class="hst-val">520</div><div class="hst-lbl">HP</div></div>
+        <div class="hst"><div class="hst-val">92</div><div class="hst-lbl">DPS</div></div>
+        <div class="hst"><div class="hst-val">300</div><div class="hst-lbl">Range</div></div>
+        <div class="hst"><div class="hst-val">6.5</div><div class="hst-lbl">Speed</div></div>
+        <div class="hst"><div class="hst-val">500</div><div class="hst-lbl">Sight</div></div>
+      </div>
+      <div style="margin-top:10px;">
+        <div class="ability"><div class="ab-name">TARGETING ARCHITECTURE</div><div class="ab-cd">Passive · Always active</div><div class="ab-desc">Vane never misses. All attacks guaranteed hit. Auto-targets highest-value enemy in range (not nearest). Stealth: invisible until first shot. "The architecture always knew."</div></div>
+        <div class="ability"><div class="ab-name">THE CONDITIONS — SEVENTEEN HOLDS</div><div class="ab-cd">Active · 50s cooldown · 17s channel + 1 strike</div><div class="ab-desc">Vane immune to all damage for 17s while targeting architecture processes. Then fires single devastating shot: ×5 normal damage (460 DPS one shot). Named for the 17 contract conditions she held.</div></div>
+        <div class="ability"><div class="ab-name">CONTINUATION</div><div class="ab-cd">Passive trigger · Once per life</div><div class="ab-desc">When Vane drops to 10% HP: activates instead of dying. All Helios units within 400 gain Targeting Architecture passive for 30s. Vane heals to 50% HP. "Continuation" — Vane's arc word.</div></div>
+      </div>
+    </div>
+    <div><div style="font-size:11px;color:var(--muted);line-height:1.7;">Smooth integrated armour. Targeting optics. Moves with inhuman precision. Six bolts in pocket (+3% damage each = +18% passive). Invisible to enemy until she fires first shot per engagement. BP: 8/sec. Stealth aura 200 radius: all friendly Helios infantry become stealth when Vane is alive.</div></div>
+  </div>
+</div>
+
+<div class="sh"><span class="sh-num">H2</span> T1 — HELIOS UNITS & BUILDINGS</div>
+<div class="tb tb1">TECH LEVEL 1</div>
+<div class="sh2">T1 Buildings</div>
+<div class="tw">
+<table class="bld-table">
+<thead><tr><th>Building</th><th>M</th><th>E</th><th>HP</th><th>Function</th></tr></thead>
+<tbody>
+<tr><td>Corporate Yard</td><td>200</td><td>70</td><td>900</td><td>Produces T1 Helios Constructor. Sleek white design with gold trim. More expensive but better HP.</td></tr>
+<tr><td>Corporate Security Barracks</td><td>170</td><td>55</td><td>800</td><td>T1 corporate infantry, stealth units, Repair, Resurrect, Reclaim. Pristine white building.</td></tr>
+<tr><td>Corporate Vehicle Bay</td><td>240</td><td>90</td><td>950</td><td>Wheeled/tracked corporate military vehicles. More expensive but better equipment.</td></tr>
+<tr><td>Corporate Air Platform</td><td>280</td><td>110</td><td>700</td><td>Advanced aircraft — stealth approach variants. Vane stealth bonus applies to aircraft too.</td></tr>
+<tr><td>Corporate Lab</td><td>200</td><td>80</td><td>700</td><td>Produces Electronic Warfare units, stealth drones, acquisition specialist drones.</td></tr>
+<tr><td>Economy Extractor</td><td>80</td><td>0</td><td>450</td><td>Standard extractor. Reyes aura makes this +20% income. Build near Reyes for compounding returns.</td></tr>
+<tr><td>Corporate Solar Array</td><td>100</td><td>0</td><td>400</td><td>+8 E/sec (slightly better than standard solar).</td></tr>
+<tr><td>Precision Laser Turret</td><td>130</td><td>35</td><td>420</td><td>Laser-based T1 turret. Hitscan. DPS 28. Range 350. Stealth — looks like corporate signage until firing.</td></tr>
+<tr><td>Corporate AA Battery</td><td>140</td><td>40</td><td>380</td><td>Guided missiles. Never misses aircraft. Shorter range (380) but zero misses. High DPS per hit.</td></tr>
+<tr><td>Signal Disruptor</td><td>120</td><td>30</td><td>300</td><td>Jams all enemy radar in 500 radius. Also disrupts Resurrect Bot channelling within 200 (forces 15s restart).</td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="sh2">T1 Units</div>
+<div class="tw">
+<table class="utab">
+<thead><tr><th>Unit</th><th>M</th><th>E</th><th>HP</th><th>DPS</th><th>Range</th><th>Speed</th><th>Weapon</th><th>Notes</th></tr></thead>
+<tbody>
+<tr><td>Corporate Security</td><td>65</td><td>450</td><td>100</td><td>14</td><td>210</td><td>68</td><td><span class="wtype wt-laser">Laser carbine</span></td><td>Best-armoured T1 infantry. Clean white armour. Can use Acquisition Protocol (costs 80M). Stealth when Vane alive.</td></tr>
+<tr><td>Corporate Scout</td><td>50</td><td>350</td><td>55</td><td>8</td><td>180</td><td>125</td><td><span class="wtype wt-laser">Laser pistol</span></td><td>Fast recon. Stealth always (Helios base stealth). Sight 520. Reveals enemy unit value ratings (shows cost as intel).</td></tr>
+<tr><td>Corporate Specialist</td><td>90</td><td>600</td><td>100</td><td>0</td><td>280</td><td>62</td><td>None (stun device)</td><td>EMP stun at range 280 — disables target 6s. Sets up Acquisition Protocol opportunities. Fragile. Keep behind security.</td></tr>
+<tr><td>Corporate Constructor <span class="tag tag-builder">Builder</span></td><td>160</td><td>1000</td><td>130</td><td>5</td><td>100</td><td>55</td><td>Laser pistol</td><td>BP: 9/sec. Economy structures 15% cheaper. Generates +5M when reclaiming enemy buildings (asset seizure). Reclaims 13M/sec.</td></tr>
+<tr><td><span class="tag tag-repair">Corporate Repair — Maintenance</span></td><td>65</td><td>450</td><td>90</td><td>—</td><td>—</td><td>72</td><td>None</td><td>Repair rate 8%/sec. Helios-unique: also repairs shields at 20% shield regen/sec. Assists construction +8 BP/sec. White uniform.</td></tr>
+<tr><td><span class="tag tag-resurrect">Acquisition Resurrector</span></td><td>100</td><td>700</td><td>75</td><td>—</td><td>—</td><td>60</td><td>None</td><td>Helios-unique: Acquisition Protocol at 50% reduced cost when applied via this unit (40M vs 80M). Hero resurrection 30s. Wreck consumption: 50% yield (Signal Disruption analysis extracts more value).</td></tr>
+<tr><td><span class="tag tag-reclaim">Data Extractor — Reclaim</span></td><td>55</td><td>380</td><td>80</td><td>—</td><td>—</td><td>78</td><td>None</td><td>Reclaims 15M/sec. Helios-unique: Archive Fragments and Resonator Shards give +100% metal yield (corporate scanning). Marks enemy structures with "acquisition data" (shows their HP bar in team HUD).</td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="sh"><span class="sh-num">H3</span> T2 & T3 — HELIOS</div>
+<div class="tb tb2">TECH LEVEL 2</div>
+<div class="tw">
+<table class="utab">
+<thead><tr><th>Unit</th><th>M</th><th>E</th><th>HP</th><th>DPS</th><th>Notes</th></tr></thead>
+<tbody>
+<tr><td>T2 Corporate Builder <span class="tag tag-builder">Builder</span></td><td>420</td><td>1900</td><td>200</td><td>5</td><td>BP: 22/sec. Reclaims 18M/sec. Economy structure discount applies (+15%). Builds T2 and T3.</td></tr>
+<tr><td>Helios Battle Platform</td><td>550</td><td>2500</td><td>750</td><td>80</td><td>Premium battle tank. Acquisition Protocol available at range (160M T2 units). Laser + missile combo. Stealth approach first 5s after spawn.</td></tr>
+<tr><td>Precision Strike Vehicle</td><td>480</td><td>2200</td><td>350</td><td>100</td><td>Guided smart missile launcher. Range 700. Locks on target — guaranteed hit unless hard shield. No friendly fire (smart guidance). Fires from stealth.</td></tr>
+<tr><td>Corporate Stratobomber</td><td>700</td><td>3000</td><td>650</td><td>100/pass</td><td>T2 stealth bomber. Stealth approach — undetectable until 200 range without advanced radar. Drops guided munitions (targeted, not line-drop). Best air unit in class.</td></tr>
+<tr><td>Signal Jammer Vehicle</td><td>350</td><td>1600</td><td>180</td><td>0</td><td>Mobile EW. Disables all enemy radar 400 radius. Disrupts Resurrect channelling. Disrupts enemy ability cooldown timers (slows them 30%). Vane's preferred escort.</td></tr>
+<tr><td>Corporate Gunship</td><td>650</td><td>3000</td><td>500</td><td>70</td><td>Heavy gunship. Stealth (Vane bonus). Fires smart missiles — guided, no friendly fire. Excellent vs priority targets.</td></tr>
+</tbody>
+</table>
+</div>
+<div class="tb tb3">TECH LEVEL 3</div>
+<div class="tw">
+<table class="utab">
+<thead><tr><th>Unit</th><th>M</th><th>E</th><th>HP</th><th>Notes</th></tr></thead>
+<tbody>
+<tr><td>Acquisition Engine <span class="tag tag-special">Experimental</span></td><td>4000</td><td>10000</td><td>3500</td><td>Mobile conversion fortress. Conversion Protocol radius 600. Converts up to 6 wounded enemies simultaneously. Cost: 40M per unit (vs 80M). Can convert T2/T3 units (160M/400M). Reyes's endgame.</td></tr>
+<tr><td>The Blueprint Strike <span class="tag tag-special">Superweapon</span></td><td>5500</td><td>14000</td><td>700 (launcher)</td><td>5000 + steals structure plans. Destroys target structure and permanently gives Helios the ability to build that faction's structure type. Hit a Synth Precision Turret → you can now build them. Global range. 120s charge.</td></tr>
+</tbody>
+</table>
+</div>
+
+</div><!-- end helios page -->
+
+<!-- ══════════════════════════ PAGE: PRECURSORS ══════════════════════════ -->
+<div id="page-pre" class="page">
+<div class="f-header" style="background:#0e0c00;border-left:4px solid var(--c-pre);">
+  <div class="f-dot" style="background:var(--c-pre);"></div>
+  <div>
+    <div class="f-name" style="color:var(--c-pre);">THE PRECURSORS</div>
+    <div class="f-tag">ANCIENT INTELLIGENCE · SUBSTRATE ENERGY · ANCIENT IMMUNITY · IRIDESCENT GOLD-WHITE / IMPOSSIBLE GEOMETRY</div>
+  </div>
+</div>
+<div class="mbox" style="margin-top:14px;border-color:var(--c-pre);">
+  <div class="mt" style="color:var(--c-pre);">Substrate Control + Ancient Immunity</div>
+  <div class="mb"><strong>Ancient Immunity:</strong> T1 weapons deal 0 damage to ALL Precursor structures. Only T2 units and above can harm them. This makes the Precursor early game completely untouchable by T1 rushes. <strong>Substrate Control:</strong> The Archon activates metal spots at T2 rate without extractor upgrades. <strong>Repair Bot variant:</strong> Geometric Mender — substrate heals. <strong>Resurrect variant:</strong> Substrate Resurrector — geometric energy reforms fallen units. <strong>Note:</strong> Most expensive faction — slow production cycle. Devastating at any tech tier once online.</div>
+</div>
+
+<div class="sh"><span class="sh-num">P1</span> HEROES</div>
+<div class="hero-block" style="border-color:var(--c-pre);">
+  <div class="hb-head" style="background:#0e0c00;">
+    <div class="hb-avatar" style="background:#201800;color:#f0d060;">◇</div>
+    <div><div class="hb-name">The Archon</div><div class="hb-sub">MAIN HERO · PRECURSORS · LAST PRECURSOR LEADER · 65,000 YEARS · SUBSTRATE ENERGY · MOST POWERFUL HERO IN GAME</div></div>
+    <div class="hb-cost">Starts on map · Respawn 90s · FREE</div>
+  </div>
+  <div class="hb-body">
+    <div>
+      <div class="hb-stats">
+        <div class="hst"><div class="hst-val">2200</div><div class="hst-lbl">HP</div></div>
+        <div class="hst"><div class="hst-val">95</div><div class="hst-lbl">DPS</div></div>
+        <div class="hst"><div class="hst-val">420</div><div class="hst-lbl">Range</div></div>
+        <div class="hst"><div class="hst-val">3.5</div><div class="hst-lbl">Speed</div></div>
+        <div class="hst"><div class="hst-val">550</div><div class="hst-lbl">Sight</div></div>
+      </div>
+      <div style="margin-top:10px;">
+        <div class="ability"><div class="ab-name">NOT READY. BUT WORTH IT.</div><div class="ab-cd">Passive · Always</div><div class="ab-desc">The Archon cannot be killed by T1 units — any T1 attack deals 0 damage. Only T2+ units and abilities damage him. He decided Earth was worth fighting for. "Not ready. But worth it."</div></div>
+        <div class="ability"><div class="ab-name">MAKE IT TOO EXPENSIVE</div><div class="ab-cd">Active · 80s cooldown · 30s duration · 500 radius</div><div class="ab-desc">Any enemy unit entering the area loses 40% current HP. Area glows with geometric gold lines. Doesn't damage structures. Forces enemy to route around rather than through.</div></div>
+        <div class="ability"><div class="ab-name">INTEGRATION PROTOCOL</div><div class="ab-cd">Active · 120s cooldown · 10s channel</div><div class="ab-desc">Channels substrate for 10s. All Precursor units in 600 range heal to full HP. All enemy units in same range lose 20% max HP for 30s. Named from the Book 1 climax — the moment the Ural complex activates.</div></div>
+      </div>
+    </div>
+    <div><div style="font-size:11px;color:var(--muted);line-height:1.7;">White-iridescent-gold geometric humanoid (4m). Facets of impossible geometry. No visible face. Moves with the specific quality of something that has been doing this for 65,000 years and is not hurrying. Activates metal spots at T2 rate in 400 radius. BP: 8/sec. Ancient Immunity applies to Archon personally: T1 and T2 infantry attacks deal 0 damage to him.</div></div>
+  </div>
+</div>
+
+<div class="hero-block" style="border-color:#a08020;">
+  <div class="hb-head" style="background:#0e0c00;">
+    <div class="hb-avatar" style="background:#181400;color:#d0c060;">⬟</div>
+    <div><div class="hb-name">The Resonator</div><div class="hb-sub">CO-HERO · PRECURSORS · MONITORING SYSTEM AVATAR · BUILD AT T2 RESONANCE CHAMBER</div></div>
+    <div class="hb-cost">Cost: 3000M / 2000E<br>Build: 140s · ONE only</div>
+  </div>
+  <div class="hb-body">
+    <div>
+      <div class="hb-stats">
+        <div class="hst"><div class="hst-val">800</div><div class="hst-lbl">HP</div></div>
+        <div class="hst"><div class="hst-val">40</div><div class="hst-lbl">DPS</div></div>
+        <div class="hst"><div class="hst-val">500</div><div class="hst-lbl">Range</div></div>
+        <div class="hst"><div class="hst-val">4.0</div><div class="hst-lbl">Speed</div></div>
+        <div class="hst"><div class="hst-val">Full map</div><div class="hst-lbl">Sight</div></div>
+      </div>
+      <div style="margin-top:10px;">
+        <div class="ability"><div class="ab-name">SEVENTEEN CYCLES</div><div class="ab-cd">Passive · Full map vision</div><div class="ab-desc">The Resonator reveals the entire map. All stealth, all hidden units, all structures visible while it lives. "The monitoring system has been watching for 65,000 years." Most powerful intelligence passive in game.</div></div>
+        <div class="ability"><div class="ab-name">DEMONSTRATE</div><div class="ab-cd">Active · 60s cooldown · 8s</div><div class="ab-desc">All enemy units in 600 radius stop attacking for 8s. Do not move — paralysed by the signal. Named from Book 1's most critical word. Does not work on heroes.</div></div>
+        <div class="ability"><div class="ab-name">DEVIATION 2.3%</div><div class="ab-cd">Active · 90s cooldown · 20s</div><div class="ab-desc">Resonator detects the 2.3% deviation. One specific enemy unit type takes +100% damage from all Precursor units for 20s. The Resonator identifies which unit — displayed to all Precursor players. Named from the confirmed Book 1 deviation.</div></div>
+      </div>
+    </div>
+    <div><div style="font-size:11px;color:var(--muted);line-height:1.7;">Crystalline floating geometric structure — the monitoring system made physical. Drifts silently. Radiates faint light. Not primarily combat — most powerful intelligence asset in game. Protect it at all costs. If Resonator dies, full-map vision ends immediately. BP: 8/sec. Ancient Immunity: T1 attacks deal 0 damage.</div></div>
+  </div>
+</div>
+
+<div class="sh"><span class="sh-num">P2</span> T1 — PRECURSOR UNITS</div>
+<div class="tb tb1">TECH LEVEL 1</div>
+<div class="sh2">T1 Structures (all require Architect unit or The Archon to build)</div>
+<div class="tw">
+<table class="bld-table">
+<thead><tr><th>Structure</th><th>M</th><th>E</th><th>HP</th><th>T1 Immune</th><th>Function</th></tr></thead>
+<tbody>
+<tr><td>Substrate Anchor (Construction)</td><td>200</td><td>80</td><td>1200</td><td>✓</td><td>Produces T1 Architect and combat units. Impossible geometry. Phases in from below ground over 30s.</td></tr>
+<tr><td>Precursor Bot Forge</td><td>180</td><td>65</td><td>1000</td><td>✓</td><td>T1 Precursor construct units, Geometric Mender, Substrate Resurrector, Archive Reclaimer.</td></tr>
+<tr><td>Ancient Vehicle Bay</td><td>260</td><td>100</td><td>1200</td><td>✓</td><td>T1 Precursor ground constructs. Geometric vehicles, impossible physics.</td></tr>
+<tr><td>Phase Air Nexus</td><td>300</td><td>120</td><td>900</td><td>✓</td><td>Precursor aerial units. Phase-flying constructs immune to T1 anti-air.</td></tr>
+<tr><td>Geometric Sentinel Turret</td><td>180</td><td>50</td><td>800</td><td>✓</td><td>T1 turret. Immune to T1 damage. DPS 45. Range 420. Best defensive structure in early game — untouchable by T1 armies.</td></tr>
+<tr><td>Monitoring Array</td><td>150</td><td>40</td><td>700</td><td>✓</td><td>LOS 900 radius. Stealth 90% detection. Immune to T1. Combined with Resonator: global complete vision.</td></tr>
+<tr><td>Phase Mine</td><td>25</td><td>80</td><td>50</td><td>✓</td><td>Stealth. Phases in and out of physical existence — only detectble at moment of detonation. 400 trigger damage. Anti-vehicle.</td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="sh2">T1 Units</div>
+<div class="tw">
+<table class="utab">
+<thead><tr><th>Unit</th><th>M</th><th>E</th><th>HP</th><th>DPS</th><th>Range</th><th>Speed</th><th>Immune T1</th><th>Notes</th></tr></thead>
+<tbody>
+<tr><td>Precursor Shard</td><td>120</td><td>700</td><td>150</td><td>22</td><td>280</td><td>72</td><td>✓</td><td>Floats. Fires geometric energy bolt. Immune to T1 damage — cannot be killed by opposing T1 armies. Most expensive T1 unit. Worth it.</td></tr>
+<tr><td>Ancient Scout</td><td>90</td><td>550</td><td>100</td><td>10</td><td>200</td><td>100</td><td>✓</td><td>Fast Precursor scout. Sight 550. Phase stealth: invisible 50% of time while moving. Ancient geometric aesthetics.</td></tr>
+<tr><td>Architect Unit <span class="tag tag-builder">Builder</span></td><td>200</td><td>1200</td><td>200</td><td>5</td><td>100</td><td>48</td><td>✓</td><td>BP: 7/sec. Metal spots within 400 radius produce at T2 rate while alive. Immune to T1 damage — builders never die to T1 aggression. Reclaims 18M/sec.</td></tr>
+<tr><td><span class="tag tag-repair">Geometric Mender</span></td><td>65</td><td>450</td><td>120</td><td>—</td><td>—</td><td>65</td><td>✓</td><td>Precursor-unique: substrate repair beam passes through structures and units — can repair multiple targets simultaneously in 120 radius. Repair rate 6%/sec each. Immune to T1. BP assist: +8/sec.</td></tr>
+<tr><td><span class="tag tag-resurrect">Substrate Resurrector</span></td><td>100</td><td>700</td><td>90</td><td>—</td><td>—</td><td>52</td><td>✓</td><td>Precursor-unique: resurrected units gain Ancient Immunity to T1 damage for 60s after resurrection — they return from the ancient substrate. Hero resurrection 22s (fastest). Immune to T1. Consume wreck: 55% yield (ancient substrate analysis).</td></tr>
+<tr><td><span class="tag tag-reclaim">Archive Reclaimer</span></td><td>55</td><td>400</td><td>90</td><td>—</td><td>—</td><td>70</td><td>✓</td><td>Preclaim 16M/sec. Precursor-unique: ALL map materials give +50% yield (the archive has encountered these before). Substrate Pools give 3M/sec ongoing (sits in pool and channels — Precursor only ability). Immune to T1.</td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="sh"><span class="sh-num">P3</span> T2 & T3</div>
+<div class="tb tb2">TECH LEVEL 2</div>
+<div class="tw">
+<table class="utab">
+<thead><tr><th>Unit</th><th>M</th><th>E</th><th>HP</th><th>DPS</th><th>Notes</th></tr></thead>
+<tbody>
+<tr><td>T2 Architect Builder <span class="tag tag-builder">Builder</span></td><td>450</td><td>2000</td><td>250</td><td>6</td><td>BP: 22/sec. Immune to T1 AND T2 infantry attacks. Substrate spots at T2 rate in 600 radius. Reclaims 22M/sec.</td></tr>
+<tr><td>Precursor Guardian</td><td>700</td><td>3000</td><td>900</td><td>110</td><td>Immune to T1 + T2 infantry damage. Fires 2 geometric bolts simultaneously. 360°. Slow. Nearly indestructible vs anything below T2 vehicles.</td></tr>
+<tr><td>Phase Shield Generator</td><td>800</td><td>200/s</td><td>1500</td><td>—</td><td>T2 defence. Phase dome — enemy T1 and T2 infantry cannot pass through. T2 vehicles can pass but take 100 damage per crossing.</td></tr>
+<tr><td>Substrate Flyer</td><td>600</td><td>2800</td><td>500</td><td>75</td><td>Precursor aircraft. Phase flight — immune to T1 anti-air. Ancient geometric impossibility in flight. Best T2 air unit per stat.</td></tr>
+<tr><td>Reality Distortion Artillery</td><td>800</td><td>3500</td><td>350</td><td>140</td><td>Range 750. Fires substrate bolt that "phases" through walls and shields — ignores all defensive structures. Hits units behind cover directly. Cannot be blocked. Impossible geometry in action.</td></tr>
+</tbody>
+</table>
+</div>
+<div class="tb tb3">TECH LEVEL 3</div>
+<div class="tw">
+<table class="utab">
+<thead><tr><th>Unit</th><th>M</th><th>E</th><th>HP</th><th>Notes</th></tr></thead>
+<tbody>
+<tr><td>The Complex — Precursor Citadel <span class="tag tag-special">Experimental</span></td><td>8000</td><td>20000</td><td>10000</td><td>Mobile 340-metre structure. Surfaces from below ground over 60s. Immune to T1 and T2 infantry. "Make It Too Expensive" aura active at 300 radius always. 3 integrated substrate turrets. Most HP of any unit in game. Speed: 15.</td></tr>
+<tr><td>65,000-Year Signal <span class="tag tag-special">Superweapon</span></td><td>7000</td><td>18000</td><td>900 (emitter)</td><td>Full map: enemy LOS loss 45s + 9000 to target. The beacon activates. All enemy radar and sensors dark for 45s globally. Simultaneous 9000 substrate pulse at one designated structure. "The Vorn heard this from across the galaxy." 180s build time.</td></tr>
+</tbody>
+</table>
+</div>
+
+</div><!-- end precursors page -->
+
+<!-- ══════════════════════════ PAGE: THE VORN ══════════════════════════ -->
+<div id="page-vor" class="page">
+<div class="f-header" style="background:#0e0202;border-left:4px solid var(--c-vor);">
+  <div class="f-dot" style="background:var(--c-vor);"></div>
+  <div>
+    <div class="f-name" style="color:var(--c-vor);">THE VORN</div>
+    <div class="f-tag">ANCIENT EXTRACTORS · HEAVY PLASMA + MASS DRIVER · DROP POD DEPLOYMENT · CHARCOAL-BLACK / CRIMSON-GOLD BIOLUMINESCENCE</div>
+  </div>
+</div>
+<div class="mbox" style="margin-top:14px;border-color:var(--c-vor);">
+  <div class="mt" style="color:var(--c-vor);">No Builder Units — Drop Pods — Extraction Rate Scaling</div>
+  <div class="mb"><strong>No builders.</strong> ALL Vorn structures descend as Drop Pods from orbit — select from menu, choose location, drops in 8 seconds. Cannot change location once launched. No builder vulnerability during construction. <strong>All extractors start at T2 rate.</strong> Each Vorn extractor gradually increases +0.1M/sec every 60s up to +0.5 cap (deeper extraction). Control spots longer = more income. <strong>Varox drops pods directly</strong> within 600 range. <strong>Sev's Resurrect ability</strong> includes Archive data imprint on resurrected hero — reveals their faction's full unit cost table (intelligence value).</div>
+</div>
+
+<div class="sh"><span class="sh-num">V1</span> HEROES</div>
+<div class="hero-block" style="border-color:var(--c-vor);">
+  <div class="hb-head" style="background:#0e0202;">
+    <div class="hb-avatar" style="background:#280404;color:#ff4040;">⬡</div>
+    <div><div class="hb-name">Varox</div><div class="hb-sub">MAIN HERO · VORN · EXTRACTION COMMAND COMMANDER · HEAVY PLASMA · LARGEST HERO IN GAME · ~450 CYCLES</div></div>
+    <div class="hb-cost">Starts on map · Respawn 90s · 150M cost</div>
+  </div>
+  <div class="hb-body">
+    <div>
+      <div class="hb-stats">
+        <div class="hst"><div class="hst-val">2800</div><div class="hst-lbl">HP</div></div>
+        <div class="hst"><div class="hst-val">130</div><div class="hst-lbl">DPS</div></div>
+        <div class="hst"><div class="hst-val">380</div><div class="hst-lbl">Range</div></div>
+        <div class="hst"><div class="hst-val">2.8</div><div class="hst-lbl">Speed</div></div>
+        <div class="hst"><div class="hst-val">480</div><div class="hst-lbl">Sight</div></div>
+      </div>
+      <div style="margin-top:10px;">
+        <div class="ability"><div class="ab-name">THE COST MODEL</div><div class="ab-cd">Passive · Trigger on kill</div><div class="ab-desc">Before any engagement, Varox displays the value of nearby enemies. When Varox personally kills a unit worth 300M+, he regenerates 200HP. Only worthy enemies restore him. The calculation is always running.</div></div>
+        <div class="ability"><div class="ab-name">MARK THIS WORLD</div><div class="ab-cd">Active · 120s cooldown · 8s delay</div><div class="ab-desc">Orbital bombardment from the Vorn fleet. After 8s delay: 5000 damage to everything in 400 radius. Most powerful hero ability in game. The fleet remembers. Named from Book 5's final transmission.</div></div>
+        <div class="ability"><div class="ab-name">EXTRACTION COMMAND</div><div class="ab-cd">Passive aura · 500 radius</div><div class="ab-desc">All Vorn units in radius gain +20% damage and +15% HP. Varox leading from the front multiplies the cost model. He belongs at the vanguard. Each Vorn extractor within 300 range +0.1M bonus/sec extra while Varox lives.</div></div>
+      </div>
+    </div>
+    <div><div style="font-size:11px;color:var(--muted);line-height:1.7;">4.5 metre Vorn. Deepest charcoal carapace, sharp geometric crimson-gold bioluminescence — like circuitry carved into living armour. Four amber eyes. No visible weapon — his form IS the weapon. Heavy plasma erupts from biological chambers in chest. Can drop any Vorn structure as pod within 600 range personally (10s delay). Ancient. Patient. Precise. Respawn costs 150M (fleet extraction reserves).</div></div>
+  </div>
+</div>
+
+<div class="hero-block" style="border-color:#7a1aaa;">
+  <div class="hb-head" style="background:#0e0202;">
+    <div class="hb-avatar" style="background:#1a0430;color:#c070ff;">Sv</div>
+    <div><div class="hb-name">Sev</div><div class="hb-sub">CO-HERO · VORN · ARCHIVE CASTE ARCHIVIST · ARCHIVE DISRUPTION · BUILD AT T2 ARCHIVE SANCTUM</div></div>
+    <div class="hb-cost">Cost: 2800M / 2000E<br>Build: 140s · ONE only</div>
+  </div>
+  <div class="hb-body">
+    <div>
+      <div class="hb-stats">
+        <div class="hst"><div class="hst-val">600</div><div class="hst-lbl">HP</div></div>
+        <div class="hst"><div class="hst-val">45</div><div class="hst-lbl">DPS</div></div>
+        <div class="hst"><div class="hst-val">350</div><div class="hst-lbl">Range</div></div>
+        <div class="hst"><div class="hst-val">5.0</div><div class="hst-lbl">Speed</div></div>
+        <div class="hst"><div class="hst-val">500</div><div class="hst-lbl">Sight</div></div>
+      </div>
+      <div style="margin-top:10px;">
+        <div class="ability"><div class="ab-name">THE ARCHIVE</div><div class="ab-cd">Active · 45s cooldown · 30s</div><div class="ab-desc">Sev opens the archive and reads target enemy unit's complete data. For 30s that unit takes +50% damage from ALL sources (not just Vorn). Every faction now knows its weaknesses.</div></div>
+        <div class="ability"><div class="ab-name">340 CYCLES OF NAMES</div><div class="ab-cd">Passive trigger · 60s duration</div><div class="ab-desc">If any friendly unit dies within 300 range, Sev's DPS increases +5 for 60s (max +50, stacks 10 times). Sev becomes more dangerous as the battle deepens. The names accumulate. The cost grows.</div></div>
+        <div class="ability"><div class="ab-name">PENDING</div><div class="ab-cd">Active · 90s cooldown · 40s</div><div class="ab-desc">Marks one enemy structure as "pending." For 40s: cannot produce units, cannot fire, costs double energy. The archive holds it in suspension. Named for the word that changed everything — Earth's entry.</div></div>
+      </div>
+    </div>
+    <div><div style="font-size:11px;color:var(--muted);line-height:1.7;">3.8m Vorn — Archive caste. Charcoal carapace but with flowing violet-silver SCRIPT-like bioluminescence (not geometric — these look like written language). Carries the Archive Device (40cm crystalline object). When Sev resurrects an enemy hero: the archive imprint reveals the entire enemy faction's unit costs and tech tree to the entire Vorn team. BP: 8/sec. Reclaims at 20M/sec (archive value analysis).</div></div>
+  </div>
+</div>
+
+<div class="sh"><span class="sh-num">V2</span> T1 — VORN UNITS & DROP POD STRUCTURES</div>
+<div class="tb tb1">TECH LEVEL 1</div>
+<div class="sh2">T1 Drop Pod Structures (no builders — all descend from orbit in 8 seconds)</div>
+<div class="tw">
+<table class="bld-table">
+<thead><tr><th>Structure [DROP POD]</th><th>M</th><th>E</th><th>HP</th><th>Drop Time</th><th>Function</th></tr></thead>
+<tbody>
+<tr><td>Extraction Platform</td><td>240</td><td>80</td><td>1400</td><td>8s</td><td>Vorn base structure. Produces T1 Vorn units (soldiers, Repair Organism, Resurrect Organism, Reclaim Organism). Immune to T1 infantry.</td></tr>
+<tr><td>Vorn Extractor</td><td>120</td><td>0</td><td>600</td><td>8s</td><td>T2-rate output from day 1. Gradually increases +0.1M/60s up to +0.5M cap. Control longer = earn more.</td></tr>
+<tr><td>Bio-Reactor</td><td>160</td><td>0</td><td>900</td><td>8s</td><td>+25 E/sec. Biological. Cannot be captured — self-destructs if enemy builder within 50 for 10s. Best T1 energy.</td></tr>
+<tr><td>Vorn Sentinel Turret</td><td>180</td><td>40</td><td>1000</td><td>8s</td><td>360°. DPS 50. Range 380. Immune to T1 infantry attacks. Highest HP T1 turret in game. Plasma burst fire.</td></tr>
+<tr><td>Vorn AA Cannon</td><td>160</td><td>35</td><td>800</td><td>8s</td><td>Anti-air plasma burst. Range 480. Tracks all aircraft in 600. Cannot target ground. Best T1 AA.</td></tr>
+<tr><td>Extraction Shield Pod</td><td>200</td><td>100/s</td><td>700</td><td>8s</td><td>T1 bio-shield dome. 400 radius. Absorbs 250 damage/sec. Costs 100 E/sec active. The Vorn protect their extraction above all.</td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="sh2">T1 Combat Units (produced at Extraction Platform)</div>
+<div class="tw">
+<table class="utab">
+<thead><tr><th>Unit</th><th>M</th><th>E</th><th>HP</th><th>DPS</th><th>Range</th><th>Speed</th><th>Weapon</th><th>Notes</th></tr></thead>
+<tbody>
+<tr><td>Vorn Extractor Trooper</td><td>90</td><td>650</td><td>160</td><td>20</td><td>220</td><td>62</td><td><span class="wtype wt-plasma">Plasma pistol</span></td><td>Most powerful T1 infantry in game. 2× HP, 2× DPS vs standard. Slow. Worth every metal. Extractors within 200 gain +0.1M bonus while alive.</td></tr>
+<tr><td>Vorn Stalker (Scout)</td><td>80</td><td>500</td><td>90</td><td>12</td><td>200</td><td>95</td><td><span class="wtype wt-plasma">Light plasma</span></td><td>Fast scouting unit. Stealth in terrain features. Detects and displays metal spot ratings in HUD (shows exact M/sec value). Sight 500.</td></tr>
+<tr><td>Vorn Extraction Tank</td><td>300</td><td>1600</td><td>480</td><td>55</td><td>300</td><td>50</td><td><span class="wtype wt-plasma">Plasma cannon</span></td><td>T1 tank with T2 performance from other factions. Slow. Occupied extractors within 200 gain +0.05M/sec bonus extraction rate. Unstoppable when massed.</td></tr>
+<tr><td><span class="tag tag-repair">Repair Organism</span></td><td>70</td><td>480</td><td>110</td><td>—</td><td>—</td><td>65</td><td>None</td><td>Vorn-unique: biological repair through plasma infusion. Repair rate 10%/sec (slightly better). Also repairs Vorn Bio-Shields at 300 shield HP/sec. Immune to T1 infantry attacks.</td></tr>
+<tr><td><span class="tag tag-resurrect">Archive Resurrector</span></td><td>120</td><td>800</td><td>90</td><td>—</td><td>—</td><td>55</td><td>None</td><td>Vorn-unique: when resurrecting an enemy hero, the complete unit cost archive is revealed to entire Vorn team. Hero resurrection 20s (fastest in game). Wreck consume: 60% yield (extraction expertise). Hero respawn cost increased by 50M if Archive Resurrector is present at wreck when hero "dies" — extracts data.</td></tr>
+<tr><td><span class="tag tag-reclaim">Extraction Drone — Reclaim</span></td><td>55</td><td>380</td><td>85</td><td>—</td><td>—</td><td>80</td><td>None</td><td>Reclaims at 18M/sec. Vorn-unique: Vorn Remnant Deposits give 400% yield (home territory knowledge). Can process up to 3 wrecks simultaneously (Vorn efficiency). Immune to T1 infantry.</td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="sh"><span class="sh-num">V3</span> T2 & T3 — VORN</div>
+<div class="tb tb2">TECH LEVEL 2</div>
+<div class="sh2">T2 Drop Pod Structures</div>
+<div class="tw">
+<table class="bld-table">
+<thead><tr><th>Structure [DROP POD]</th><th>M</th><th>E</th><th>HP</th><th>Drop Time</th><th>Function</th></tr></thead>
+<tbody>
+<tr><td>Fleet Staging Platform</td><td>1200</td><td>500</td><td>2800</td><td>8s</td><td>T2 Vorn production. Heavy Vorn units, flyers, T2 support. Core T2 structure.</td></tr>
+<tr><td>Archive Sanctum</td><td>700</td><td>300</td><td>1800</td><td>8s</td><td>Builds Sev (Co-Hero). Also: passive 50-radius archive buff — all Vorn within take 15% less damage (the archive predicts incoming attacks).</td></tr>
+<tr><td>Fleet Reactor</td><td>900</td><td>0</td><td>2200</td><td>8s</td><td>+120 E/sec. Massive. Enemy priority target. Build behind defences or under shield dome.</td></tr>
+<tr><td>Plasma Battery Turret</td><td>600</td><td>150</td><td>2000</td><td>8s</td><td>T2 turret. Fires plasma charges — high splash 200 radius. Immune to T1 and T2 infantry damage. Heavy armour penetration.</td></tr>
+<tr><td>Long-Range Mass Driver</td><td>800</td><td>200</td><td>1400</td><td>8s</td><td>T2 artillery structure. Range 1200. Hitscan mass driver — no travel time. Zero splash. Single-target devastation. Cannot miss.</td></tr>
+</tbody>
+</table>
+</div>
+<div class="sh2">T2 Combat Units</div>
+<div class="tw">
+<table class="utab">
+<thead><tr><th>Unit</th><th>M</th><th>E</th><th>HP</th><th>DPS</th><th>Weapon</th><th>Notes</th></tr></thead>
+<tbody>
+<tr><td>Vorn War Construct</td><td>900</td><td>4000</td><td>1400</td><td>140</td><td><span class="wtype wt-plasma">Heavy plasma cannon</span></td><td>Heaviest T2 unit in game. Not vehicle, not infantry — Vorn construct. Immune to T2 infantry attacks. One construct can hold against 4 equivalent T2 units.</td></tr>
+<tr><td>Vorn Mass Driver Vehicle</td><td>700</td><td>3200</td><td>500</td><td>180</td><td><span class="wtype wt-kinetic">Mass driver (hitscan)</span></td><td>Longest range T2 unit (800). Hitscan — no travel time, no arc. Zero splash — pure single-target. Never misses. Devastating vs priority targets. No friendly fire risk.</td></tr>
+<tr><td>Atmospheric Destroyer</td><td>800</td><td>3500</td><td>800</td><td>120</td><td><span class="wtype wt-plasma">Plasma barrage</span></td><td>Vorn-scale gunship/battlecruiser. No stealth. Immediately visible. Commands fear. Immune to T1 anti-air. Ground focus — ignores AA missiles.</td></tr>
+<tr><td>Plasma Siege Platform</td><td>1100</td><td>5000</td><td>1600</td><td>200</td><td><span class="wtype wt-plasma">Heavy plasma siege</span></td><td>Stationary deploy (8s). Fires massive plasma charges at 600 range — 300 radius splash. Friendly fire risk. The Vorn version of artillery — but heavier.</td></tr>
+</tbody>
+</table>
+</div>
+<div class="tb tb3">TECH LEVEL 3</div>
+<div class="tw">
+<table class="utab">
+<thead><tr><th>Unit</th><th>M</th><th>E</th><th>HP</th><th>Notes</th></tr></thead>
+<tbody>
+<tr><td>Varox's Fleet Destroyer <span class="tag tag-special">Experimental · Drop Pod · 30s</span></td><td>7000</td><td>18000</td><td>9000</td><td>Portion of Vorn fleet made surface-capable. Emerges from massive impact crater (Drop Pod creates crater terrain). 360° heavy plasma. Immune to ALL T1 and T2 infantry attacks. Varox can board: +Mark This World ability added (60s cooldown). DPS: 280. Speed: 22.</td></tr>
+<tr><td>Planetary Extraction Cannon <span class="tag tag-special">Superweapon · Drop Pod · 8s</span></td><td>6500</td><td>16000</td><td>1200 (emplacement)</td><td>Fires extraction beam at target location. 3000 damage to everything in 500 radius AND steals all metal income from all extractors in area for 60 seconds — depositing in Vorn accounts. The cost-model in weapon form. 150s charge. Global range.</td></tr>
+<tr><td>Fleet Anchor <span class="tag tag-special">T3 Structure · Drop Pod</span></td><td>5500</td><td>14000</td><td>7000</td><td>Permanent Vorn fleet relay station. All Vorn units in 800 radius +30% stats. Generates 50M/sec passively (fleet resupply). Immune to T1+T2 infantry. 3 integrated plasma turrets. DPS 250 each. Extraction scaling applies to nearby spots at +1.5× rate.</td></tr>
+</tbody>
+</table>
+</div>
+
+</div><!-- end vorn page -->
+
+<!-- ══════════════════════════ PAGE: REFERENCE ══════════════════════════ -->
+<div id="page-ref" class="page">
+
+<div class="sh"><span class="sh-num">REF1</span> COMPLETE FACTION COMPARISON TABLE</div>
+<div class="tw">
+<table class="utab">
+<thead><tr>
+  <th>Faction</th><th>Main Hero HP</th><th>Co-Hero HP</th><th>T1 Builder</th><th>Weapon Type</th><th>Economy Bonus</th><th>Unique Mechanic</th><th>Win Style</th>
+</tr></thead>
+<tbody>
+<tr><td style="color:var(--c-res);font-weight:700;">Resistance</td><td>850</td><td>480 (Ward)</td><td>T1 Bot Lab · 130M</td><td>Ballistic · Explosive</td><td>Standard</td><td>Kill Switch: command aura +15% acc/speed</td><td>Coordinated pushes. Vale frontline + Ward intel.</td></tr>
+<tr><td style="color:var(--c-nom);font-weight:700;">Nomads</td><td>720</td><td>380 (Jax)</td><td>Salvage Yard · 110M</td><td>Ballistic · Improvised</td><td>Wreck income auto</td><td>Wreck Income: every corpse feeds them. +30% build speed.</td><td>Swarm + recycle. More battle = more income.</td></tr>
+<tr><td style="color:var(--c-syn);font-weight:700;">Synth</td><td>1100</td><td>680 (SP-01)</td><td>Bot Fabricator · 140M</td><td>Laser · EMP</td><td>55E → 1M converter</td><td>Logic Bracket: +25% acc/dmg after 3s stationary. Network Link LOS.</td><td>Deliberate positions. Turret lines. Wait, then strike.</td></tr>
+<tr><td style="color:var(--c-myc);font-weight:700;">Mycelion</td><td>1400</td><td>350 (Tanaka)</td><td>No builders — organic growth</td><td>Biological · DoT</td><td>+15 E/sec photosynthesis</td><td>Root Network: −30% enemy speed. +20% regen on own terrain.</td><td>Spread territory. All war happens on your terms.</td></tr>
+<tr><td style="color:var(--c-hel);font-weight:700;">Helios</td><td>600</td><td>520 (Vane)</td><td>Corp. Yard · 160M</td><td>Laser · Smart Missile</td><td>Reyes +20% income aura</td><td>Acquisition: spend 80M to convert enemy units &lt;15% HP.</td><td>Economy dominance. Convert enemy units. Late-game engine.</td></tr>
+<tr><td style="color:var(--c-pre);font-weight:700;">Precursors</td><td>2200</td><td>800 (Resonator)</td><td>Substrate Anchor · 200M</td><td>Substrate Energy</td><td>T2 extractor rate from T1</td><td>Ancient Immunity: T1 weapons deal 0 damage to all Precursor units/structures.</td><td>Survive early game untouched. Escalate to full power.</td></tr>
+<tr><td style="color:var(--c-vor);font-weight:700;">The Vorn</td><td>2800</td><td>600 (Sev)</td><td>Drop Pods (no builders)</td><td>Heavy Plasma · Mass Driver</td><td>T2 extractor rate from T1 + scaling</td><td>Drop Pods: no builder vulnerability. Extraction scaling income.</td><td>Overwhelming individual unit power. Endgame dominance.</td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="sh"><span class="sh-num">REF2</span> RESURRECT BOT — COMPARISON BY FACTION</div>
+<div class="tw">
+<table class="utab">
+<thead><tr><th>Faction</th><th>Resurrect Unit Name</th><th>Hero Res. Time</th><th>Wreck Consume %</th><th>Faction-Unique Bonus</th></tr></thead>
+<tbody>
+<tr><td style="color:var(--c-res);">Resistance</td><td>Recovery Bot</td><td>30s</td><td>40%</td><td>Standard. Interruption-resistant in Vale command aura (+10% resist to interrupt).</td></tr>
+<tr><td style="color:var(--c-nom);">Nomads</td><td>Zone Recovery Bot</td><td>30s</td><td>55%</td><td>Consumes yield 55%. Resurrect costs 25% metal (vs 30%). Wreck income active during channelling.</td></tr>
+<tr><td style="color:var(--c-syn);">Synth</td><td>Logic Resurrector</td><td>25s</td><td>45%</td><td>Resurrected units gain Logic Bracket for 30s after resurrection.</td></tr>
+<tr><td style="color:var(--c-myc);">Mycelion</td><td>Spore Resurrector</td><td>28s</td><td>42%</td><td>Resurrect spawns 1 bonus Spore Crawler from wreck matter. Resurrected units on network get +20% regen.</td></tr>
+<tr><td style="color:var(--c-hel);">Helios</td><td>Acquisition Resurrector</td><td>30s</td><td>50%</td><td>Acquisition Protocol at 40M (vs 80M) via this unit. Signal Disruption analysis extracts more value.</td></tr>
+<tr><td style="color:var(--c-pre);">Precursors</td><td>Substrate Resurrector</td><td>22s</td><td>55%</td><td>Fastest resurrection. Resurrected units immune to T1 damage for 60s. Immune to T1 itself.</td></tr>
+<tr><td style="color:var(--c-vor);">The Vorn</td><td>Archive Resurrector</td><td>20s</td><td>60%</td><td>Fastest time, highest yield. Enemy hero resurrection reveals enemy faction's full tech tree costs to Vorn team. Immune to T1 infantry.</td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="sh"><span class="sh-num">REF3</span> HERO/CO-HERO SURVIVAL — VICTORY RULES MATRIX</div>
+<div class="tw">
+<table class="utab">
+<thead><tr>
+  <th>Match Type</th><th>Hero Dies (alone)</th><th>Co-Hero Dies (alone)</th><th>Both Hero + Co-Hero Die</th><th>All Team Heroes + Co-Heroes Die</th>
+</tr></thead>
+<tbody>
+<tr><td>1v1</td><td>INSTANT LOSS</td><td>Lose co-hero. Must rebuild or resurrect. Game continues.</td><td>INSTANT LOSS (hero death triggered it)</td><td>INSTANT LOSS</td></tr>
+<tr><td>2v2</td><td>90s respawn timer. If body resurrected by enemy: hero fights for them.</td><td>Must rebuild hero bay. Game continues normally.</td><td>Team still alive if ANY ally hero or co-hero alive.</td><td>TEAM LOSES when 0 heroes AND 0 co-heroes remain on team.</td></tr>
+<tr><td>3v3</td><td>Same as 2v2 — respawn. Team continues with 2 heroes.</td><td>Same. Game continues.</td><td>Same. Team continues if allies have heroes/co-heroes.</td><td>TEAM LOSES when entire team has 0 commanders.</td></tr>
+<tr><td>5v5 / 5v10</td><td>Same — respawn. Team of 5 continues with 4 heroes.</td><td>Same — rebuild or resurrect.</td><td>Same — team continues unless ALL commanders eliminated.</td><td>TEAM LOSES when the last hero AND last co-hero on the team falls with no resurrection available.</td></tr>
+</tbody>
+</table>
+</div>
+<div class="mbox red" style="margin-top:10px;">
+  <div class="mt red">CRITICAL: Resurrect Race</div>
+  <div class="mb">When ANY hero or co-hero dies, a 120-second body marker remains at the wreck location. The FIRST Resurrect Bot to reach it determines ownership. In team games this creates a race mechanic: your Resurrect Bots race to secure your fallen heroes, enemy Resurrect Bots race to steal them. Protecting fallen hero locations is a legitimate strategy. Signal Disruptor prevents enemy Resurrect channelling in 200 radius.</div>
+</div>
+
+<div class="sh"><span class="sh-num">REF4</span> MAP MATERIALS QUICK-REFERENCE</div>
+<div class="tw">
+<table class="mat-table">
+<thead><tr><th>Material</th><th>Rarity</th><th>Base Yield</th><th>Best Faction for Reclaim</th><th>Strategic Value</th></tr></thead>
+<tbody>
+<tr><td>Metal Ore Deposits</td><td>Common</td><td>5–50M one-time</td><td>All equal</td><td>Low — early game metal top-up</td></tr>
+<tr><td>Gold Vein</td><td>Uncommon</td><td>120–400M</td><td>All equal (2× speed)</td><td>High — major metal injection</td></tr>
+<tr><td>Substrate Crystal</td><td>Uncommon</td><td>80M + 200E</td><td>Synth (2× yield) / Precursors (50% bonus)</td><td>High — energy + metal, faction synergy</td></tr>
+<tr><td>Vorn Remnant Deposit</td><td>Rare</td><td>300M</td><td>Vorn (400% yield) / Any</td><td>Very High — large instant metal</td></tr>
+<tr><td>Bio-Synth Node</td><td>Rare</td><td>60M + regen aura</td><td>Mycelion (organic synergy) / Tanaka</td><td>Medium — regen aura in combat</td></tr>
+<tr><td>Resonator Shard</td><td>Rare</td><td>150M + T2 build speed</td><td>Synth (2× yield) / Precursors</td><td>High — T2 timing advantage</td></tr>
+<tr><td>Dark Matter Crystal</td><td>Very Rare (1–2/map)</td><td>500M + 2000E</td><td>All equal</td><td>Critical — superweapon timing</td></tr>
+<tr><td>Diamond Deposit</td><td>Rare</td><td>200M</td><td>All equal</td><td>High — T3 timing advantage</td></tr>
+<tr><td>Archive Fragment</td><td>Rare · Vorn maps</td><td>100M + intel reveal</td><td>Vorn (home knowledge)</td><td>High — tactical intelligence</td></tr>
+<tr><td>Substrate Pool</td><td>Rare (1–3/map)</td><td>2M/sec ongoing</td><td>Precursors (4M/sec) / Vorn (auto)</td><td>Very High — ongoing passive income</td></tr>
+</tbody>
+</table>
+</div>
+
+<div style="margin-top:32px;border:1px solid var(--gold);border-radius:8px;padding:22px 26px;">
+  <div style="font-family:'Rajdhani',sans-serif;font-size:18px;font-weight:700;color:var(--gold);margin-bottom:12px;">DOCUMENT COMPLETE</div>
+  <div style="font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--muted);line-height:2.2;">
+    7 FACTIONS · FULL HERO + CO-HERO SHEETS · COMPLETE T1/T2/T3 UNIT TREES PER FACTION<br>
+    REPAIR BOT · RESURRECT BOT · RECLAIM BOT — ALL 7 FACTIONS WITH UNIQUE FACTION BONUSES<br>
+    12 MAP MATERIALS — SOR UNIVERSE EXCLUSIVE (SUBSTRATE CRYSTAL, ARCHIVE FRAGMENT, DARK MATTER, VORN REMNANT, ETC.)<br>
+    VICTORY CONDITIONS — HERO DEATH RULES FOR 1v1 / 2v2 / 3v3 / 5v10 — RESURRECT RACE MECHANIC<br>
+    WEAPON TECHNOLOGY DIFFERENTIATION — BALLISTIC / LASER / PLASMA / BIOLOGICAL / SUBSTRATE / EMP / KINETIC<br>
+    BAR: BEYOND ALL REASON PHILOSOPHY — NO HARVESTERS · NO UNIT CAP · ENDLESS ZOOM · ECONOMY-LIMITED<br>
+    DENIS KACAR © 2026 · SOR: SINGULARITY REIGN
+  </div>
+</div>
+
+</div><!-- end reference page -->
+
+<!-- ══════════════════════════ PAGE: UNIT NAMES ══════════════════════════ -->
+<div id="page-names" class="page">
+
+<div style="padding:20px 0 10px;">
+  <div style="font-family:'Rajdhani',sans-serif;font-size:28px;font-weight:700;color:var(--gold);letter-spacing:3px;">UNIT NAMING BIBLE</div>
+  <div style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--muted);margin-top:4px;">ALL 7 FACTIONS · ALL CATEGORIES · SCI-FI NAMES · COUNTER-UNITS · FACTION SPECIALS · DENIS KACAR © 2026</div>
+</div>
+
+<div class="mbox gold" style="margin-bottom:20px;">
+  <div class="mt gold">FACTION SPECIALIZATION — WHO IS BEST WHERE</div>
+  <div class="mb">
+    <strong style="color:var(--c-res);">Resistance</strong> → Best infantry command + balanced all-round. Strongest T2 infantry.<br>
+    <strong style="color:var(--c-nom);">Nomads</strong> → Strongest ground vehicles per cost. Best wreck economy. Fastest builders.<br>
+    <strong style="color:var(--c-syn);">Synth</strong> → Strongest air units. Network vision. Best anti-air.<br>
+    <strong style="color:var(--c-myc);">Mycelion</strong> → Strongest fixed defences. Best regeneration. Territory denial.<br>
+    <strong style="color:var(--c-hel);">Helios</strong> → Best stealth + precision. Unique unit conversion. Best scout aircraft.<br>
+    <strong style="color:var(--c-pre);">Precursors</strong> → Ancient immunity. Best economy (T2 rate from T1). Most durable structures.<br>
+    <strong style="color:var(--c-vor);">Vorn</strong> → Strongest heavy units per-unit. Highest HP per category. Extraction income scaling.
+  </div>
+</div>
+
+<!-- ─── INFANTRY ─── -->
+<div class="sh"><span class="sh-num">N1</span> INFANTRY — ALL FACTIONS</div>
+<div style="margin-bottom:6px;font-size:11px;color:var(--muted);">Format: Category / Faction Name / Sci-Fi Unit Name · Counter-unit shown where applicable · <span style="color:var(--gold);">★ = Faction Exclusive Special Unit</span></div>
+
+<div class="tw">
+<table class="utab">
+<thead><tr>
+  <th>Category</th>
+  <th style="color:var(--c-res);">Resistance</th>
+  <th style="color:var(--c-nom);">Nomads</th>
+  <th style="color:var(--c-syn);">Synth</th>
+  <th style="color:var(--c-myc);">Mycelion</th>
+  <th style="color:var(--c-hel);">Helios</th>
+  <th style="color:var(--c-pre);">Precursors</th>
+  <th style="color:var(--c-vor);">The Vorn</th>
+</tr></thead>
+<tbody>
+<tr>
+  <td><strong>Scout Infantry</strong><br><span class="tag tag-builder">Recon</span></td>
+  <td>Scout Runner<br><em style="color:var(--muted);font-size:10px;">Fastest T1 bot. Smoke grenades. Named Osei when alone.</em></td>
+  <td>Pirjo<br><em style="color:var(--muted);font-size:10px;">Named. Fastest infantry in game. Smoke + flare.</em></td>
+  <td>Vertex Unit<br><em style="color:var(--muted);font-size:10px;">Hitscan pistol. Extends Network Link 280 radius.</em></td>
+  <td>Spore Runner<br><em style="color:var(--muted);font-size:10px;">Stealth in forest. Leaves root trail.</em></td>
+  <td>Corporate Scout<br><em style="color:var(--muted);font-size:10px;">Permanent stealth. Reveals enemy unit cost in HUD.</em></td>
+  <td>Ancient Scout<br><em style="color:var(--muted);font-size:10px;">Phase-stealth while moving. 50% invisible.</em></td>
+  <td>Vorn Stalker<br><em style="color:var(--muted);font-size:10px;">Detects metal spot ratings. Stealth in terrain.</em></td>
+</tr>
+<tr style="background:rgba(255,255,255,0.02);">
+  <td><strong>Rifle Infantry</strong><br><span class="tag tag-builder">Basic</span></td>
+  <td>Resistance Rifleman<br><em style="color:var(--muted);font-size:10px;">Ballistic. Squad backbone. Fast queue.</em></td>
+  <td>Salvage Runner<br><em style="color:var(--muted);font-size:10px;">Shotgun. Auto-wreck income radius 80.</em></td>
+  <td>Laser Rifleman<br><em style="color:var(--muted);font-size:10px;">Hitscan. Zero splash. Logic Bracket required.</em></td>
+  <td>Spore Crawler<br><em style="color:var(--muted);font-size:10px;">Biological. Acid DoT. Spreads root network.</em></td>
+  <td>Corporate Security<br><em style="color:var(--muted);font-size:10px;">Laser carbine. Best T1 armour. Can Acquire.</em></td>
+  <td>Precursor Shard<br><em style="color:var(--muted);font-size:10px;">Substrate. Floats. T1-immune. Most expensive.</em></td>
+  <td>Extractor Trooper<br><em style="color:var(--muted);font-size:10px;">Heavy Plasma. 2× HP/DPS vs standard T1.</em></td>
+</tr>
+<tr>
+  <td><strong>Anti-Tank Infantry</strong><br><span class="tag tag-aa">AT</span></td>
+  <td>Javelin<br><em style="color:var(--muted);font-size:10px;">RPG. Arm-up 2s. High vs vehicles, weak vs infantry.</em></td>
+  <td>Bolt Gunner<br><em style="color:var(--muted);font-size:10px;">Improvised AT bolt. Cheaper, lower damage.</em></td>
+  <td>Logic Piercer<br><em style="color:var(--muted);font-size:10px;">EMP bolt. Disables vehicle systems 5s on hit.</em></td>
+  <td>Acid Spitter<br><em style="color:var(--muted);font-size:10px;">Biological acid stream. DoT melts vehicle armour.</em></td>
+  <td>Corporate Specialist<br><em style="color:var(--muted);font-size:10px;">EMP stun device. 6s disable. Sets up Acquisition.</em></td>
+  <td>Phase Lancer<br><em style="color:var(--muted);font-size:10px;">Substrate bolt phases through 30% armour rating.</em></td>
+  <td>Plasma Reaper<br><em style="color:var(--muted);font-size:10px;">Mass driver bolt. Hitscan. Devastating vs armour.</em></td>
+</tr>
+<tr style="background:rgba(255,255,255,0.02);">
+  <td><strong>Sniper</strong><br><span class="tag tag-stealth">Long Range</span></td>
+  <td>Osei<br><em style="color:var(--muted);font-size:10px;">Named. Stealth stationary 2s. Kinetic hitscan.</em></td>
+  <td>Scope Rat<br><em style="color:var(--muted);font-size:10px;">+DPS when adjacent to wreck (improvised support). Ballistic.</em></td>
+  <td>Apex Node<br><em style="color:var(--muted);font-size:10px;">Laser. Perfect bracket sniping. Extreme range 500.</em></td>
+  <td>Lurker<br><em style="color:var(--muted);font-size:10px;">Invisible on Root Network until fires. Bio spore.</em></td>
+  <td>Ghost Operative<br><em style="color:var(--muted);font-size:10px;">Vane-class stealth. Shoots from stealth. Re-stealth 6s.</em></td>
+  <td>Resonance Spike<br><em style="color:var(--muted);font-size:10px;">Substrate hitscan. Range 600. Ignores 50% armour.</em></td>
+  <td>Archive Spotter<br><em style="color:var(--muted);font-size:10px;">Marks target: +30% damage all sources for 15s.</em></td>
+</tr>
+<tr>
+  <td><strong>Support Engineer</strong><br><span class="tag tag-repair">Builder</span></td>
+  <td>Combat Engineer<br><em style="color:var(--muted);font-size:10px;">Repairs vehicles 8%/sec. Can fortify position.</em></td>
+  <td>Zone Eleven Builder<br><em style="color:var(--muted);font-size:10px;">+30% build speed. Auto-wreck income 200 radius.</em></td>
+  <td>Constructor Unit<br><em style="color:var(--muted);font-size:10px;">Energy beam construction. Faster in energy surplus.</em></td>
+  <td>Mycelion Tendril (Repair)<br><em style="color:var(--muted);font-size:10px;">Root-based repair. +50% rate on own network.</em></td>
+  <td>Corporate Constructor<br><em style="color:var(--muted);font-size:10px;">Economy structures 15% cheaper. +5M on reclaim.</em></td>
+  <td>Architect Unit<br><em style="color:var(--muted);font-size:10px;">T1-immune. Metal spots at T2 rate in 400 radius.</em></td>
+  <td>— (Drop Pods replace builders)<br><em style="color:var(--muted);font-size:10px;">Repair Organism instead. T1-immune.</em></td>
+</tr>
+<tr style="background:rgba(255,255,255,0.02);">
+  <td><strong>Heavy Infantry</strong><br><span class="tag tag-special">T2</span></td>
+  <td>Resistance Veteran<br><em style="color:var(--muted);font-size:10px;">LMG. Suppresses: −30% enemy accuracy while firing.</em></td>
+  <td>Ironclad<br><em style="color:var(--muted);font-size:10px;">Welded scrap plate. Most HP of any T2 infantry.</em></td>
+  <td>Logic Enforcer<br><em style="color:var(--muted);font-size:10px;">Deploy mode: instant bracket. Best AT when set.</em></td>
+  <td>Carapace Guard<br><em style="color:var(--muted);font-size:10px;">Organic armour. Regen 20HP/sec on Root Network.</em></td>
+  <td>Executive Guard<br><em style="color:var(--muted);font-size:10px;">Absorbs 1 hit without HP loss (executive shielding).</em></td>
+  <td>Precursor Guardian<br><em style="color:var(--muted);font-size:10px;">Immune T1+T2 infantry damage. Fires dual bolts.</em></td>
+  <td>Vorn War Construct<br><em style="color:var(--muted);font-size:10px;">Not infantry, not vehicle. Immune T2 infantry. 1v4.</em></td>
+</tr>
+<tr>
+  <td><strong style="color:var(--gold);">★ Faction Exclusive Infantry</strong><br><span class="tag tag-unique">Unique Unit</span></td>
+  <td style="color:var(--c-res);"><strong>Signal Corps</strong><br><em style="color:var(--muted);font-size:10px;">Deploys a battlefield relay beacon. Extends team LOS 500 radius for 60s. Entire team sees enemy positions in area. Cannot be jammed. One per player on field.</em></td>
+  <td style="color:var(--c-nom);"><strong>Wreck Rider</strong><br><em style="color:var(--muted);font-size:10px;">Mounts a destroyed vehicle chassis as mobile cover (+80HP shield from wreck). Generates +1.5M/sec wreck income. When chassis destroyed: ejects and finds next wreck automatically.</em></td>
+  <td style="color:var(--c-syn);"><strong>Network Ghost</strong><br><em style="color:var(--muted);font-size:10px;">Can phase through walls for 5s. Extends Network Link as it moves. 30% phase-dodge chance. After phasing through a wall: fires burst of 4 logic bolts simultaneously.</em></td>
+  <td style="color:var(--c-myc);"><strong>Symbiont Host</strong><br><em style="color:var(--muted);font-size:10px;">When this unit kills an enemy, a Spore Crawler grows from the corpse (free unit). Spreads Root Network as it moves. Cannot be killed — only incapacitated: reforms from network in 45s.</em></td>
+  <td style="color:var(--c-hel);"><strong>Acquisition Agent</strong><br><em style="color:var(--muted);font-size:10px;">Can convert enemy infantry units directly at cost 120M (no HP requirement needed). Converted infantry joins Helios permanently. Unlike Acquisition Protocol — works on healthy targets.</em></td>
+  <td style="color:var(--c-pre);"><strong>Substrate Walker</strong><br><em style="color:var(--muted);font-size:10px;">Immune to ALL T1 and T2 infantry weapons (ancient armour). Fires slow-moving substrate orb that splits into 4 bolts on impact. Walks through enemy T1 formations untouchable. Costs 300M.</em></td>
+  <td style="color:var(--c-vor);"><strong>Dreadnought Trooper</strong><br><em style="color:var(--muted);font-size:10px;">800HP. Immune T1+T2 infantry. Fires heavy plasma burst (6s reload). Walks through T1 armies. Max 3 on field. Costs 400M each. Most powerful infantry unit in game.</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<!-- ─── VEHICLES ─── -->
+<div class="sh"><span class="sh-num">N2</span> VEHICLES — ALL FACTIONS</div>
+
+<div class="tw">
+<table class="utab">
+<thead><tr>
+  <th>Category</th>
+  <th style="color:var(--c-res);">Resistance</th>
+  <th style="color:var(--c-nom);">Nomads</th>
+  <th style="color:var(--c-syn);">Synth</th>
+  <th style="color:var(--c-myc);">Mycelion</th>
+  <th style="color:var(--c-hel);">Helios</th>
+  <th style="color:var(--c-pre);">Precursors</th>
+  <th style="color:var(--c-vor);">The Vorn</th>
+</tr></thead>
+<tbody>
+<tr>
+  <td><strong>Light Scout Vehicle</strong><br><span class="tag tag-builder">T1 · Fast</span></td>
+  <td><strong>Jackal</strong><br><em style="color:var(--muted);font-size:10px;">Wheeled. Fast. Extended LOS 400. Light autocannon.</em></td>
+  <td><strong>Tornado</strong><br><em style="color:var(--muted);font-size:10px;">Fastest scout vehicle in game. Wreck income auto.</em></td>
+  <td><strong>Axiom</strong><br><em style="color:var(--muted);font-size:10px;">Geometric chassis. Extended LOS 420. Network Link.</em></td>
+  <td><strong>Skimmer</strong><br><em style="color:var(--muted);font-size:10px;">Flat organic creature. Very fast. Leaves root trail.</em></td>
+  <td><strong>Meridian</strong><br><em style="color:var(--muted);font-size:10px;">Stealth approach. Reveals enemy unit cost in HUD.</em></td>
+  <td><strong>Fragment</strong><br><em style="color:var(--muted);font-size:10px;">Geometric construct. Phase-stealth while moving 40%.</em></td>
+  <td><strong>Extractor Runner</strong><br><em style="color:var(--muted);font-size:10px;">Drop Pod (8s). Displays metal spot ratings on map.</em></td>
+</tr>
+<tr style="background:rgba(255,255,255,0.02);">
+  <td><strong>Light Tank</strong><br><span class="tag tag-builder">T1 · Anti-vehicle</span></td>
+  <td><strong>Hellström</strong><br><em style="color:var(--muted);font-size:10px;">Named. AP rounds. Good vs light vehicles. Fires on move −20% acc.</em></td>
+  <td><strong>Avalanche</strong><br><em style="color:var(--muted);font-size:10px;">Scrap-built. Cheaper than Resistance, good DPS. Ram bonus.</em></td>
+  <td><strong>Theorem</strong><br><em style="color:var(--muted);font-size:10px;">Stop-and-fire. +25%/+15% when bracketed. Turret rotates instant.</em></td>
+  <td><strong>Carapace Runner</strong><br><em style="color:var(--muted);font-size:10px;">Armoured organism. Regen 15HP/sec on Root Network.</em></td>
+  <td><strong>Executive</strong><br><em style="color:var(--muted);font-size:10px;">Precision laser. Single-target only. Stealth 5s after spawn.</em></td>
+  <td><strong>Shard Construct</strong><br><em style="color:var(--muted);font-size:10px;">T1-immune. Floats. Substrate energy bolt. Costly but untouchable by T1.</em></td>
+  <td><strong>Extractor Chassis</strong><br><em style="color:var(--muted);font-size:10px;">T2 stats at T1 tier. Slow. Extractor bonus +0.05M/sec nearby.</em></td>
+</tr>
+<tr>
+  <td><strong>Medium Tank</strong><br><span class="tag tag-special">T1-T2 · Main battle</span></td>
+  <td><strong>Warhound MkII</strong><br><em style="color:var(--muted);font-size:10px;">Balanced. High-velocity AP. Reliable at all ranges.</em></td>
+  <td><strong>Earthquake</strong><br><em style="color:var(--muted);font-size:10px;">Impressive for cost. Wreck income. Death: 200M reclaim value.</em></td>
+  <td><strong>Doctrine</strong><br><em style="color:var(--muted);font-size:10px;">Deploy mode for instant bracket. Best medium tank when positioned.</em></td>
+  <td><strong>Crusher</strong><br><em style="color:var(--muted);font-size:10px;">Large bio-beast. Anti-vehicle melee. Devastating on home network.</em></td>
+  <td><strong>Director Class</strong><br><em style="color:var(--muted);font-size:10px;">Acquisition Protocol built-in (160M converts enemy unit &lt;15% HP).</em></td>
+  <td><strong>Theorem Engine</strong><br><em style="color:var(--muted);font-size:10px;">Reality distortion rounds bypass 30% armour. Phased geometry.</em></td>
+  <td><strong>Obliterator</strong><br><em style="color:var(--muted);font-size:10px;">Single plasma shot kills most T2 units. 3s reload. High risk/reward.</em></td>
+</tr>
+<tr style="background:rgba(255,255,255,0.02);">
+  <td><strong>Heavy Tank</strong><br><span class="tag tag-special">T2 · Frontline</span></td>
+  <td><strong>Bastion</strong><br><em style="color:var(--muted);font-size:10px;">High HP. Commands aura bonus within 200. Fires on move at −10%.</em></td>
+  <td><strong>Iron Titan</strong><br><em style="color:var(--muted);font-size:10px;">Highest HP of any T2 tank. Leaves 350M wreck on death.</em></td>
+  <td><strong>Paradigm</strong><br><em style="color:var(--muted);font-size:10px;">Full bracket always active. Best accuracy T2 tank in game.</em></td>
+  <td><strong>Colossus</strong><br><em style="color:var(--muted);font-size:10px;">Mature organism. Near-immortal on dense Root Network. Regen 20HP/sec.</em></td>
+  <td><strong>Helios Battle Platform</strong><br><em style="color:var(--muted);font-size:10px;">Acquisition Protocol range. Premium laser + smart missile combo.</em></td>
+  <td><strong>Precursor Guardian</strong><br><em style="color:var(--muted);font-size:10px;">Immune T1+T2 infantry. Dual substrate bolts. Near-indestructible.</em></td>
+  <td><strong>World-Ender</strong><br><em style="color:var(--muted);font-size:10px;">Requires 3 enemy heavy T2 tanks to counter. Slow. Unstoppable.</em></td>
+</tr>
+<tr>
+  <td><strong>Artillery / SPG</strong><br><span class="tag tag-special">T1-T2 · Indirect</span></td>
+  <td><strong>CERP-7 Howitzer</strong><br><em style="color:var(--muted);font-size:10px;">Named. Deploy 3s. Large splash. Friendly fire risk.</em></td>
+  <td><strong>Junk Cannon</strong><br><em style="color:var(--muted);font-size:10px;">3-shot scatter cluster. Unpredictable. Devastating in density.</em></td>
+  <td><strong>Vector Cannon</strong><br><em style="color:var(--muted);font-size:10px;">Zero splash. Hitscan at bracket. Cannot miss + no friendly fire.</em></td>
+  <td><strong>Spore Cannon Organism</strong><br><em style="color:var(--muted);font-size:10px;">Arced biological. Impacts create Root Network creep for 15s.</em></td>
+  <td><strong>Precision Strike Vehicle</strong><br><em style="color:var(--muted);font-size:10px;">Smart guided. Guaranteed hit. No friendly fire. Fires from stealth.</em></td>
+  <td><strong>Reality Distortion Artillery</strong><br><em style="color:var(--muted);font-size:10px;">Phases through walls and shields. Cannot be blocked. Range 750.</em></td>
+  <td><strong>Mass Driver Platform</strong><br><em style="color:var(--muted);font-size:10px;">Hitscan railgun. Zero travel time. Range 800. Cannot miss.</em></td>
+</tr>
+<tr style="background:rgba(255,255,255,0.02);">
+  <td><strong>Anti-Air Vehicle</strong><br><span class="tag tag-aa">Mobile AA</span></td>
+  <td><strong>Skywatch</strong><br><em style="color:var(--muted);font-size:10px;">Flak missile hybrid. Tracks all aircraft 500 radius. Essential escort.</em></td>
+  <td><strong>Buzzsaw</strong><br><em style="color:var(--muted);font-size:10px;">Improvised rotary gun on truck. Higher DPS, shorter range (320).</em></td>
+  <td><strong>Null-Field AA</strong><br><em style="color:var(--muted);font-size:10px;">Laser hitscan. Never misses aircraft. Creates 200 no-fly zone field.</em></td>
+  <td><strong>Spore Cloud Battery</strong><br><em style="color:var(--muted);font-size:10px;">Fires persistent spore clouds at altitude. Stays 20s. AoE AA.</em></td>
+  <td><strong>Aegis</strong><br><em style="color:var(--muted);font-size:10px;">Guided missiles. Never misses. Shortest range (380) but zero misses.</em></td>
+  <td><strong>Phase Deflector</strong><br><em style="color:var(--muted);font-size:10px;">Creates phase-field: incoming missiles detonate early at 50 range.</em></td>
+  <td><strong>Atmospheric Cannon</strong><br><em style="color:var(--muted);font-size:10px;">Heavy plasma burst. Immune to T1 anti-air counter-fire. Splash AA.</em></td>
+</tr>
+<tr>
+  <td><strong>APC / Transport</strong><br><span class="tag tag-builder">T1 · Carrier</span></td>
+  <td><strong>Convoy</strong><br><em style="color:var(--muted);font-size:10px;">Carries 6 infantry. Passengers fire +20% accuracy. Light armour.</em></td>
+  <td><strong>Drifter</strong><br><em style="color:var(--muted);font-size:10px;">Carries 5. Fastest APC. Wreck income auto-generates during transit.</em></td>
+  <td><strong>Matrix Carrier</strong><br><em style="color:var(--muted);font-size:10px;">Carries 4. Passengers share Network Link with carrier (LOS extends).</em></td>
+  <td><strong>Symbiont Carrier</strong><br><em style="color:var(--muted);font-size:10px;">Biological chamber. Passengers regen 5HP/sec while inside.</em></td>
+  <td><strong>Corporate Enforcer</strong><br><em style="color:var(--muted);font-size:10px;">Carries 3. Passengers +acc. Stealth until first shot with Vane.</em></td>
+  <td><strong>Void Carrier</strong><br><em style="color:var(--muted);font-size:10px;">Drops passengers through phase portal 150 units ahead of movement.</em></td>
+  <td><strong>Trooper Carrier</strong><br><em style="color:var(--muted);font-size:10px;">Drop Pod deployed. Carries 4 Vorn troopers. Immune to T1 infantry.</em></td>
+</tr>
+<tr style="background:rgba(255,255,255,0.02);">
+  <td><strong>Mobile Command</strong><br><span class="tag tag-special">T2 · HQ</span></td>
+  <td><strong>Fortress Crawler</strong><br><em style="color:var(--muted);font-size:10px;">Extends Vale command aura 500 radius. Integrated heavy turret.</em></td>
+  <td><strong>Zone Eleven Command Crawler</strong><br><em style="color:var(--muted);font-size:10px;">All Nomad builders 400 radius build at 180%. Drone spawner built-in.</em></td>
+  <td><strong>Network Prime</strong><br><em style="color:var(--muted);font-size:10px;">All Network Links extend +200 radius within 600. Maps enemy positions.</em></td>
+  <td><strong>Root Nexus</strong><br><em style="color:var(--muted);font-size:10px;">Spreads Root Network 600 radius continuously as it moves.</em></td>
+  <td><strong>Board Room</strong><br><em style="color:var(--muted);font-size:10px;">Reyes aura extends 800 radius from this unit. +30% income boost.</em></td>
+  <td><strong>Archive Mobile</strong><br><em style="color:var(--muted);font-size:10px;">Activates all metal spots at T2 rate within 600 radius. Moves slowly.</em></td>
+  <td><strong>Fleet Relay</strong><br><em style="color:var(--muted);font-size:10px;">Calls Vorn fleet strike within 800 radius every 90s (200 dmg minor). Passive +20M/sec.</em></td>
+</tr>
+<tr>
+  <td><strong style="color:var(--gold);">★ Faction Exclusive Vehicle</strong><br><span class="tag tag-unique">Unique · No Counter</span></td>
+  <td style="color:var(--c-res);"><strong>Relay Tank</strong><br><em style="color:var(--muted);font-size:10px;">When deployed (stationary): extends Vale command aura to 800 radius. Three Relay Tanks networked together create overlapping command zones — entire front gains +15% acc +10% speed. Most synergistic tank in game.</em></td>
+  <td style="color:var(--c-nom);"><strong>Scrap Leviathan</strong><br><em style="color:var(--muted);font-size:10px;">Absorbs up to 3 nearby wrecks mid-battle. Each wreck absorbed: +200HP, +15% DPS. When fully fed (3 wrecks): 150% effectiveness for 60s. Starts weak — becomes a monster. Must create wrecks to feed it.</em></td>
+  <td style="color:var(--c-syn);"><strong>Mirror Tank</strong><br><em style="color:var(--muted);font-size:10px;">Reflects 30% of incoming ballistic damage back at attacker. Immune to own reflected damage. Devastating against Resistance/Nomads. Laser weapons bypass reflection. Most tactical counter-vehicle.</em></td>
+  <td style="color:var(--c-myc);"><strong>Living Tank — Kraken</strong><br><em style="color:var(--muted);font-size:10px;">Grows stronger over time: starts at T1 stats. Gains +10% HP+DPS every 2 minutes on Root Network. Caps at +100% after 20 min. Cannot be repaired — only self-regenerates. Kill it early or pay a massive cost.</em></td>
+  <td style="color:var(--c-hel);"><strong>Ghost Tank — Valkyrie</strong><br><em style="color:var(--muted);font-size:10px;">Permanently stealth. Fires 6 simultaneous guided missiles from stealth. Cannot be targeted until first shot fires. Re-stealth 10s after firing. Most lethal single-strike vehicle. Each missile independently guided.</em></td>
+  <td style="color:var(--c-pre);"><strong>Eternity Tank</strong><br><em style="color:var(--muted);font-size:10px;">Phases in/out of existence on 5s cycle. While phased out: immune to ALL damage, cannot be targeted. Fires substrate bolt from phased state (enemy cannot shoot back). Most tactically complex unit in game.</em></td>
+  <td style="color:var(--c-vor);"><strong>Extraction Dreadnought</strong><br><em style="color:var(--muted);font-size:10px;">When adjacent to enemy extractor: drains 2M/sec from it. Over 60s: fully converts extractor to Vorn ownership. Can "eat" any T2 structure given time. The cost-model made physical. Most economically devastating unit.</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<!-- ─── AIRCRAFT ─── -->
+<div class="sh"><span class="sh-num">N3</span> AIRCRAFT — ALL FACTIONS</div>
+
+<div class="tw">
+<table class="utab">
+<thead><tr>
+  <th>Category</th>
+  <th style="color:var(--c-res);">Resistance</th>
+  <th style="color:var(--c-nom);">Nomads</th>
+  <th style="color:var(--c-syn);">Synth</th>
+  <th style="color:var(--c-myc);">Mycelion</th>
+  <th style="color:var(--c-hel);">Helios</th>
+  <th style="color:var(--c-pre);">Precursors</th>
+  <th style="color:var(--c-vor);">The Vorn</th>
+</tr></thead>
+<tbody>
+<tr>
+  <td><strong>Scout Aircraft</strong><br><span class="tag tag-builder">T1 · Recon</span></td>
+  <td><strong>Recon Sparrow</strong><br><em style="color:var(--muted);font-size:10px;">Fastest unit in game. LOS 800. Fragile. Stealth detect 30%.</em></td>
+  <td><strong>Pirjo's Eye</strong><br><em style="color:var(--muted);font-size:10px;">Named after Pirjo. Fast drone recon. Generates wreck intel.</em></td>
+  <td><strong>Echo Drone</strong><br><em style="color:var(--muted);font-size:10px;">Fastest aircraft in game. LOS 700. Extends Network Link airborne.</em></td>
+  <td><strong>Spore Hawk</strong><br><em style="color:var(--muted);font-size:10px;">Biological flying creature. Drops root spores creating micro-network.</em></td>
+  <td><strong>Meridian Eye</strong><br><em style="color:var(--muted);font-size:10px;">Stealth drone. Reveals enemy unit cost + HP values in HUD.</em></td>
+  <td><strong>Phase Eye</strong><br><em style="color:var(--muted);font-size:10px;">Phases in/out of detection. Cannot be reliably targeted by AA.</em></td>
+  <td><strong>Orbital Eye</strong><br><em style="color:var(--muted);font-size:10px;">Drops from orbit. Single pass reconnaissance. Full map strip revealed.</em></td>
+</tr>
+<tr style="background:rgba(255,255,255,0.02);">
+  <td><strong>Fighter / Interceptor</strong><br><span class="tag tag-aa">T1 · Anti-Air</span></td>
+  <td><strong>Interceptor</strong><br><em style="color:var(--muted);font-size:10px;">AA cannon. Dog-fight AI. Minimal ground capability.</em></td>
+  <td><strong>Bolt Dart</strong><br><em style="color:var(--muted);font-size:10px;">Improvised. Faster than standard. Lower HP. Expendable.</em></td>
+  <td><strong>Logic Interceptor</strong><br><em style="color:var(--muted);font-size:10px;">Laser guided lock-on. Never misses aircraft. Best T1 fighter.</em></td>
+  <td><strong>Blade Wing</strong><br><em style="color:var(--muted);font-size:10px;">Organic razor wings. Close-range air combat. Slices through aircraft.</em></td>
+  <td><strong>Rapier</strong><br><em style="color:var(--muted);font-size:10px;">Precision guided fighter. Smart missile lock. Stealth approach.</em></td>
+  <td><strong>Logic Wing</strong><br><em style="color:var(--muted);font-size:10px;">Substrate AA. Immune to T1 anti-air (phase flight). Best T1 survival.</em></td>
+  <td><strong>Vorn Striker</strong><br><em style="color:var(--muted);font-size:10px;">Heavy fighter. 2× HP vs standard T1 fighter. Plasma AA burst.</em></td>
+</tr>
+<tr>
+  <td><strong>Light Bomber</strong><br><span class="tag tag-special">T1 · Ground Strike</span></td>
+  <td><strong>Raider</strong><br><em style="color:var(--muted);font-size:10px;">Bomb line drop. Cannot target single units. Friendly fire risk.</em></td>
+  <td><strong>Scatter Bomb</strong><br><em style="color:var(--muted);font-size:10px;">Drops cluster bombs — each bomblet creates a small wreck pile on impact.</em></td>
+  <td><strong>Phase Striker</strong><br><em style="color:var(--muted);font-size:10px;">Drops guided energy bomb. No friendly fire (precision guided).</em></td>
+  <td><strong>Acid Dropper</strong><br><em style="color:var(--muted);font-size:10px;">Drops living acid organisms. DoT 10 DPS 15s on impact area.</em></td>
+  <td><strong>Shadow Strike</strong><br><em style="color:var(--muted);font-size:10px;">Stealth approach. Drops 2 guided munitions (targeted not line).</em></td>
+  <td><strong>Null Striker</strong><br><em style="color:var(--muted);font-size:10px;">Substrate charge drop. Bypasses 40% armour on impact. Phase flight.</em></td>
+  <td><strong>Fleet Strike Drone</strong><br><em style="color:var(--muted);font-size:10px;">Called from Vorn fleet. High single-target damage. Drop Pod style.</em></td>
+</tr>
+<tr style="background:rgba(255,255,255,0.02);">
+  <td><strong>Gunship</strong><br><span class="tag tag-special">T2 · Heavy Air</span></td>
+  <td><strong>Coalition Gunship</strong><br><em style="color:var(--muted);font-size:10px;">Chain cannon. Anti-vehicle specialist. Fast. Vulnerable to fighters.</em></td>
+  <td><strong>Reaper Copter</strong><br><em style="color:var(--muted);font-size:10px;">Scrap-built gunship. Drops wreck markers on destroyed targets (+reclaim).</em></td>
+  <td><strong>Logic Shield Gunship</strong><br><em style="color:var(--muted);font-size:10px;">Carries micro-shield (absorbs 150 dmg). Network Link airborne. Laser.</em></td>
+  <td><strong>Acid Cloud Flyer</strong><br><em style="color:var(--muted);font-size:10px;">Drops living acid cloud 150 radius. DoT 15 DPS + root slow 15s.</em></td>
+  <td><strong>Corporate Gunship</strong><br><em style="color:var(--muted);font-size:10px;">Smart missiles (no friendly fire). Stealth approach with Vane active.</em></td>
+  <td><strong>Substrate Flyer</strong><br><em style="color:var(--muted);font-size:10px;">Phase flight. Immune to T1 AA. Best T2 air unit per stat.</em></td>
+  <td><strong>Atmospheric Destroyer</strong><br><em style="color:var(--muted);font-size:10px;">Battlecruiser-scale gunship. Immune T1 AA. Heavy plasma barrage.</em></td>
+</tr>
+<tr>
+  <td><strong>Heavy Bomber</strong><br><span class="tag tag-special">T2-T3 · Strategic</span></td>
+  <td><strong>9-D Sector Bomber</strong><br><em style="color:var(--muted);font-size:10px;">T3. Carpet-bombs 600 length line. Needs fighter escort.</em></td>
+  <td><strong>Pirjo's Bomber</strong><br><em style="color:var(--muted);font-size:10px;">Named craft. Cheap T2. Bomb impacts create reclaim piles.</em></td>
+  <td><strong>Doctrine Bomber</strong><br><em style="color:var(--muted);font-size:10px;">T2. Carpet EMP — disables everything below for 20s. No damage.</em></td>
+  <td><strong>Spore Behemoth</strong><br><em style="color:var(--muted);font-size:10px;">T2. Drops Root Network seed clusters — instant root on impact zone.</em></td>
+  <td><strong>Black Budget</strong><br><em style="color:var(--muted);font-size:10px;">T2. Stealth strategic. Precision (targeted) not carpet. Most accurate.</em></td>
+  <td><strong>Horizon Breaker</strong><br><em style="color:var(--muted);font-size:10px;">T2. Impossible geometry bomb pattern. Phase through AA. Best survival.</em></td>
+  <td><strong>World Cannon</strong><br><em style="color:var(--muted);font-size:10px;">T2. Fires mass driver shells from altitude. Hitscan. No arc.</em></td>
+</tr>
+<tr style="background:rgba(255,255,255,0.02);">
+  <td><strong>Transport Aircraft</strong><br><span class="tag tag-builder">T1 · Carrier</span></td>
+  <td><strong>Pelican</strong><br><em style="color:var(--muted);font-size:10px;">Carries 8 infantry. Deploy-on-fly. Needs escort. Unarmed.</em></td>
+  <td><strong>The Bus</strong><br><em style="color:var(--muted);font-size:10px;">Carries 6. Cheapest transport. When shot down: wreck at destination.</em></td>
+  <td><strong>Network Carrier</strong><br><em style="color:var(--muted);font-size:10px;">Carries 4. Passengers extend Network Link from aircraft while aboard.</em></td>
+  <td><strong>Flesh Carrier</strong><br><em style="color:var(--muted);font-size:10px;">Biological organism. Carries 5. Passengers regen 8HP/sec inside.</em></td>
+  <td><strong>Executive Transport</strong><br><em style="color:var(--muted);font-size:10px;">Carries 4. Stealth transport — arrives undetected. Best insertion.</em></td>
+  <td><strong>Phase Gate Carrier</strong><br><em style="color:var(--muted);font-size:10px;">Drops passengers through phase portal 200 units ahead. Surprise delivery.</em></td>
+  <td><strong>Drop Carrier</strong><br><em style="color:var(--muted);font-size:10px;">Delivers 6 troops via mini-drop-pods individually. Scatter deployment.</em></td>
+</tr>
+<tr>
+  <td><strong style="color:var(--gold);">★ Faction Exclusive Aircraft</strong><br><span class="tag tag-unique">Unique · No Counter</span></td>
+  <td style="color:var(--c-res);"><strong>AWACS Sentinel</strong><br><em style="color:var(--muted);font-size:10px;">Airborne command plane. While airborne: covers entire small map with radar. All enemy units visible to entire team for 60s when active. Cannot be jammed by ground jammers. Fragile — must be escorted. One per player.</em></td>
+  <td style="color:var(--c-nom);"><strong>Drone Queen</strong><br><em style="color:var(--muted);font-size:10px;">Massive flying carrier. Continuously spawns combat drones while airborne (1 drone every 8s, max 8 active around it). Drones fight on destruction of Queen. Most chaotic air unit in game. Prioritise in team games.</em></td>
+  <td style="color:var(--c-syn);"><strong>Network Phantom</strong><br><em style="color:var(--muted);font-size:10px;">Permanently stealth aircraft. Jams ALL enemy radar in 800 radius while airborne. Creates false radar pings to deceive enemy. Cannot be detected without advanced T2 radar. If shot down: leaves no wreck (self-destructs).</em></td>
+  <td style="color:var(--c-myc);"><strong>Hive Mother</strong><br><em style="color:var(--muted);font-size:10px;">Enormous flying bio-structure. CANNOT be targeted by fighters (too large for air-to-air). Creates Root Network from altitude. Spawns creature units (1 Spore Crawler every 12s while airborne). 3000 HP. Game-changing.</em></td>
+  <td style="color:var(--c-hel);"><strong>Signal Ghost</strong><br><em style="color:var(--muted);font-size:10px;">Permanently stealth. Carries integrated Signal Jammer. Creates 1000-radius radar blackout wherever it flies. Enemy cannot detect it without T2 advanced radar. Most powerful electronic warfare aircraft in game.</em></td>
+  <td style="color:var(--c-pre);"><strong>Phase Rider</strong><br><em style="color:var(--muted);font-size:10px;">Cannot be targeted by ANY anti-air system. If a missile locks on: phases out for 2s causing missile to pass through. Only destroyable by fighter dog-fight at close range. Most survivable aircraft in game. Substrate weapons.</em></td>
+  <td style="color:var(--c-vor);"><strong>Fleet Spear</strong><br><em style="color:var(--muted);font-size:10px;">Dives from orbit. Speed too great for any AA to target (immune). Delivers mass-driver strike at target point (2000 dmg, 100 radius). Then exits atmosphere. 180s cooldown. Cannot be stopped. The Vorn fleet asserts control.</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<!-- ─── DEFENCES ─── -->
+<div class="sh"><span class="sh-num">N4</span> DEFENCES & TURRETS — ALL FACTIONS</div>
+
+<div class="tw">
+<table class="utab">
+<thead><tr>
+  <th>Category</th>
+  <th style="color:var(--c-res);">Resistance</th>
+  <th style="color:var(--c-nom);">Nomads</th>
+  <th style="color:var(--c-syn);">Synth</th>
+  <th style="color:var(--c-myc);">Mycelion</th>
+  <th style="color:var(--c-hel);">Helios</th>
+  <th style="color:var(--c-pre);">Precursors</th>
+  <th style="color:var(--c-vor);">The Vorn</th>
+</tr></thead>
+<tbody>
+<tr>
+  <td><strong>Light Anti-Infantry Turret</strong><br><span class="tag tag-builder">T1</span></td>
+  <td><strong>LT-1 Guard Turret</strong><br><em style="color:var(--muted);font-size:10px;">Ballistic rapid-fire. 180° arc. Best T1 anti-infantry.</em></td>
+  <td><strong>Scrap Turret</strong><br><em style="color:var(--muted);font-size:10px;">Improvised rapid-fire. Cheap. Fast build. Low HP.</em></td>
+  <td><strong>Precision Turret</strong><br><em style="color:var(--muted);font-size:10px;">Laser. Always bracketed (never moves). Best DPS/cost T1 turret.</em></td>
+  <td><strong>Spore Launcher Turret</strong><br><em style="color:var(--muted);font-size:10px;">120 radius splash. Root Network slow applied on impact.</em></td>
+  <td><strong>Precision Laser Turret</strong><br><em style="color:var(--muted);font-size:10px;">Stealth — looks like signage. Hitscan. High precision, lower HP.</em></td>
+  <td><strong>Geometric Sentinel</strong><br><em style="color:var(--muted);font-size:10px;">T1-IMMUNE. Best early turret. Untouchable by T1 armies.</em></td>
+  <td><strong>Vorn Sentinel Turret</strong><br><em style="color:var(--muted);font-size:10px;">Immune T1 infantry. 360°. Highest HP of any T1 turret. Drop Pod.</em></td>
+</tr>
+<tr style="background:rgba(255,255,255,0.02);">
+  <td><strong>Anti-Tank Turret</strong><br><span class="tag tag-special">T1</span></td>
+  <td><strong>AT-1 Tank Stopper</strong><br><em style="color:var(--muted);font-size:10px;">AP shell. 360°. Cannot target aircraft.</em></td>
+  <td><strong>Bolt Cannon</strong><br><em style="color:var(--muted);font-size:10px;">Scrap AP rounds. Cheaper, lower HP. Good cost-efficiency.</em></td>
+  <td><strong>Logic Cannon</strong><br><em style="color:var(--muted);font-size:10px;">EMP blast. Disables vehicle 8s without HP damage. Combo with Precision.</em></td>
+  <td><strong>Root Spike Turret</strong><br><em style="color:var(--muted);font-size:10px;">Shoots underground root spikes at vehicles. Ignores vehicle armour 20%.</em></td>
+  <td><strong>Corporate Enforcer Turret</strong><br><em style="color:var(--muted);font-size:10px;">Smart missiles. Never misses vehicles. Stealth until firing.</em></td>
+  <td><strong>Substrate Lance</strong><br><em style="color:var(--muted);font-size:10px;">T1-immune structure. Substrate bolt phases 30% vehicle armour.</em></td>
+  <td><strong>Plasma Battery Turret</strong><br><em style="color:var(--muted);font-size:10px;">Immune T1+T2 infantry. High splash. Drop Pod. Best T2 AT turret.</em></td>
+</tr>
+<tr>
+  <td><strong>Anti-Air Battery</strong><br><span class="tag tag-aa">T1</span></td>
+  <td><strong>AA-1 Flak Battery</strong><br><em style="color:var(--muted);font-size:10px;">Flak clusters. Area damage at altitude. Cannot target ground.</em></td>
+  <td><strong>Junk AA Gun</strong><br><em style="color:var(--muted);font-size:10px;">Improvised. Higher DPS than flak, shorter range (320). Good coverage.</em></td>
+  <td><strong>AA Laser Platform</strong><br><em style="color:var(--muted);font-size:10px;">Hitscan. Never misses aircraft. Best T1 AA turret in game.</em></td>
+  <td><strong>Spore Cloud Battery</strong><br><em style="color:var(--muted);font-size:10px;">Persistent spore cloud at altitude. Area AA. DoT on aircraft.</em></td>
+  <td><strong>Corporate AA Battery</strong><br><em style="color:var(--muted);font-size:10px;">Guided missiles. Never misses. Shorter range. High hit probability.</em></td>
+  <td><strong>Phase Deflector Array</strong><br><em style="color:var(--muted);font-size:10px;">Phase-field: incoming missiles detonate 50 range early. T1-immune.</em></td>
+  <td><strong>Vorn AA Cannon</strong><br><em style="color:var(--muted);font-size:10px;">Plasma burst AA. Range 480. Best T1 AA DPS. Drop Pod. T1-immune.</em></td>
+</tr>
+<tr style="background:rgba(255,255,255,0.02);">
+  <td><strong>Heavy Multi-Role Turret</strong><br><span class="tag tag-special">T2</span></td>
+  <td><strong>HT-2 Perimeter Fortress</strong><br><em style="color:var(--muted);font-size:10px;">AP penetrating rounds. 360°. Vale aura extends to 500 nearby.</em></td>
+  <td><strong>Fortress Turret</strong><br><em style="color:var(--muted);font-size:10px;">3-barrel scrap cannon. Gets stronger with adjacent wreck piles (+5% DPS).</em></td>
+  <td><strong>Citadel Turret</strong><br><em style="color:var(--muted);font-size:10px;">Laser. Always bracketed. Best T2 turret DPS in game when stationary.</em></td>
+  <td><strong>Network Pulse Tower</strong><br><em style="color:var(--muted);font-size:10px;">Fires pulse damaging ALL enemies in 200 radius every 8s. Cheap energy.</em></td>
+  <td><strong>Acquisition Fortress</strong><br><em style="color:var(--muted);font-size:10px;">Fires Acquisition beam at wounded enemies: converts them at 80M.</em></td>
+  <td><strong>Ancient Citadel Turret</strong><br><em style="color:var(--muted);font-size:10px;">Immune T1+T2 infantry. Dual substrate bolts. Cannot be rushed.</em></td>
+  <td><strong>Long-Range Mass Driver</strong><br><em style="color:var(--muted);font-size:10px;">Range 1200. Hitscan. Zero travel time. Cannot miss. Drop Pod.</em></td>
+</tr>
+<tr>
+  <td><strong>Shield Generator</strong><br><span class="tag tag-special">T2 · Dome</span></td>
+  <td><strong>Shield Generator</strong><br><em style="color:var(--muted);font-size:10px;">Dome 500 radius. 200 dmg/sec absorb. 150 E/sec active. Toggle.</em></td>
+  <td><strong>Nomad Barrier</strong><br><em style="color:var(--muted);font-size:10px;">Dome 400 radius. Cheaper. When shield breaks: explodes 50 dmg nearby.</em></td>
+  <td><strong>Phase Shield Generator</strong><br><em style="color:var(--muted);font-size:10px;">Infantry cannot pass through dome. Vehicles pass but take 100 dmg.</em></td>
+  <td><strong>Chitinous Dome</strong><br><em style="color:var(--muted);font-size:10px;">Organic. Regenerates 20 HP/sec automatically (no energy cost to regen).</em></td>
+  <td><strong>Corporate Shield Array</strong><br><em style="color:var(--muted);font-size:10px;">Dome 450 radius. Links to Signal Disruptor: shield+jam combo.</em></td>
+  <td><strong>Phase Shield Generator</strong><br><em style="color:var(--muted);font-size:10px;">T1-immune. Phase blocks T2 infantry too. Unique anti-infantry dome.</em></td>
+  <td><strong>Extraction Shield Pod</strong><br><em style="color:var(--muted);font-size:10px;">Dome 400 radius. 250 dmg/sec absorb. Drop Pod. Cannot be captured.</em></td>
+</tr>
+<tr style="background:rgba(255,255,255,0.02);">
+  <td><strong style="color:var(--gold);">★ Faction Exclusive Defence</strong><br><span class="tag tag-unique">Unique Structure</span></td>
+  <td style="color:var(--c-res);"><strong>Command Spire</strong><br><em style="color:var(--muted);font-size:10px;">Extends Vale command aura to 1000 radius from this structure. Integrated missile pod (DPS 60, range 500, guides missiles). If Vale is within 500 of this Spire: entire network broadcasts +20% damage bonus to all Resistance units globally.</em></td>
+  <td style="color:var(--c-nom);"><strong>Wreck Emitter</strong><br><em style="color:var(--muted);font-size:10px;">Turret that grows stronger with nearby wrecks: +10% DPS per wreck within 150 radius, max +80%. Place in battle areas to create a turret that becomes devastating mid-battle. Generates 0.3M/sec from each adjacent wreck passively.</em></td>
+  <td style="color:var(--c-syn);"><strong>EMP Spire</strong><br><em style="color:var(--muted);font-size:10px;">Manual activation only. Fires mass EMP pulse in 400 radius — disables ALL units friend AND foe for 8s. Synth uses own Network Link instead of radar. Warning radius shown to team. Most powerful area-disable structure in game.</em></td>
+  <td style="color:var(--c-myc);"><strong>Symbiont Nest</strong><br><em style="color:var(--muted);font-size:10px;">Does not attack directly. Spawns 1 Spore Crawler every 8s as defenders (unlimited). Cannot be destroyed while Root Network is dense within 100 radius of nest. The nest is immortal on home territory. One nest is 3 factories in one.</em></td>
+  <td style="color:var(--c-hel);"><strong>Signal Spire</strong><br><em style="color:var(--muted);font-size:10px;">Jams ALL radar (friend AND foe) in 800 radius. Helios uses own targeting systems (unaffected). Inside the blackout: Helios stealth units operate freely, Acquisition Protocol range extends to 600. Enemy navigates blind.</em></td>
+  <td style="color:var(--c-pre);"><strong>Impossibility Spire</strong><br><em style="color:var(--muted);font-size:10px;">Fires simultaneously in ALL directions every 10s in 200 radius. Cannot be flanked. Reality-distortion rounds ignore 50% armour. Immune to T1 damage. Cannot be shot from T2 infantry. Most indestructible T2 defensive structure.</em></td>
+  <td style="color:var(--c-vor);"><strong>Orbital Relay Spire</strong><br><em style="color:var(--muted);font-size:10px;">Calls continuous orbital strike on any point within 600 radius every 30s (300 damage, 100 radius). Cannot be countered by anti-missile systems. The Vorn fleet has permanent fire authority on the surface. Drop Pod deployed.</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<!-- ─── COUNTER MATRIX ─── -->
+<div class="sh"><span class="sh-num">N5</span> COUNTER-UNIT MATRIX — WHO COUNTERS WHAT</div>
+<div class="mbox" style="margin-bottom:12px;">
+  <div class="mt gold">Counter Logic — Every Attack Has an Answer</div>
+  <div class="mb">Each row shows the attacker type and the units that counter it. All factions have equivalent counter categories — different names, same function. <strong>No unit is uncounterable except faction exclusive ★ units</strong> which are balanced by extreme cost.</div>
+</div>
+<div class="tw">
+<table class="utab">
+<thead><tr>
+  <th>Attacker Type</th><th>Hard Counter Unit Type</th><th>Example per faction (one each)</th>
+</tr></thead>
+<tbody>
+<tr><td>Light/Scout infantry</td><td>Rapid-fire light turret or LMG infantry</td><td>LT-1 Guard / Scrap Turret / Precision Turret / Spore Launcher / Corp. Laser / Geometric Sentinel / Vorn Sentinel</td></tr>
+<tr style="background:rgba(255,255,255,0.02);"><td>Light vehicles / light tanks</td><td>Anti-Tank infantry + light tank AP rounds</td><td>Javelin / Bolt Gunner / Logic Piercer / Acid Spitter / Corp. Specialist / Phase Lancer / Plasma Reaper</td></tr>
+<tr><td>Medium/heavy tanks</td><td>Heavy tank + Artillery/SPG</td><td>Bastion / Iron Titan / Paradigm / Colossus / Battle Platform / Precursor Guardian / World-Ender</td></tr>
+<tr style="background:rgba(255,255,255,0.02);"><td>Mass infantry swarm</td><td>Area-splash weapon (grenade, spore, EMP)</td><td>Grenadier / Junk Cannon (scatter) / EMP Disabler / Spore Cannon / Corp Specialist (EMP stun) / Substrate Walker / Dreadnought Trooper</td></tr>
+<tr><td>Scout aircraft / drones</td><td>T1 Fighter + AA vehicle/turret</td><td>Interceptor / Bolt Dart / Logic Interceptor / Blade Wing / Rapier / Logic Wing / Vorn Striker</td></tr>
+<tr style="background:rgba(255,255,255,0.02);"><td>Heavy bombers</td><td>Fast T2 fighters + AA missile battery</td><td>T2 Fighter escort / Doctrine EMP bomber stops ground / Phase Rider (best bombers stop other bombers) / Atmospheric Destroyer</td></tr>
+<tr><td>Gunships</td><td>T1 AA vehicle deployed + fighter cover</td><td>Skywatch / Buzzsaw / Null-Field AA / Spore Cloud Battery / Aegis / Phase Deflector / Atmospheric Cannon</td></tr>
+<tr style="background:rgba(255,255,255,0.02);"><td>Artillery / SPG</td><td>Fast scout to reveal + fighter strike or counter-SPG</td><td>Recon Sparrow / Pirjo's Eye / Echo Drone / Spore Hawk / Meridian Eye / Phase Eye / Orbital Eye (all scout)</td></tr>
+<tr><td>Stealth units</td><td>Radar tower + T2 radar + Ward / Resonator / Recon units</td><td>Radar Tower (all) / Ward ability / Resonator passive / Sensor Grid Array / Corporate Lab units reveal / Archive Reclaimer</td></tr>
+<tr style="background:rgba(255,255,255,0.02);"><td>Shield-protected base</td><td>Reality Distortion / Substrate / Smart missiles / EMP spire</td><td>CERP (brute force) / Junk Cannon / Vector Cannon / Spore Cannon / Precision Strike / Reality Distortion / Mass Driver</td></tr>
+<tr><td>Root Network terrain (Mycelion)</td><td>Raised terrain + ranged fire to avoid network, fire units purge roots</td><td>All factions: Long-range artillery clears root structures. Fire / plasma destroys root terrain. Avoid stepping on network.</td></tr>
+<tr style="background:rgba(255,255,255,0.02);"><td>Precursor T1-immune units</td><td>T2 units only — must rush T2 faster than Precursor builds</td><td>All factions: Build T2 faster using Adv. Extractor income. Target Architect units (T1-immune too but slower than combat units).</td></tr>
+<tr><td>Vorn Drop Pod structures</td><td>Strike the 8-second drop window — bomb the landing zone</td><td>Artillery area denial / bombers / EMP / Spore Cannon on landing zone during 8s approach window — stops Vorn from placing safely.</td></tr>
+</tbody>
+</table>
+</div>
+
+<!-- ─── SPECIALTY SUMMARY ─── -->
+<div class="sh"><span class="sh-num">N6</span> CATEGORY DOMINANCE — WHO IS STRONGEST WHERE</div>
+<div class="g3" style="gap:10px;">
+<div class="card" style="border-left:3px solid var(--c-res);">
+  <div class="card-title" style="color:var(--c-res);">Resistance</div>
+  <div class="card-sub">BEST: T2 Infantry + Command Structures</div>
+  <div class="card-body">Strongest when Vale and Ward are both alive. Command Spire + Relay Tanks create unstoppable coordinated pushes. Signal Corps intel + AWACS Sentinel means enemy has no hidden moves. <strong>Weakest:</strong> Economy — needs metal spots early. Fragile if Vale falls.</div>
+</div>
+<div class="card" style="border-left:3px solid var(--c-nom);">
+  <div class="card-title" style="color:var(--c-nom);">Nomads</div>
+  <div class="card-sub">BEST: Ground Vehicles + Drone Volume</div>
+  <div class="card-body">Scrap Leviathan fed on wrecks + Iron Titan wall + Junk Cannon barrage. Zone Eleven Command Crawler with Drone Queen overhead. Wreck income means more battle = more economy. <strong>Weakest:</strong> Air — expensive drones, improvised aircraft are fragile at T2.</div>
+</div>
+<div class="card" style="border-left:3px solid var(--c-syn);">
+  <div class="card-title" style="color:var(--c-syn);">Synth Coalition</div>
+  <div class="card-sub">BEST: Air Superiority + Electronic Warfare</div>
+  <div class="card-body">Network Phantom + Logic Interceptors = total air control. Echo Drone chains give free map LOS. EMP Spire + Vector Cannon = anything in 400 radius is disabled then sniped. <strong>Weakest:</strong> Slow production, vulnerable to fast rushes before bracket established.</div>
+</div>
+<div class="card" style="border-left:3px solid var(--c-myc);">
+  <div class="card-title" style="color:var(--c-myc);">Mycelion Network</div>
+  <div class="card-sub">BEST: Fixed Defences + Territory Denial</div>
+  <div class="card-body">Symbiont Nest spawns infinite defenders. Network Pulse Tower disables everything every 8s. Chitinous Dome regenerates free. Hive Mother overhead spawns air creatures. Root Network makes entire territory a weapon. <strong>Weakest:</strong> Off network — completely loses regen advantage.</div>
+</div>
+<div class="card" style="border-left:3px solid var(--c-hel);">
+  <div class="card-title" style="color:var(--c-hel);">Helios Corporate</div>
+  <div class="card-sub">BEST: Stealth + Precision + Economy</div>
+  <div class="card-body">Ghost Tank Valkyrie + Signal Ghost aircraft = enemy never knows where strike comes from. Signal Spire kills enemy intel. Acquisition Engine converts enemy army mid-battle. Reyes aura + Board Room = richest faction. <strong>Weakest:</strong> HP — corporate units more expensive but slightly fragile without stealth.</div>
+</div>
+<div class="card" style="border-left:3px solid var(--c-pre);">
+  <div class="card-title" style="color:var(--c-pre);">Precursors</div>
+  <div class="card-sub">BEST: Early Untouchability + Economy</div>
+  <div class="card-body">Geometric Sentinel + T1-immune Architect = enemy T1 rush does literally nothing. Eternity Tank phases through all attacks. Phase Rider cannot be shot down. Impossibility Spire fires in all directions simultaneously. <strong>Weakest:</strong> Slowest production, most expensive — overwhelmed by simultaneous multi-front attacks.</div>
+</div>
+<div class="card" style="border-left:3px solid var(--c-vor);">
+  <div class="card-title" style="color:var(--c-vor);">The Vorn</div>
+  <div class="card-sub">BEST: Heavy Units + Per-Unit Dominance</div>
+  <div class="card-body">World-Ender + Extraction Dreadnought (steals income as it advances) + Fleet Spear orbital strike = no counter at T3. Dreadnought Trooper infantry walks through T1 armies. Orbital Relay Spire calls strikes every 30s. <strong>Weakest:</strong> Early game — no builders, Drop Pod delay, slow to mass. Rush Vorn before T2 online.</div>
+</div>
+</div>
+
+<div style="margin-top:28px;border:1px solid var(--gold);border-radius:8px;padding:18px 24px;">
+  <div style="font-family:'Rajdhani',sans-serif;font-size:16px;font-weight:700;color:var(--gold);margin-bottom:10px;">NAMING BIBLE COMPLETE</div>
+  <div style="font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--muted);line-height:2.2;">
+    7 FACTIONS × 7 CATEGORIES (SCOUT, RIFLE, AT, SNIPER, ENGINEER, HEAVY, EXCLUSIVE) INFANTRY<br>
+    7 FACTIONS × 9 CATEGORIES (SCOUT VEH, LIGHT TANK, MEDIUM TANK, HEAVY TANK, SPG, AA VEH, APC, MOBILE CMD, EXCLUSIVE) VEHICLES<br>
+    7 FACTIONS × 7 CATEGORIES (SCOUT, FIGHTER, BOMBER, GUNSHIP, HEAVY BOMBER, TRANSPORT, EXCLUSIVE) AIRCRAFT<br>
+    7 FACTIONS × 6 CATEGORIES (AI TURRET, AT TURRET, AA BATTERY, HEAVY TURRET, SHIELD, EXCLUSIVE) DEFENCES<br>
+    COMPLETE COUNTER-UNIT MATRIX · FACTION SPECIALIZATION CHART<br>
+    DENIS KACAR © 2026 · SOR: SINGULARITY REIGN
+  </div>
+</div>
+
+</div><!-- end names page -->
+
+<script>
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+  event.target.classList.add('active');
+}
+</script>
+
+</body>
+</html>
