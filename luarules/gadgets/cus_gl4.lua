@@ -866,6 +866,18 @@ local function GenFastTextureKey(objectDefID, objectDef, normaltexpath, texturet
 	local tex2 = string.lower(objectDef.model.textures.tex2 or "")
 	normaltexpath = string.lower(normaltexpath or "")
 	local strkey = tex1 .. tex2 .. normaltexpath
+	-- SOR: only include slot [0]/[1] in the hash when they're literal override paths,
+	-- NOT engine placeholders like "%defID:0". Without this, per-unit colortex/othertex
+	-- overrides (from initBinsAndTextures) silently collide with the shared faction
+	-- atlas hash and get dropped at `textureKeytoSet[texKeyFast] == nil`. We keep
+	-- texture sharing for non-override units (their slot [0]/[1] is "%defID:N" — skip).
+	local s0, s1 = texturetable[0], texturetable[1]
+	if type(s0) == "string" and s0:sub(1,1) ~= "%" then
+		strkey = strkey .. s0
+	end
+	if type(s1) == "string" and s1:sub(1,1) ~= "%" then
+		strkey = strkey .. s1
+	end
 	for i=3, 20 do -- from 3 since 0-1-2 are tex12 and normals, and this guarantees order of the table
 		if texturetable[i] then
 			strkey = strkey .. texturetable[i]

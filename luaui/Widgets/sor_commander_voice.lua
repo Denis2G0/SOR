@@ -94,6 +94,9 @@ end
 
 function widget:Initialize()
 	buildLookup()
+	local n = 0
+	for _ in pairs(commanderVoices) do n = n + 1 end
+	Spring.Echo("[SOR-VOICE] Initialize: mapped " .. n .. " commander unitDefIDs, VALE_SELECT has " .. #VALE_SELECT .. " lines")
 end
 
 -- LMB press: defer voice trigger by one Update so Spring has finalized the new selection.
@@ -114,7 +117,11 @@ function widget:Update()
 	local udid = findSelectedCommander()
 	if not udid then return end
 
-	playRotating(commanderVoices[udid].select, selectIndex, udid, SELECT_VOLUME)
+	local list = commanderVoices[udid].select
+	local nextIdx = ((selectIndex[udid] or 0) % #list) + 1
+	selectIndex[udid] = nextIdx
+	Spring.Echo("[SOR-VOICE] PLAY " .. list[nextIdx])
+	spPlaySoundFile(list[nextIdx], SELECT_VOLUME, SOUND_CHANNEL)
 	lastSelectFrame = frame
 end
 
