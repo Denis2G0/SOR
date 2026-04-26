@@ -1,7 +1,7 @@
 function widget:GetInfo()
 	return {
 		name      = "SOR Commander Voice",
-		desc      = "Plays SOR Vale (Resistance) / Prime Node (Synth) voice on commander select + move/build orders. Additive over BAR's gui_soundeffects gadget — no upstream files modified.",
+		desc      = "Plays SOR Vale (Resistance) / Prime Node (Synth) voice on commander select + move/build orders. Voice files live at sounds/voice/en/sor/ — registered automatically by gamedata/soundsVoice.lua with clean voice attributes (gain=1, pitchmod=0, gainmod=0).",
 		author    = "SOR",
 		date      = "2026",
 		license   = "GPL v2+",
@@ -20,10 +20,10 @@ local SELECT_COOLDOWN_FRAMES = 12   -- ~0.4 s between rotations on rapid clicks
 local ORDER_COOLDOWN_FRAMES  = 24   -- ~0.8 s between order acks
 local SOUND_CHANNEL      = 'ui'     -- non-positional, full volume, no rolloff
 
-local VALE_SELECT  = { "sounds/sor/voice/vale-sel.wav", "sounds/sor/voice/vale-sel-1.wav", "sounds/sor/voice/vale-sel-2.wav", "sounds/sor/voice/vale-sel-3.wav", }
-local VALE_ORDER   = { "sounds/sor/voice/vale-ok-1.wav", "sounds/sor/voice/vale-ok-2.wav", }
-local PRIME_SELECT = { "sounds/sor/voice/prime-sel.wav", "sounds/sor/voice/prime-sel-1.wav", "sounds/sor/voice/prime-sel-2.wav", }
-local PRIME_ORDER  = { "sounds/sor/voice/prime-ok-1.wav", "sounds/sor/voice/prime-ok-2.wav", }
+local VALE_SELECT  = { "sounds/voice/en/sor/vale-sel.wav", "sounds/voice/en/sor/vale-sel-1.wav", "sounds/voice/en/sor/vale-sel-2.wav", "sounds/voice/en/sor/vale-sel-3.wav", }
+local VALE_ORDER   = { "sounds/voice/en/sor/vale-ok-1.wav", "sounds/voice/en/sor/vale-ok-2.wav", }
+local PRIME_SELECT = { "sounds/voice/en/sor/prime-sel.wav", "sounds/voice/en/sor/prime-sel-1.wav", "sounds/voice/en/sor/prime-sel-2.wav", }
+local PRIME_ORDER  = { "sounds/voice/en/sor/prime-ok-1.wav", "sounds/voice/en/sor/prime-ok-2.wav", }
 
 -- Resistance commanders (Cor side after the 2026-04-26 faction swap).
 local RESISTANCE_COMMANDERS = { "corcom", "corcomlvl2", "corcomlvl3", "corcomlvl4", "corcomlvl5", "corcomlvl6", "corcomlvl7", "corcomlvl8", "corcomlvl9", "corcomlvl10", "cordecom", }
