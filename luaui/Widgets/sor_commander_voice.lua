@@ -20,7 +20,7 @@ local SELECT_COOLDOWN_FRAMES = 12   -- ~0.4 s between rotations on rapid clicks
 local ORDER_COOLDOWN_FRAMES  = 24   -- ~0.8 s between order acks
 local SOUND_CHANNEL      = 'ui'     -- non-positional, full volume, no rolloff
 
-local VALE_SELECT  = { "sounds/voice/en/sor/vale-sel.wav", "sounds/voice/en/sor/vale-sel-1.wav", "sounds/voice/en/sor/vale-sel-2.wav", "sounds/voice/en/sor/vale-sel-3.wav", }
+local VALE_SELECT  = { "sounds/voice/en/sor/vale-sel.wav", "sounds/voice/en/sor/vale-sel-1.wav", "sounds/voice/en/sor/vale-sel-2.wav", "sounds/voice/en/sor/vale-sel-3.wav", "sounds/voice/en/sor/vale-sel-4.wav", }
 local VALE_ORDER   = { "sounds/voice/en/sor/vale-ok-1.wav", "sounds/voice/en/sor/vale-ok-2.wav", }
 local PRIME_SELECT = { "sounds/voice/en/sor/prime-sel.wav", "sounds/voice/en/sor/prime-sel-1.wav", "sounds/voice/en/sor/prime-sel-2.wav", }
 local PRIME_ORDER  = { "sounds/voice/en/sor/prime-ok-1.wav", "sounds/voice/en/sor/prime-ok-2.wav", }

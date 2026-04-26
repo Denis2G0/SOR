@@ -87,6 +87,9 @@ return {
 			[27] = "corfhp",
 		},
 		customparams = {
+			-- SOR: Resistance Vale skin override. Per-unit color atlas swap, mesh unchanged.
+			-- See cus_gl4.lua per-unit material override hook (~line 1120).
+			colortex = "unittextures/sor/corcom_color.dds",
 			iscommander = true,
 			model_author = "Mr Bob",
 			normaltex = "unittextures/cor_normal.dds",
