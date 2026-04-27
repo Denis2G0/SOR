@@ -3696,3 +3696,67 @@ for _, n in ipairs({ "corcsa", "corcut", "corsb", "corseap", "corsfig", "corhunt
                     "armcsa", "armsaber", "armsb", "armseap", "armsfig", "armsehak" }) do
 	sorApplyMobileVoice(n)
 end
+
+-- ============================================================
+-- T2 BATCHES — aggressive/heavy tone (per locked tier escalation doctrine)
+-- T2 bots: corlab voice dPah2VEoifKnZT37774q / armalab voice j5PjskdGIiVpn3EEsfG9
+-- T2 tanks: coravp voice fCxG8OHm4STbIsWe4aT9 / armavp voice OmMFaXUeV5N8uREfZgI3
+-- T2 air: coraap voice cPoqAvGWCPfCfyPMwe4z / armaap voice 7132PIzTLZ5WPFlYLr4g
+-- T2 ships: corasy voice ch0vU... / armasy voice F4FA... (same as T1, voice scheme has no T2 ship override)
+-- ============================================================
+
+-- T2 bots (coralab buildoptions)
+for _, n in ipairs({ "corack", "corfast", "corpyro", "coramph", "corcan", "corsumo", "cortermite", "cormort", "corhrk", "coraak", "corroach", "corsktl", "cordecom", "corvoyr", "corspy", "corspec", "cormando" }) do
+	sorApplyMobileVoice(n)
+end
+
+-- T2 bots (armalab buildoptions)
+for _, n in ipairs({ "armack", "armfark", "armfast", "armamph", "armzeus", "armmav", "armsptk", "armfido", "armsnipe", "armfboy", "armspid", "armaak", "armvader", "armdecom", "armscab", "armaser", "armspy", "armmark" }) do
+	sorApplyMobileVoice(n)
+end
+
+-- T2 tanks (coravp buildoptions)
+for _, n in ipairs({ "coracv", "corsala", "correap", "corparrow", "corgol", "corban", "cormart", "corvroc", "cortrem", "corsent", "cormabm", "coreter", "corvrad" }) do
+	sorApplyMobileVoice(n)
+end
+
+-- T2 tanks (armavp buildoptions)
+for _, n in ipairs({ "armacv", "armconsul", "armcroc", "armlatnk", "armbull", "armgremlin", "armmart", "armmerl", "armmanni", "armyork", "armseer", "armjam" }) do
+	sorApplyMobileVoice(n)
+end
+
+-- T2 air (coraap buildoptions)
+for _, n in ipairs({ "coraca", "corape", "corhurc", "cortitan", "corvamp", "corawac", "corseah", "corcrwh" }) do
+	sorApplyMobileVoice(n)
+end
+
+-- T2 air (armaap buildoptions)
+for _, n in ipairs({ "armaca", "armbrawl", "armpnix", "armlance", "armhawk", "armawac", "armdfly", "armblade", "armstil", "armliche" }) do
+	sorApplyMobileVoice(n)
+end
+
+-- T2 ships (corasy buildoptions)
+for _, n in ipairs({ "coracsub", "cormls", "corcrus", "corshark", "corssub", "corarch", "corsjam", "corantiship", "corbats", "cormship", "corblackhy", "corfship" }) do
+	sorApplyMobileVoice(n)
+end
+
+-- T2 ships (armasy buildoptions)
+for _, n in ipairs({ "armacsub", "armmls", "armcrus", "armsubk", "armserp", "armaas", "armsjam", "armantiship", "armbats", "armmship", "armepoch", "armlship" }) do
+	sorApplyMobileVoice(n)
+end
+
+-- ============================================================
+-- T3 — apex/devastating tone (per locked tier escalation doctrine)
+-- Resistance T3 voice: NgBYGKDDq2Z8Hnhatgma
+-- Synth T3 voice: hQU8r7JV8coS4DYBXoOA
+-- ============================================================
+
+-- T3 (corgant buildoptions)
+for _, n in ipairs({ "corkorg", "corkarg", "corjugg", "corshiva", "corcat", "corsok", "cordemon" }) do
+	sorApplyMobileVoice(n)
+end
+
+-- T3 (armshltx buildoptions)
+for _, n in ipairs({ "armbanth", "armraz", "armmar", "armvang", "armlun", "armthor" }) do
+	sorApplyMobileVoice(n)
+end
