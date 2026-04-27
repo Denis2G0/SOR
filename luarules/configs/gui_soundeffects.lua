@@ -3667,3 +3667,32 @@ end
 for _, n in ipairs({ "armch", "armsh", "armanac", "armah", "armmh" }) do
 	sorApplyMobileVoice(n)
 end
+
+-- ============================================================
+-- T1 BOT/TANK/SHIP EXPANSION — full coverage of remaining T1 buildoptions.
+-- All units inherit faction+category voice scheme from prior locked maps.
+-- ============================================================
+
+-- T1 bot expansion
+for _, n in ipairs({ "corck", "cornecro", "corstorm", "corthud", "corcrash",
+                    "armck", "armrectr", "armrock", "armham", "armjeth", "armwar", "armflea" }) do
+	sorApplyMobileVoice(n)
+end
+
+-- T1 tank expansion
+for _, n in ipairs({ "corcv", "cormuskrat", "cormlv", "corfav", "corgator", "corgarp", "corlevlr", "corwolv", "cormist",
+                    "armcv", "armbeaver", "armmlv", "armfav", "armflash", "armpincer", "armart", "armjanus", "armsam" }) do
+	sorApplyMobileVoice(n)
+end
+
+-- T1 ships (corsy / armsy)
+for _, n in ipairs({ "corcs", "correcl", "coresupp", "corpt", "corpship", "corroy", "corsub",
+                    "armcs", "armrecl", "armdecade", "armpt", "armpship", "armroy", "armsub" }) do
+	sorApplyMobileVoice(n)
+end
+
+-- T1 seaplanes / amphib platforms (corplat / armplat)
+for _, n in ipairs({ "corcsa", "corcut", "corsb", "corseap", "corsfig", "corhunt",
+                    "armcsa", "armsaber", "armsb", "armseap", "armsfig", "armsehak" }) do
+	sorApplyMobileVoice(n)
+end
