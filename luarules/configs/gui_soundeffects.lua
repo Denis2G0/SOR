@@ -3515,3 +3515,55 @@ for _, sorCommanderName in ipairs({
 }) do
 	GUIUnitSoundEffects[sorCommanderName] = nil
 end
+
+-- ============================================================
+-- SOR Resistance (Cor side) unit voice overrides — T1 PILOT
+-- Uses full file paths so gamedata/soundsVoice.lua applies clean
+-- voiceAttributes (gain=1, pitchmod=0, rolloff=0). The gadget plays
+-- these on the 'sfx' channel positionally; rolloff=0 keeps volume
+-- constant regardless of camera distance.
+-- Voice scheme (locked 2026-04-27, Resistance):
+--   T1 bots  -> Voice A  TbEd6wZh117FdOyTGS3q
+--   T1 tanks -> Voice B  TxWZERZ5Hc6h9dGxVmXa
+--   Hovers   -> CHY1nsGW7i0Wi24i5SNq
+--   T1 air   -> KJF2ogTBPpTHWHAqRZrS
+--   T2 bots  -> dPah2VEoifKnZT37774q
+--   T2 tanks -> fCxG8OHm4STbIsWe4aT9
+--   T2 air   -> cPoqAvGWCPfCfyPMwe4z
+--   Ships    -> ch0vU2DwfJVmFG2iZy89
+--   T3 all   -> NgBYGKDDq2Z8Hnhatgma
+-- ============================================================
+
+-- T1 bot
+if GUIUnitSoundEffects["corak"] then
+	GUIUnitSoundEffects["corak"].BaseSoundSelectType = {
+		"sounds/voice/en/sor/corak-sel.wav",
+		"sounds/voice/en/sor/corak-sel-1.wav",
+	}
+	GUIUnitSoundEffects["corak"].BaseSoundMovementType = {
+		"sounds/voice/en/sor/corak-ok.wav",
+		"sounds/voice/en/sor/corak-ok-1.wav",
+		"sounds/voice/en/sor/corak-arr.wav",
+	}
+end
+
+-- T1 tank (Raider)
+if GUIUnitSoundEffects["corraid"] then
+	GUIUnitSoundEffects["corraid"].BaseSoundSelectType = {
+		"sounds/voice/en/sor/corraid-sel.wav",
+		"sounds/voice/en/sor/corraid-sel-1.wav",
+	}
+	GUIUnitSoundEffects["corraid"].BaseSoundMovementType = {
+		"sounds/voice/en/sor/corraid-ok.wav",
+		"sounds/voice/en/sor/corraid-ok-1.wav",
+		"sounds/voice/en/sor/corraid-arr.wav",
+	}
+end
+
+-- T1 turret (Defender) — structure, select-only
+if GUIUnitSoundEffects["corllt"] then
+	GUIUnitSoundEffects["corllt"].BaseSoundSelectType = {
+		"sounds/voice/en/sor/corllt-sel.wav",
+		"sounds/voice/en/sor/corllt-sel-1.wav",
+	}
+end

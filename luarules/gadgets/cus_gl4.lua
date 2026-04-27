@@ -1804,7 +1804,16 @@ local function ExecuteDrawPass(drawPass)
 								batches = batches + 1
 								units = units + texAndObj.numobjects
 								local mybinVAO = texAndObj.VAO
+								-- SOR: log actual draw-time binding for override textures (once per path)
 								for bindPosition, tex in pairs(texAndObj.textures) do
+									if type(tex) == "string" and tex:find("/sor/", 1, true) and not _sorLogged then
+										_sorLogged = {}
+									end
+									if _sorLogged and type(tex) == "string" and tex:find("/sor/", 1, true) and not _sorLogged[tex] then
+										_sorLogged[tex] = true
+										Spring.Echo(string.format("[SOR][cus_gl4][draw] pass=%d shader=%s slot=%d tex=%s",
+											drawPass, tostring(shaderName), bindPosition, tex))
+									end
 									gl.Texture(bindPosition, tex)
 								end
 
