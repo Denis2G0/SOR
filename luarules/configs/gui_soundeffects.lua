@@ -3617,3 +3617,35 @@ if GUIUnitSoundEffects["armllt"] then
 		"sounds/voice/en/sor/armllt-sel-1.wav",
 	}
 end
+
+-- ============================================================
+-- T1 AIR BATCH — both factions, 14 units total.
+-- Resistance air voice: KJF2ogTBPpTHWHAqRZrS (radio-pilot)
+-- Synth air voice:      16TK5fvPG4TmGd18tTHI (cold AI air-collective)
+-- Standard line set per air unit: 2 sel + 2 ok + 1 arr.
+-- ============================================================
+
+-- Helper to apply standard 5-line voice set (sel x2, ok x2, arr x1)
+local function sorApplyAirVoice(unitName)
+	if GUIUnitSoundEffects[unitName] then
+		GUIUnitSoundEffects[unitName].BaseSoundSelectType = {
+			"sounds/voice/en/sor/" .. unitName .. "-sel.wav",
+			"sounds/voice/en/sor/" .. unitName .. "-sel-1.wav",
+		}
+		GUIUnitSoundEffects[unitName].BaseSoundMovementType = {
+			"sounds/voice/en/sor/" .. unitName .. "-ok.wav",
+			"sounds/voice/en/sor/" .. unitName .. "-ok-1.wav",
+			"sounds/voice/en/sor/" .. unitName .. "-arr.wav",
+		}
+	end
+end
+
+-- Resistance T1 air (corap buildoptions)
+for _, n in ipairs({ "corca", "corfink", "corveng", "corshad", "corvalk", "corbw", "corhvytrans" }) do
+	sorApplyAirVoice(n)
+end
+
+-- Synth T1 air (armap buildoptions)
+for _, n in ipairs({ "armca", "armpeep", "armfig", "armthund", "armatlas", "armkam", "armhvytrans" }) do
+	sorApplyAirVoice(n)
+end
