@@ -3567,3 +3567,53 @@ if GUIUnitSoundEffects["corllt"] then
 		"sounds/voice/en/sor/corllt-sel-1.wav",
 	}
 end
+
+-- ============================================================
+-- SOR Synth (Arm side) unit voice overrides — T1 PILOT
+-- Voice scheme (locked 2026-04-27, Synth):
+--   T1 bots  -> YXA8hiSHzJlJIcdLyCiE
+--   T1 tanks -> sfxYhsJ7rjMmcI1qJQDq
+--   Hovers   -> aXTa6TlhdVSIobpWY3v0
+--   T1 air   -> 16TK5fvPG4TmGd18tTHI
+--   T2 bots  -> j5PjskdGIiVpn3EEsfG9
+--   T2 tanks -> OmMFaXUeV5N8uREfZgI3
+--   T2 air   -> 7132PIzTLZ5WPFlYLr4g
+--   Ships    -> F4FAEn9fesYU6Dn3bCXo
+--   T3 all   -> hQU8r7JV8coS4DYBXoOA
+-- Tier escalation locked: T1 = working/professional, T2 = aggressive/heavy,
+-- T3 = apex/devastating. Lines and tone reflect this per faction.
+-- ============================================================
+
+-- T1 bot (Pawn)
+if GUIUnitSoundEffects["armpw"] then
+	GUIUnitSoundEffects["armpw"].BaseSoundSelectType = {
+		"sounds/voice/en/sor/armpw-sel.wav",
+		"sounds/voice/en/sor/armpw-sel-1.wav",
+	}
+	GUIUnitSoundEffects["armpw"].BaseSoundMovementType = {
+		"sounds/voice/en/sor/armpw-ok.wav",
+		"sounds/voice/en/sor/armpw-ok-1.wav",
+		"sounds/voice/en/sor/armpw-arr.wav",
+	}
+end
+
+-- T1 tank (Stumpy)
+if GUIUnitSoundEffects["armstump"] then
+	GUIUnitSoundEffects["armstump"].BaseSoundSelectType = {
+		"sounds/voice/en/sor/armstump-sel.wav",
+		"sounds/voice/en/sor/armstump-sel-1.wav",
+	}
+	GUIUnitSoundEffects["armstump"].BaseSoundMovementType = {
+		"sounds/voice/en/sor/armstump-ok.wav",
+		"sounds/voice/en/sor/armstump-ok-1.wav",
+		"sounds/voice/en/sor/armstump-arr.wav",
+	}
+end
+
+-- T1 turret (Beamer) — structure, select-only
+if GUIUnitSoundEffects["armllt"] then
+	GUIUnitSoundEffects["armllt"].BaseSoundSelectType = {
+		"sounds/voice/en/sor/armllt-sel.wav",
+		"sounds/voice/en/sor/armllt-sel-1.wav",
+	}
+end
