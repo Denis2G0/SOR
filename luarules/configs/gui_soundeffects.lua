@@ -3626,7 +3626,8 @@ end
 -- ============================================================
 
 -- Helper to apply standard 5-line voice set (sel x2, ok x2, arr x1)
-local function sorApplyAirVoice(unitName)
+-- Used for any mobile unit (air, hover, bot, tank, ship).
+local function sorApplyMobileVoice(unitName)
 	if GUIUnitSoundEffects[unitName] then
 		GUIUnitSoundEffects[unitName].BaseSoundSelectType = {
 			"sounds/voice/en/sor/" .. unitName .. "-sel.wav",
@@ -3642,10 +3643,27 @@ end
 
 -- Resistance T1 air (corap buildoptions)
 for _, n in ipairs({ "corca", "corfink", "corveng", "corshad", "corvalk", "corbw", "corhvytrans" }) do
-	sorApplyAirVoice(n)
+	sorApplyMobileVoice(n)
 end
 
 -- Synth T1 air (armap buildoptions)
 for _, n in ipairs({ "armca", "armpeep", "armfig", "armthund", "armatlas", "armkam", "armhvytrans" }) do
-	sorApplyAirVoice(n)
+	sorApplyMobileVoice(n)
+end
+
+-- ============================================================
+-- T1 HOVER BATCH — both factions, 11 units total.
+-- Resistance hover voice: CHY1nsGW7i0Wi24i5SNq (radio-pilot, hover-themed)
+-- Synth hover voice:      aXTa6TlhdVSIobpWY3v0 (cold AI hover-collective)
+-- Lines reference skids/hover lock/glide for category recognition.
+-- ============================================================
+
+-- Resistance hovers (corhp buildoptions)
+for _, n in ipairs({ "corch", "corsh", "corsnap", "corah", "cormh", "corhal" }) do
+	sorApplyMobileVoice(n)
+end
+
+-- Synth hovers (armhp buildoptions)
+for _, n in ipairs({ "armch", "armsh", "armanac", "armah", "armmh" }) do
+	sorApplyMobileVoice(n)
 end
